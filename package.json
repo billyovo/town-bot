@@ -7,21 +7,31 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "build": "tsup src/index.ts --minify",
-    "fix": "eslint src --fix"
+    "register": "ts-node ./src/commands/register",
+    "fix": "eslint src --fix",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/builders": "^1.6.5",
+    "@types/luxon": "^3.3.3",
+    "axios": "^1.5.1",
     "discord.js": "^14.13.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "luxon": "^3.4.3",
+    "rrule": "^2.7.2"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/node": "^20.8.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "eslint": "^8.51.0",
     "husky": "^8.0.3",
+    "jest": "^29.7.0",
     "lint-staged": "^14.0.1",
+    "ts-jest": "^29.1.1",
     "tsup": "^7.2.0",
     "tsx": "^3.13.0",
     "typescript": "^5.2.2"
@@ -30,5 +40,5 @@
     "*.ts": [
       "eslint --fix"
     ]
- }
+  }
 }

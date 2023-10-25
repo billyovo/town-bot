@@ -1,0 +1,33 @@
+import { Routes, REST, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+
+import fs from "fs";
+import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.join(__dirname, "../../.env") });
+
+if (!process.env.CLIENT_ID || !process.env.DISCORD_TOKEN) {
+	console.error("Failed to register command: Missing CLIENT_ID or DISCORD_TOKEN in .env file");
+	process.exit(1);
+}
+
+const commandsPath = path.join(__dirname, "./builders");
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts")).map((file) => path.parse(file).name);
+const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
+
+// @eslint-disable-next-line
+const commands : RESTPostAPIApplicationCommandsJSONBody[] = [];
+
+const importPromises = commandFiles.map(file =>
+	import(path.join(commandsPath, file)).then(module =>
+		commands.push(module.command.toJSON()),
+	),
+);
+
+Promise.all(importPromises).then(async () => {
+	const data = await rest.put(
+		Routes.applicationCommands(process.env.CLIENT_ID as string),
+		{ body: commands },
+	);
+	console.log(data);
+});

@@ -1,0 +1,39 @@
+[
+    {
+      "title": "碰碰豬",
+      "id": "bumper",
+      "rrule": "FREQ=MONTHLY;BYDAY=2WE,4SA;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+      "emote": "🐷"
+    },
+    {
+      "title": "忘掉那 無形鎖",
+      "id": "cannon",        
+      "rrule": "FREQ=MONTHLY;BYDAY=1WE,3SA;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+      "emote": "🔓"
+    },
+    {
+      "title": "繽紛飛天蛇",
+      "id": "snake",        
+      "rrule": "FREQ=MONTHLY;BYDAY=3WE,1SA;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+      "emote": "🐍"
+    },
+    {
+      "title": "七彩羊駝保衛戰",
+      "id": "boat",        
+      "rrule": "FREQ=MONTHLY;BYDAY=4WE,2SA;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+      "emote": "🦙"  
+    },
+    {
+      "title": "高空墜落",
+      "id": "drop",        
+      "rrule": "FREQ=MONTHLY;BYDAY=1MO,3FR;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+      "emote": "🪂"
+    },
+    {
+      "title": "記憶極限",
+      "id": "match",        
+      "rrule": "FREQ=MONTHLY;BYDAY=2MO,4FR;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+      "emote": "🧠"
+    }
+  ]
+  
