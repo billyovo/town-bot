@@ -21,11 +21,13 @@
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "luxon": "^3.4.3",
+    "node-schedule": "^2.1.1",
     "rrule": "^2.7.2"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/node": "^20.8.5",
+    "@types/node-schedule": "^2.1.2",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "eslint": "^8.51.0",
     "husky": "^8.0.3",

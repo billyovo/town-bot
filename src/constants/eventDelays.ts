@@ -1,1 +1,0 @@
-export const timeBetweenSurvivalAndSkyblockInMillisecond = 1*60*60*1000; // 1 hour

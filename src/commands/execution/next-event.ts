@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { eventSchedule } from "../../managers/eventScheduleManager";
-import { ServerEmoteEnum, ServerNameChineseEnum } from "../../constants/enums";
+import { ServerEmoteEnum, ServerNameChineseEnum } from "../../enums/servers";
 import { DateTime } from "luxon";
-import { timeBetweenSurvivalAndSkyblockInMillisecond } from "../../constants/eventDelays";
+import { timeBetweenSurvivalAndSkyblockInMillisecond } from "../../constants/times";
 
 export async function execute(interaction: ChatInputCommandInteraction){
     const targetEvent = eventSchedule.list.at(0);

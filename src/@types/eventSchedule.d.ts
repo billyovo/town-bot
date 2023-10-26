@@ -18,3 +18,16 @@ export interface EventSchedule {
     today: Collection<string, EventScheduleItem>,
     tomorrow: Collection<string, EventScheduleItem>,
 }
+
+export interface scheduleTomorrowEventMessageOptions {
+    annoucementChannel: TextChannel, 
+    avatarURL: string, 
+    event: EventScheduleItem
+}
+
+export interface scheduleTodayEventMessageOptions{
+    annoucementChannel: TextChannel,
+    event: EventScheduleItem,
+    startTime: Date,
+    mentionedRole: string
+}

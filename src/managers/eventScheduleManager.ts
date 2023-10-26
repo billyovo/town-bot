@@ -8,3 +8,4 @@ if (!isScheduleValid(eventSchedule)) {
 	console.error("Event schedule is invalid");
 	process.exit(1);
 }
+

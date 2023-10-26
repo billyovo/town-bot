@@ -22,14 +22,13 @@ export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : Even
 		output.list.set(eventScheduleItem.id ,eventScheduleItem);
 
 		if (isToday(new Date(), nextOccurrence)) {
-			output.list.set(eventScheduleItem.id ,eventScheduleItem);
+			output.today.set(eventScheduleItem.id ,eventScheduleItem);
 			continue;
 		}
 
 		if (isTomorrow(new Date(), nextOccurrence)) {
-			output.list.set(eventScheduleItem.id ,eventScheduleItem);
+			output.tomorrow.set(eventScheduleItem.id ,eventScheduleItem);
 		}
-		console.log(`${event.title} ${event.emote}\r\n${DateTime.fromJSDate(nextOccurrence).toFormat("yyyy-MM-dd HH:mm")}\r\n\r\n`);
 	}
 	output.list.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
 	output.today.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
