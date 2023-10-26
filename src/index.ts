@@ -1,3 +1,3 @@
 import "dotenv/config";
-import "./managers/discordManager";
+import "./managers/discord/discordManager";
 import "./managers/eventScheduleManager";

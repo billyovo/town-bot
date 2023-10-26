@@ -1,3 +1,5 @@
+import { Collection } from "discord.js"
+
 export interface EventData {
     title: string,
     id: string,
@@ -12,7 +14,7 @@ export interface EventScheduleItem {
     nextOccurrence: Date
 }
 export interface EventSchedule {
-    list: EventScheduleItem[],
-    today: EventScheduleItem[],
-    tomorrow: EventScheduleItem[],
+    list: Collection<string, EventScheduleItem>,
+    today: Collection<string, EventScheduleItem>,
+    tomorrow: Collection<string, EventScheduleItem>,
 }

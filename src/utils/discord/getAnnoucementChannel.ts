@@ -1,6 +1,7 @@
 import { Client, TextChannel } from "discord.js";
+import { DiscordClient } from "../../@types/discord";
 
-export async function getAnnoucementChannel(client: Client, annoucementChannelID: string) : Promise<TextChannel> {
+export async function getAnnoucementChannel(client: DiscordClient, annoucementChannelID: string) : Promise<TextChannel> {
 	const annoucementChannel : TextChannel = await client.channels.fetch(
 		annoucementChannelID,
 		{

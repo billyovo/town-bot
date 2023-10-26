@@ -1,12 +1,13 @@
 import { DateTime } from "luxon";
 import { getOccurrencFromRRuleString, isToday, isTomorrow } from "./helper";
 import { EventData, EventSchedule, EventScheduleItem } from "../../@types/eventSchedule";
+import { Collection } from "discord.js";
 
 export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : EventSchedule {
 	const output : EventSchedule = {
-		list: [],
-		today: [],
-		tomorrow: [],
+		list: new Collection(),
+		today: new Collection,
+		tomorrow: new Collection(),
 	};
 
 	for (const event of schedule) {
@@ -18,17 +19,17 @@ export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : Even
 			nextOccurrence: nextOccurrence,
 		};
 
-		output.list.push(eventScheduleItem);
+		output.list.set(eventScheduleItem.id ,eventScheduleItem);
 
 		if (isToday(new Date(), nextOccurrence)) {
-			output.today.push(eventScheduleItem);
+			output.list.set(eventScheduleItem.id ,eventScheduleItem);
 			continue;
 		}
 
 		if (isTomorrow(new Date(), nextOccurrence)) {
-			output.tomorrow.push(eventScheduleItem);
+			output.list.set(eventScheduleItem.id ,eventScheduleItem);
 		}
-		console.log(`${event.title} ${event.emote}\r\n${DateTime.fromJSDate(nextOccurrence).toFormat("yyyy-MM-dd HH:mm")}\r\n`);
+		console.log(`${event.title} ${event.emote}\r\n${DateTime.fromJSDate(nextOccurrence).toFormat("yyyy-MM-dd HH:mm")}\r\n\r\n`);
 	}
 	output.list.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
 	output.today.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
@@ -37,10 +38,10 @@ export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : Even
 }
 
 export function isScheduleValid(schedule: EventSchedule): boolean {
-	if (schedule.list.length === 0) return false;
+	if (schedule.list.size === 0) return false;
 
-	for (const event of schedule.list) {
-		if (event.nextOccurrence < new Date()) return false;
+	for(let i = 0; i < schedule.list.size; i++) {
+		if ((schedule.list.at(i)?.nextOccurrence || Infinity) < new Date()) return false;
 	}
 
 	return true;
