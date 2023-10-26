@@ -5,7 +5,7 @@ import { Collection } from "discord.js";
 import { CommandsCollection } from "../../../@types/discord";
 
 export async function loadSlashCommands() : Promise<CommandsCollection> {
-  const foldersPath = path.join(__dirname, "../../../commands/execution");
+  const foldersPath = path.join(process.cwd(), "./src/commands/execution");
   const commandFiles = fs.readdirSync(foldersPath);
 
   const commandsCollection : CommandsCollection = new Collection();
