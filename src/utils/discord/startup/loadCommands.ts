@@ -5,18 +5,18 @@ import { Collection } from "discord.js";
 import { CommandsCollection } from "../../../@types/discord";
 
 export async function loadSlashCommands() : Promise<CommandsCollection> {
-  const foldersPath = path.join(process.cwd(), "./src/commands/execution");
-  const commandFiles = fs.readdirSync(foldersPath);
+	const foldersPath = path.join(process.cwd(), "./src/commands/execution");
+	const commandFiles = fs.readdirSync(foldersPath);
 
-  const commandsCollection : CommandsCollection = new Collection();
+	const commandsCollection : CommandsCollection = new Collection();
 
-  const importPromises = commandFiles.map(async file =>{
-    const command = url.pathToFileURL(path.resolve(foldersPath, file)).toString();
-    const module = await import(command);
-    commandsCollection.set(path.parse(file).name, module);
-    console.log(`Loaded command: ${path.parse(file).name}`);
-  });
+	const importPromises = commandFiles.map(async file => {
+		const command = url.pathToFileURL(path.resolve(foldersPath, file)).toString();
+		const module = await import(command);
+		commandsCollection.set(path.parse(file).name, module);
+		console.log(`Loaded command: ${path.parse(file).name}`);
+	});
 
-  await Promise.all(importPromises);
-  return commandsCollection;
+	await Promise.all(importPromises);
+	return commandsCollection;
 }

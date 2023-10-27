@@ -7,9 +7,10 @@ import { loadSlashCommands } from "../../utils/discord/startup/loadCommands";
 import { handleInteraction } from "../../commands/handler/interactionHandler";
 import { updateStatus } from "../../utils/discord/updateStatus";
 import { eventSchedule } from "../eventScheduleManager";
-import { planTodayScheduleMessage, planTomorrowScheduleMessage } from "../../utils/discord/scheduledEvents/planScheduledEvent";
+import { checkTodayScheduleMessage, checkTomorrowScheduleMessage } from "../../utils/discord/scheduledMessages/checkScheduledMessages";
+import { checkGuildScheduledEvents } from "../../utils/discord/guildScheduledEvents/checkGuildScheduledEvents";
 
-export let client : DiscordClient = new ExtendedDiscordClient({
+export const client : DiscordClient = new ExtendedDiscordClient({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
@@ -28,16 +29,22 @@ client.on(Events.ClientReady, async () => {
 		console.error("Annoucement channel not found! Aborting...");
 		process.exit(1);
 	}
-	
-	planTomorrowScheduleMessage({
-		annoucementChannel,
-		avatarURL: client.user?.avatarURL() ?? '',
-	})
 
-	planTodayScheduleMessage({
+	checkTomorrowScheduleMessage({
 		annoucementChannel,
-	})
+		avatarURL: client.user?.avatarURL() ?? "",
+		tomorrowEvents: eventSchedule.tomorrow,
+	});
 
+	checkTodayScheduleMessage({
+		annoucementChannel,
+		todayEvents: eventSchedule.today,
+	});
+
+	await checkGuildScheduledEvents({
+		guild: annoucementChannel.guild,
+		eventList: eventSchedule.list,
+	});
 	updateStatus(client, eventSchedule.today);
 	console.log(`Logged in as ${client.user?.displayName}`);
 	console.log(`Found Annoucement Channel: ${annoucementChannel.name}`);

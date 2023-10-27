@@ -1,4 +1,4 @@
-import { Collection } from "discord.js"
+import { Collection } from "discord.js";
 
 export interface EventData {
     title: string,
@@ -20,8 +20,8 @@ export interface EventSchedule {
 }
 
 export interface scheduleTomorrowEventMessageOptions {
-    annoucementChannel: TextChannel, 
-    avatarURL: string, 
+    annoucementChannel: TextChannel,
+    avatarURL: string,
     event: EventScheduleItem
 }
 

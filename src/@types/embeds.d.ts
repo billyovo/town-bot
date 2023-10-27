@@ -9,3 +9,8 @@ export interface EventTodayMessageOptions{
     startTime: Date,
     mentionedRole: string
 }
+
+export interface EventTimeOptions{
+    event: EventScheduleItem,
+    timeBetweenEvent: number
+}

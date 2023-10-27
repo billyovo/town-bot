@@ -1,4 +1,4 @@
-import { isTomorrow } from "../utils/eventScheduler/helper";
+import { isTomorrow } from "../utils/eventScheduleGenerator/helper";
 import { test, expect, describe } from "@jest/globals";
 
 describe("isTomorrow()", () => {

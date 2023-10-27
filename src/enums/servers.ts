@@ -3,6 +3,10 @@ export enum ServerNameChineseEnum {
     SURVIVAL = "生存",
 }
 
+export enum ServerNameEnum{
+    SKYBLOCK = "skyblock",
+    SURVIVAL = "survival",
+}
 export enum ServerEmoteEnum {
     SKYBLOCK = "<:cobblestone:833225746020696075>",
     SURVIVAL = "<:grassblock:833226098020057088>",

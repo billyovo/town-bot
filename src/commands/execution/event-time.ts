@@ -5,7 +5,7 @@ import { getSingleEventTimeMessage } from "../../assets/messages/messages";
 import { EventScheduleItem } from "../../@types/eventSchedule";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const targetEvent : EventScheduleItem = eventSchedule.list.at(0) as EventScheduleItem;
+	const targetEvent : EventScheduleItem = eventSchedule.list.get(interaction.options.getString("event") || "") as EventScheduleItem;
 	if (!targetEvent?.nextOccurrence) return interaction.reply("目前沒有活動");
 
 	const message = getSingleEventTimeMessage({

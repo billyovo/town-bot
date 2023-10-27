@@ -1,12 +1,16 @@
-export const timeBetweenSurvivalAndSkyblockInMillisecond = 1*60*60*1000; // 1 hour
+import { DateTime, Duration } from "luxon";
 
-export const annoucementTimeBeforeEventStart = 20*60*1000; // 20 minutes
+// 1 hour
+export const timeBetweenSurvivalAndSkyblockInMillisecond = Duration.fromObject({ hours: 1 }).as("milliseconds");
 
-export function getEventTomorrowAnnoucementTime(){
-    // 5:00 PM
-    const time = new Date();
-    time.setHours(17, 0 , 0);
+// 20 minutes
+export const annoucementTimeBeforeEventStart = Duration.fromObject({ minutes: 20 }).as("milliseconds");
 
-    return time;
-};
+// 5:00 PM
+export function getEventTomorrowAnnoucementTime() {
+	return DateTime.fromObject({ hour: 17, minute: 0, second: 0, millisecond: 0 }).toJSDate();
+}
 
+export const guildEventScheduleTime = Duration.fromObject({ days: 7 }).as("milliseconds");
+
+export const guildEventScheduleDuration = Duration.fromObject({ minutes: 15 }).as("milliseconds");

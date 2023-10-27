@@ -1,9 +1,8 @@
-import { DateTime } from "luxon";
 import { getOccurrencFromRRuleString, isToday, isTomorrow } from "./helper";
 import { EventData, EventSchedule, EventScheduleItem } from "../../@types/eventSchedule";
 import { Collection } from "discord.js";
 
-export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : EventSchedule {
+export function generateSchedule(fromDate: Date, schedule: EventData[] = []) : EventSchedule {
 	const output : EventSchedule = {
 		list: new Collection(),
 		today: new Collection,
@@ -19,15 +18,15 @@ export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : Even
 			nextOccurrence: nextOccurrence,
 		};
 
-		output.list.set(eventScheduleItem.id ,eventScheduleItem);
+		output.list.set(eventScheduleItem.id, eventScheduleItem);
 
 		if (isToday(new Date(), nextOccurrence)) {
-			output.today.set(eventScheduleItem.id ,eventScheduleItem);
+			output.today.set(eventScheduleItem.id, eventScheduleItem);
 			continue;
 		}
 
 		if (isTomorrow(new Date(), nextOccurrence)) {
-			output.tomorrow.set(eventScheduleItem.id ,eventScheduleItem);
+			output.tomorrow.set(eventScheduleItem.id, eventScheduleItem);
 		}
 	}
 	output.list.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
@@ -39,8 +38,8 @@ export function checkSchedule(fromDate: Date, schedule: EventData[] = []) : Even
 export function isScheduleValid(schedule: EventSchedule): boolean {
 	if (schedule.list.size === 0) return false;
 
-	for(let i = 0; i < schedule.list.size; i++) {
-		if ((schedule.list.at(i)?.nextOccurrence || Infinity) < new Date()) return false;
+	for (const [_key, event] of schedule.list) {
+		if ((event?.nextOccurrence || Infinity) < new Date()) return false;
 	}
 
 	return true;
