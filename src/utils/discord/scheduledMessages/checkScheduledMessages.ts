@@ -1,7 +1,7 @@
 import { Collection, TextChannel } from "discord.js";
 import { scheduleTodayEventMessage, scheduleTomorrowEventMessage } from "./scheduleMessages";
 import { DateTime } from "luxon";
-import { annoucementTimeBeforeEventStart, timeBetweenSurvivalAndSkyblockInMillisecond } from "../../../constants/times";
+import { timeBetweenSurvivalAndSkyblockInMillisecond } from "../../../constants/times";
 import { ServerRoleMentionEnum } from "../../../enums/servers";
 import { EventScheduleItem } from "../../../@types/eventSchedule";
 
@@ -13,9 +13,8 @@ export function checkTomorrowScheduleMessage(options: {annoucementChannel: TextC
 
 export function checkTodayScheduleMessage(options: { annoucementChannel: TextChannel, todayEvents: Collection<string, EventScheduleItem> }) {
 	for (const [_key, event] of options.todayEvents) {
-		const skyblockAnnoucementTime = DateTime.fromJSDate(event.nextOccurrence).minus({ millisecond: annoucementTimeBeforeEventStart }).toJSDate();
+		const skyblockAnnoucementTime = DateTime.fromJSDate(event.nextOccurrence).toJSDate();
 		const survivalAnnoucementTime = DateTime.fromJSDate(event.nextOccurrence)
-			.minus({ millisecond: annoucementTimeBeforeEventStart })
 			.plus({ millisecond: timeBetweenSurvivalAndSkyblockInMillisecond })
 			.toJSDate();
 
