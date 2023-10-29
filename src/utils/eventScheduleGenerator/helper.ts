@@ -2,8 +2,9 @@ import { RRule } from "rrule";
 import { DateTime } from "luxon";
 
 export function getOccurrencFromRRuleString(fromDate: Date, rrule: string) : Date {
-	const rule = RRule.fromString(rrule);
-	const nextOccurrence = rule.after(fromDate, true) as Date;
+	const rule : RRule = RRule.fromString(rrule);
+	const fromDateUTC : Date = DateTime.fromJSDate(fromDate).plus({ hours: 8 }).toJSDate();
+	const nextOccurrence : Date = rule.after(fromDateUTC, true) as Date;
 
 	// by pass the timezone bug in rrule by substracting, very smart.
 	return DateTime.fromJSDate(nextOccurrence).minus({ hours: 8 }).toJSDate();
