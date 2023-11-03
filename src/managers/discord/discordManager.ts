@@ -32,7 +32,7 @@ client.on(Events.ClientReady, async () => {
 
 	checkTomorrowScheduleMessage({
 		annoucementChannel,
-		avatarURL: client.user?.avatarURL() ?? "",
+		avatarURL: client.user?.displayAvatarURL() ?? "",
 		tomorrowEvents: eventSchedule.tomorrow,
 	});
 
