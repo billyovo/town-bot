@@ -25,7 +25,7 @@ export function getEventTomorrowEmbed(options: EventTomorrowEmbedOptions) : Embe
 }
 
 export function getEventTodayMessage(options: EventTodayMessageOptions) : string {
-	return `<@&${options.mentionedRole}>
+	return `${options.mentionedRole}
 ${options.event.emote} 小遊戲 ${options.event.title} 將於 <t:${DateTime.fromJSDate(options.startTime).toSeconds()}:t> 開始 ${options.event.emote}
 有意參加的玩家可以按spawn左邊的魔法使, 往右走就能找到傳送告示牌了
 :warning: 小遊戲會在小遊戲伺服器舉行, 建議提早3分鐘起行以免錯過開始時間
@@ -70,7 +70,7 @@ export function getEventMazeTomorrowEmbed(options: {avatar: string, resetTime: D
 }
 
 export function getEventMazeTodayMessage(options: { nextResetDate: Date}) {
-	return `<@&${ServerRoleMentionEnum.SKYBLOCK}> <@&${ServerRoleMentionEnum.SURVIVAL}>
+	return `${ServerRoleMentionEnum.SKYBLOCK} ${ServerRoleMentionEnum.SURVIVAL}
 🧭 小遊戲 **赤翠迷蹤** 已經完成迷宮重置並重新開放 🧭
 有意參加的玩家可以按spawn左邊的魔法使, 往右走就能找到傳送告示牌了
 到達小遊戲伺服器後一直向左前方走即可看到前往迷宮的樓梯
