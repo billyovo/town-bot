@@ -17,8 +17,8 @@ export function scheduleTomorrowEventMessage(options: scheduleTomorrowEventMessa
 }
 
 export function scheduleTodayEventMessage(options: scheduleTodayEventMessageOptions) {
-	console.log(`Scheduled today event annoucement for: ${options.event.title} ${options.event.emote} at ${options.startTime.toTimeString()}`);
 	const annouceTime = DateTime.fromJSDate(options.startTime).minus({ millisecond: annoucementTimeBeforeEventStart }).toJSDate();
+	console.log(`Scheduled today event annoucement for: ${options.event.title} ${options.event.emote} at ${annouceTime.toTimeString()}`);
 	scheduleJob(annouceTime, () => {
 		options.annoucementChannel?.send(getEventTodayMessage({
 			event: options.event,

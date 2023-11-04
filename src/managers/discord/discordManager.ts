@@ -9,6 +9,7 @@ import { updateStatus } from "../../utils/discord/updateStatus";
 import { eventSchedule } from "../eventScheduleManager";
 import { checkTodayScheduleMessage, checkTomorrowScheduleMessage } from "../../utils/discord/scheduledMessages/checkScheduledMessages";
 import { checkGuildScheduledEvents } from "../../utils/discord/guildScheduledEvents/checkGuildScheduledEvents";
+import { handleTextCommand } from "../../commands/handler/textCommandHandler";
 
 export const client : DiscordClient = new ExtendedDiscordClient({
 	intents: [
@@ -22,6 +23,8 @@ export let annoucementChannel : TextChannel | null = null;
 client.login(process.env.DISCORD_TOKEN);
 
 client.on(Events.InteractionCreate, handleInteraction);
+client.on(Events.MessageCreate, handleTextCommand);
+
 client.on(Events.ClientReady, async () => {
 	annoucementChannel = await getAnnoucementChannel(client, config.annoucementChannelID);
 	client.commands = await loadSlashCommands();

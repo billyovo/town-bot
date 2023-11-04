@@ -77,3 +77,8 @@ export function getEventMazeTodayMessage(options: { nextResetDate: Date}) {
 :warning: 請在背包預留至少5格空位以便從小遊戲伺服器來時領取參加獎
 :calendar_spiral: 下一次迷宮重置日期: <t:${DateTime.fromJSDate(options.nextResetDate).toSeconds()}:d>`;
 }
+
+export function getEventWinnerMessage(options:{server: string, game: string, name: string}) {
+	return `${DateTime.now().toFormat("LL 月 dd 日")}
+${options.server}服: ${options.game} - ${options.name} , 禁賽一次`;
+}
