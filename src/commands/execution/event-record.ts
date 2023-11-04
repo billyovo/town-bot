@@ -14,7 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			$regex: ServerNameChineseEnum[server as keyof typeof ServerNameChineseEnum] || ".*",
 		},
 	};
-	const count = winnerCollection.countDocuments(filter);
+	const count = await winnerCollection.countDocuments(filter);
 	const target_info = await winnerCollection.findOne({ name: name });
 	if (!count || !target_info) {
 		interaction.reply({ content: "找不到玩家 `" + name + "` 的紀錄 :(", ephemeral: true });
