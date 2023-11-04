@@ -19,7 +19,7 @@ export async function handleTextCommand(message: Message) {
 			playerName: playerName,
 			gameName: gameName,
 		});
-		await handleWinnerAnnouncement(message, {
+		handleWinnerAnnouncement(message, {
 			server: server,
 			playerName: playerName,
 			gameName: gameName,
