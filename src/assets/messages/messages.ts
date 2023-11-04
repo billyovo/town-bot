@@ -82,3 +82,9 @@ export function getEventWinnerMessage(options:{server: string, game: string, nam
 	return `${DateTime.now().toFormat("LL 月 dd 日")}
 ${options.server}服: ${options.game} - ${options.name} , 禁賽一次`;
 }
+
+export function getEventDrawMessage(options:{server: string, game: string}) {
+	return `${DateTime.now().toFormat("LL 月 dd 日")}
+${options.server}服: ${options.game} - ` + "無人獲勝";
+
+}

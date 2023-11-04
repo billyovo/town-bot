@@ -2,7 +2,7 @@ import axios from "axios";
 import { SetWinnerOptions } from "../../../@types/textCommands";
 import { createWinnerRecord, getWinnerFromDB, updateWinnerNameFromUUID } from "./database";
 import { Message } from "discord.js";
-import { getEventWinnerMessage } from "../../../assets/messages/messages";
+import { getEventDrawMessage, getEventWinnerMessage } from "../../../assets/messages/messages";
 
 export async function getUUIDFromPlayerName(name : string) : Promise<string | null> {
 	return axios.get(`https://api.mojang.com/users/profiles/minecraft/${name}`)
@@ -36,10 +36,17 @@ export async function setWinner(options: SetWinnerOptions) {
 	});
 }
 
-export async function handleWinnerAnnouncement(message : Message, options: { server: string, gameName: string, playerName: string }) {
+export function handleWinnerAnnouncement(message : Message, options: { server: string, gameName: string, playerName: string }) {
 	message.channel.send(getEventWinnerMessage({
 		server: options.server,
 		game: options.gameName,
 		name: options.playerName,
+	}));
+}
+
+export function handleDrawAnnoucement(message : Message, options: { server: string, gameName: string }) {
+	message.channel.send(getEventDrawMessage({
+		server: options.server,
+		game: options.gameName,
 	}));
 }
