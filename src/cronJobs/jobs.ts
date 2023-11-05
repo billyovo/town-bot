@@ -18,7 +18,7 @@ scheduleJob("1 0 * * *", async () => {
 
 	checkTomorrowScheduleMessage({
 		annoucementChannel: annoucementChannel as TextChannel,
-		avatarURL: "",
+		avatarURL: client.user?.displayAvatarURL() ?? "",
 		tomorrowEvents: eventSchedule.tomorrow,
 	});
 
@@ -31,7 +31,7 @@ scheduleJob("1 0 * * *", async () => {
 scheduleJob("0 12 14 * *", () => {
 	sendMazeTomorrowMessage({
 		announcementChannel: annoucementChannel as TextChannel,
-		avatar: client.user?.avatarURL() ?? "",
+		avatar: client.user?.displayAvatarURL() ?? "",
 	});
 });
 
