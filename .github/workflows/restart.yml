@@ -1,0 +1,28 @@
+name: Restart Minigame Bot
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+    - src/**
+      
+jobs:
+  Restart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Restart 
+        run: |
+          curl --request POST \
+          --url ${{ secrets.API_LINK }} \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --header 'Authorization: Bearer ${{ secrets.API_KEY }}' \
+          --data '{"signal": "restart"}' 
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'I have restarted minigame bot!'
