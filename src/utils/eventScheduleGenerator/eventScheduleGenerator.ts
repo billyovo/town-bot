@@ -1,6 +1,7 @@
 import { getOccurrencFromRRuleString, isToday, isTomorrow } from "./helper";
 import { EventData, EventSchedule, EventScheduleItem } from "../../@types/eventSchedule";
 import { Collection } from "discord.js";
+import { logger } from "../../logger/logger";
 
 export function generateSchedule(fromDate: Date, schedule: EventData[] = []) : EventSchedule {
 	const output : EventSchedule = {
@@ -32,6 +33,8 @@ export function generateSchedule(fromDate: Date, schedule: EventData[] = []) : E
 	output.list.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
 	output.today.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
 	output.tomorrow.sort((a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime());
+
+	logger(`Generated Event Schedule: found ${output.list.size} events in total, ${output.today.size} events today, ${output.tomorrow.size} events tomorrow.`);
 	return output;
 }
 
