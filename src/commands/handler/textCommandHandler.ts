@@ -1,7 +1,8 @@
 import { Message, PermissionsBitField } from "discord.js";
 import config from "../../configs/config.json";
-import { handleDrawAnnoucement, handleWinnerAnnouncement, setWinner } from "../../utils/discord/textCommands/winner";
-import { createWinnerRecord } from "../../utils/discord/textCommands/database";
+import { handleWinnerAnnouncement, setWinner } from "../../utils/discord/textCommands/winner";
+import { createWinnerRecord } from "../../utils/database";
+import { handleDrawAnnoucement } from "../../utils/discord/textCommands/draw";
 
 export async function handleTextCommand(message: Message) {
 	if (!message.content.startsWith(config.prefix)) return;

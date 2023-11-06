@@ -1,5 +1,5 @@
-import { CreateWinnerOptions } from "../../../@types/textCommands";
-import { winnerCollection } from "../../../managers/databaseManager";
+import { CreateWinnerOptions } from "../@types/textCommands";
+import { winnerCollection } from "../managers/databaseManager";
 
 export async function getWinnerFromDB(playerName: string) : Promise<{ UUID: string, name: string } | null> {
 	const winner = await winnerCollection.findOne({ name: playerName }, { projection: { UUID: 1, name: 1 } });
