@@ -1,4 +1,5 @@
 node_modules
 .env
+.env.github
 dist
 src/configs/config.json
