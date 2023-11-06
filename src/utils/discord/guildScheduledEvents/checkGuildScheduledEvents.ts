@@ -39,7 +39,7 @@ export async function checkGuildScheduledEvents(options : checkGuildScheduledEve
 	}
 }
 
-async function createGuildScheduleEvent(options : createGuildScheduleEventOptions) {
+async function createGuildScheduleEvent(options : createGuildScheduleEventOptions) : Promise<void> {
 	logger("Created Guild Schedule Event for " + options.event.title);
 	options.guild.scheduledEvents.create({
 		name: `${options.event.emote} ${options.event.title}`,
