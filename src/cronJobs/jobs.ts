@@ -5,10 +5,11 @@ import { annoucementChannel, client } from "../managers/discord/discordManager";
 import { Guild, TextChannel } from "discord.js";
 import { checkGuildScheduledEvents } from "../utils/discord/guildScheduledEvents/checkGuildScheduledEvents";
 import { sendMazeTodayMessage, sendMazeTomorrowMessage } from "../utils/discord/scheduledMessages/mazeMessages";
+import { logger } from "../logger/logger";
 
 // daily updates schedule and messages
 scheduleJob("1 0 * * *", async () => {
-	console.log("Updated Event Schedule!");
+	logger("Updated Event Schedule!");
 	updateEventSchedule();
 
 	checkTodayScheduleMessage({

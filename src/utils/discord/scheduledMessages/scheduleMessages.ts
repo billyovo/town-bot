@@ -3,9 +3,10 @@ import { annoucementTimeBeforeEventStart, getEventTomorrowAnnoucementTime } from
 import { getEventTodayMessage, getEventTomorrowEmbed } from "../../../assets/messages/messages";
 import { scheduleTodayEventMessageOptions, scheduleTomorrowEventMessageOptions } from "../../../@types/eventSchedule";
 import { DateTime } from "luxon";
+import { logger } from "../../../logger/logger";
 
 export function scheduleTomorrowEventMessage(options: scheduleTomorrowEventMessageOptions) {
-	console.log(`Scheduled tomorrow event annoucement for: ${options.event.title} ${options.event.emote} at ${getEventTomorrowAnnoucementTime().toTimeString()}`);
+	logger(`Scheduled tomorrow event annoucement for: ${options.event.title} ${options.event.emote} at ${getEventTomorrowAnnoucementTime().toTimeString()}`);
 
 	scheduleJob(getEventTomorrowAnnoucementTime(), () => {
 		options.annoucementChannel?.send({
@@ -18,7 +19,7 @@ export function scheduleTomorrowEventMessage(options: scheduleTomorrowEventMessa
 
 export function scheduleTodayEventMessage(options: scheduleTodayEventMessageOptions) {
 	const annouceTime = DateTime.fromJSDate(options.startTime).minus({ millisecond: annoucementTimeBeforeEventStart }).toJSDate();
-	console.log(`Scheduled today event annoucement for: ${options.event.title} ${options.event.emote} at ${annouceTime.toTimeString()}`);
+	logger(`Scheduled today event annoucement for: ${options.event.title} ${options.event.emote} at ${annouceTime.toTimeString()}`);
 	scheduleJob(annouceTime, () => {
 		options.annoucementChannel?.send(getEventTodayMessage({
 			event: options.event,

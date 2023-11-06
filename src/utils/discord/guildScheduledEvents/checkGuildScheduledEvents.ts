@@ -5,6 +5,7 @@ import { guildEventScheduleDuration, guildEventScheduleTime, timeBetweenSurvival
 import { ServerNameChineseEnum, ServerNameEnum } from "../../../enums/servers";
 import { getGuildScheduledEventMessage } from "../../../assets/messages/messages";
 import path from "path";
+import { logger } from "../../../logger/logger";
 
 export async function checkGuildScheduledEvents(options : checkGuildScheduledEventsOptions) : Promise<void> {
 	const shouldBeScheduledDateLimit = new Date(Date.now() + guildEventScheduleTime);
@@ -39,7 +40,7 @@ export async function checkGuildScheduledEvents(options : checkGuildScheduledEve
 }
 
 async function createGuildScheduleEvent(options : createGuildScheduleEventOptions) {
-	console.log("Created Guild Schedule Event for " + options.event.title);
+	logger("Created Guild Schedule Event for " + options.event.title);
 	options.guild.scheduledEvents.create({
 		name: `${options.event.emote} ${options.event.title}`,
 		scheduledStartTime: options.startTime.getTime(),

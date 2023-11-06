@@ -3,6 +3,7 @@ import { createWinnerRecord, getWinnerFromDB, updateWinnerNameFromUUID } from ".
 import { Message } from "discord.js";
 import { getEventWinnerMessage } from "../../../assets/messages/messages";
 import { getUUIDFromPlayerName } from "../../mojang";
+import { logger } from "../../../logger/logger";
 
 export async function setWinner(options: SetWinnerOptions) {
 	let winner = await getWinnerFromDB(options.playerName);
@@ -12,7 +13,7 @@ export async function setWinner(options: SetWinnerOptions) {
 			winner = { UUID: UUID as string, name: options.playerName };
 		}
 		catch (e) {
-			console.log("Cannot get UUID from mojang!");
+			logger("Cannot get UUID from mojang!");
 			return;
 		}
 	}

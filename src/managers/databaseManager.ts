@@ -1,14 +1,15 @@
 import { MongoClient } from "mongodb";
+import { logger } from "../logger/logger";
 
 const client : MongoClient = new MongoClient(process.env.DB_CONNECTION_STRING as string);
 
 client.connect().then(() => {
-	console.log("Connected to DB!");
+	logger("Connected to DB!");
 })
 	.catch((err) => {
 		if (process.env.NODE_ENV !== "development") {
-			console.log(err);
-			console.log("DB connection failed. Aborting...");
+			logger(err);
+			logger("DB connection failed. Aborting...");
 			process.exit(1);
 		}
 	});

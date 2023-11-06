@@ -10,6 +10,7 @@ import { eventSchedule } from "../eventScheduleManager";
 import { checkTodayScheduleMessage, checkTomorrowScheduleMessage } from "../../utils/discord/scheduledMessages/checkScheduledMessages";
 import { checkGuildScheduledEvents } from "../../utils/discord/guildScheduledEvents/checkGuildScheduledEvents";
 import { handleTextCommand } from "../../commands/handler/textCommandHandler";
+import { logger } from "../../logger/logger";
 
 export const client : DiscordClient = new ExtendedDiscordClient({
 	intents: [
@@ -49,7 +50,7 @@ client.on(Events.ClientReady, async () => {
 		eventList: eventSchedule.list,
 	});
 	updateStatus(client, eventSchedule.today);
-	console.log(`Logged in as ${client.user?.displayName}`);
-	console.log(`Found Annoucement Channel: ${annoucementChannel.name}`);
+	logger(`Logged in as ${client.user?.displayName}`);
+	logger(`Found Annoucement Channel: ${annoucementChannel.name}`);
 });
 

@@ -3,6 +3,7 @@ import { Routes, REST, RESTPostAPIApplicationCommandsJSONBody } from "discord.js
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
+import { logger } from "../logger/logger";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
@@ -28,5 +29,5 @@ Promise.all(importPromises).then(async () => {
 		Routes.applicationCommands(process.env.CLIENT_ID as string),
 		{ body: commands },
 	);
-	console.log(data);
+	logger(JSON.stringify(data));
 });
