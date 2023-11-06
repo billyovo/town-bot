@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { ServerNameChineseEnum } from "../../enums/servers";
+import { ServerEmoteEnum, ServerNameChineseEnum } from "../../enums/servers";
 import { getEventBanlist } from "../../utils/database";
 import { embedColor } from "../../constants/embeds";
 import { EmbedBuilder } from "discord.js";
@@ -12,7 +12,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const embed = new EmbedBuilder()
 		.setColor(embedColor)
-		.setTitle(`${serverChineseName}服 禁賽名單`);
+		.setTitle(`${ServerEmoteEnum[server as keyof typeof ServerEmoteEnum]} ${serverChineseName}服 禁賽名單`);
 	banlist.forEach((record : WinnerRecord) => {
 		embed.addFields({ name:`${record.event}`, value: record.name, inline: true });
 	});
