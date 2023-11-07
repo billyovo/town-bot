@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { getEventDrawMessage } from "../../../assets/messages/messages";
+import { getEventDrawMessage } from "@assets/messages/messages";
 
 export function handleDrawAnnoucement(message : Message, options: { server: string, gameName: string }) {
 	message.channel.send(getEventDrawMessage({

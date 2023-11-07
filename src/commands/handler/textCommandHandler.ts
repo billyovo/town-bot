@@ -1,8 +1,8 @@
 import { Message, PermissionsBitField } from "discord.js";
-import config from "../../configs/config.json";
-import { handleWinnerAnnouncement, setWinner } from "../../utils/discord/textCommands/winner";
-import { createWinnerRecord } from "../../utils/database";
-import { handleDrawAnnoucement } from "../../utils/discord/textCommands/draw";
+import config from "@configs/config.json";
+import { handleWinnerAnnouncement, setWinner } from "@utils/discord/textCommands/winner";
+import { createWinnerRecord } from "@utils/database";
+import { handleDrawAnnoucement } from "@utils/discord/textCommands/draw";
 import { logger } from "../../logger/logger";
 
 export async function handleTextCommand(message: Message) {

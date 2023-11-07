@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
-import { getEventMazeTodayMessage, getEventMazeTomorrowEmbed } from "../../../assets/messages/messages";
-import { ServerRoleMentionEnum } from "../../../enums/servers";
+import { getEventMazeTodayMessage, getEventMazeTomorrowEmbed } from "@assets/messages/messages";
+import { ServerRoleMentionEnum } from "@enums/servers";
 import { TextChannel } from "discord.js";
 
 export function sendMazeTomorrowMessage(options: {announcementChannel: TextChannel, avatar: string}) {

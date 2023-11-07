@@ -3,11 +3,21 @@
     "target": "ES6",
     "module": "CommonJS",
     "rootDir": "./src",
+    "paths":{
+      "@assets/*": ["./src/assets/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@enums/*": ["./src/enums/*"],
+      "@commands/*": ["./src/commands/*"],
+      "@types/*": ["./src/types/*"],
+      "@managers/*": ["./src/managers/*"],
+      "@configs/*": ["./src/configs/*"],
+    },
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
-  }
+    "resolveJsonModule": true,
+  },
 }

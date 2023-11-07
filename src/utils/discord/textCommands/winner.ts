@@ -1,8 +1,8 @@
 import { SetWinnerOptions } from "../../../@types/textCommands";
-import { createWinnerRecord, getWinnerFromDB, updateWinnerNameFromUUID } from "../../database";
+import { createWinnerRecord, getWinnerFromDB, updateWinnerNameFromUUID } from "@utils/database";
 import { Message } from "discord.js";
-import { getEventWinnerMessage } from "../../../assets/messages/messages";
-import { getUUIDFromPlayerName } from "../../mojang";
+import { getEventWinnerMessage } from "@assets/messages/messages";
+import { getUUIDFromPlayerName } from "@utils/mojang";
 import { logger } from "../../../logger/logger";
 
 export async function setWinner(options: SetWinnerOptions) {

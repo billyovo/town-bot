@@ -1,7 +1,7 @@
 import { scheduleTodayEventMessage, scheduleTomorrowEventMessage } from "./scheduleMessages";
 import { DateTime } from "luxon";
-import { timeBetweenSurvivalAndSkyblockInMillisecond } from "../../../constants/times";
-import { ServerRoleMentionEnum } from "../../../enums/servers";
+import { timeBetweenSurvivalAndSkyblockInMillisecond } from "@constants/times";
+import { ServerRoleMentionEnum } from "@enums/servers";
 import { CheckTomorrowScheduleMessageOptions, checkTodayScheduleMessageOptions } from "../../../@types/discord";
 
 export function checkTomorrowScheduleMessage(options: CheckTomorrowScheduleMessageOptions) : void {

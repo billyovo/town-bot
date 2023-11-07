@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@rollup/plugin-dynamic-import-vars": "^2.1.0",
     "@types/node": "^20.8.5",
     "@types/node-schedule": "^2.1.2",
     "@typescript-eslint/eslint-plugin": "^6.7.5",

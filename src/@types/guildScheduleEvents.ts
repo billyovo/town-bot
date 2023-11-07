@@ -1,6 +1,6 @@
 import { Collection, Guild } from "discord.js";
 import { EventScheduleItem } from "./eventSchedule";
-import { ServerNameChineseEnum } from "../enums/servers";
+import { ServerNameChineseEnum } from "@enums/servers";
 
 export interface checkGuildScheduledEventsOptions {
     guild: Guild;

@@ -1,6 +1,6 @@
 import { ActivityType, Collection } from "discord.js";
 import { EventScheduleItem } from "../../@types/eventSchedule";
-import { ExtendedDiscordClient } from "../../managers/discord/client";
+import { ExtendedDiscordClient } from "@managers/discord/client";
 
 export function updateStatus(client : ExtendedDiscordClient, eventsToday: Collection<string, EventScheduleItem>) {
 	if (eventsToday.size > 0) {

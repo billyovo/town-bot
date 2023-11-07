@@ -1,5 +1,5 @@
 import { BaseInteraction } from "discord.js";
-import { client } from "../../managers/discord/discordManager";
+import { client } from "@managers/discord/discordManager";
 import { logger } from "../../logger/logger";
 
 export function handleInteraction(interaction: BaseInteraction) {

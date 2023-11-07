@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
-import config from "../../configs/config.json";
+import config from "@configs/config.json";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const buttonToHomepage = new ButtonBuilder()

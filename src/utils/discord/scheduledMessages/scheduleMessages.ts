@@ -1,6 +1,6 @@
 import { scheduleJob } from "node-schedule";
-import { annoucementTimeBeforeEventStart, getEventTomorrowAnnoucementTime } from "../../../constants/times";
-import { getEventTodayMessage, getEventTomorrowEmbed } from "../../../assets/messages/messages";
+import { annoucementTimeBeforeEventStart, getEventTomorrowAnnoucementTime } from "@constants/times";
+import { getEventTodayMessage, getEventTomorrowEmbed } from "@assets/messages/messages";
 import { scheduleTodayEventMessageOptions, scheduleTomorrowEventMessageOptions } from "../../../@types/eventSchedule";
 import { DateTime } from "luxon";
 import { logger } from "../../../logger/logger";

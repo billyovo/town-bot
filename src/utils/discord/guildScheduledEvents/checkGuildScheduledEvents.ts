@@ -1,10 +1,10 @@
 import { GuildScheduledEvent, GuildScheduledEventEntityType } from "discord.js";
 import { EventScheduleItem } from "../../../@types/eventSchedule";
 import { checkGuildScheduledEventsOptions, createGuildScheduleEventOptions } from "../../../@types/guildScheduleEvents";
-import { guildEventScheduleDuration, guildEventScheduleTime, timeBetweenSurvivalAndSkyblockInMillisecond } from "../../../constants/times";
-import { ServerNameChineseEnum, ServerNameEnum } from "../../../enums/servers";
-import { getGuildScheduledEventMessage } from "../../../assets/messages/messages";
-import path from "path";
+import { guildEventScheduleDuration, guildEventScheduleTime, timeBetweenSurvivalAndSkyblockInMillisecond } from "@constants/times";
+import { ServerNameChineseEnum, ServerNameEnum } from "@enums/servers";
+import { getGuildScheduledEventMessage } from "@assets/messages/messages";
+import fs from "fs/promises";
 import { logger } from "../../../logger/logger";
 
 export async function checkGuildScheduledEvents(options : checkGuildScheduledEventsOptions) : Promise<void> {
@@ -25,7 +25,7 @@ export async function checkGuildScheduledEvents(options : checkGuildScheduledEve
 			guild: options.guild,
 			event: event,
 			server: ServerNameChineseEnum.SKYBLOCK,
-			image: path.resolve(__dirname, `../../../assets/images/${event.id}_${ServerNameEnum.SKYBLOCK}.png`),
+			image: `./src/assets/images/${event.id}_${ServerNameEnum.SKYBLOCK}.png`,
 			startTime: event.nextOccurrence,
 		});
 
@@ -33,7 +33,7 @@ export async function checkGuildScheduledEvents(options : checkGuildScheduledEve
 			guild: options.guild,
 			event: event,
 			server: ServerNameChineseEnum.SURVIVAL,
-			image: path.resolve(__dirname, `../../../assets/images/${event.id}_${ServerNameEnum.SURVIVAL}.png`),
+			image: `./src/assets/images/${event.id}_${ServerNameEnum.SURVIVAL}.png`,
 			startTime: new Date(event.nextOccurrence.getTime() + timeBetweenSurvivalAndSkyblockInMillisecond),
 		});
 	}
@@ -46,7 +46,7 @@ async function createGuildScheduleEvent(options : createGuildScheduleEventOption
 		scheduledStartTime: options.startTime.getTime(),
 		scheduledEndTime: options.startTime.getTime() + guildEventScheduleDuration,
 		privacyLevel: 2,
-		image: options.image,
+		image: await fs.readFile(options.image),
 		entityType: GuildScheduledEventEntityType.External,
 		description: getGuildScheduledEventMessage({ server: options.server }),
 		entityMetadata:{

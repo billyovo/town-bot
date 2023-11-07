@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { ServerNameChineseEnum } from "../../enums/servers";
-import { winnerCollection } from "../../managers/databaseManager";
+import { ServerNameChineseEnum } from "@enums/servers";
+import { winnerCollection } from "@managers/databaseManager";
 import { EmbedBuilder } from "discord.js";
-import { embedColor } from "../../constants/embeds";
+import { embedColor } from "@constants/embeds";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const server :string = interaction.options.getString("server", true);

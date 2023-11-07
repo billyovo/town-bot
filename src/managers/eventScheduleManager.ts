@@ -1,5 +1,5 @@
-import { generateSchedule, isScheduleValid } from "../utils/eventScheduleGenerator/eventScheduleGenerator";
-import events from "../configs/events.json";
+import { generateSchedule, isScheduleValid } from "@utils/eventScheduleGenerator/eventScheduleGenerator";
+import events from "@configs/events.json";
 import { EventSchedule } from "../@types/eventSchedule";
 
 export let eventSchedule: EventSchedule = generateSchedule(new Date(), events);

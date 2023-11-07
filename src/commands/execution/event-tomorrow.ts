@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, Collection } from "discord.js";
-import { eventSchedule } from "../../managers/eventScheduleManager";
-import { timeBetweenSurvivalAndSkyblockInMillisecond } from "../../constants/times";
-import { getSingleEventTimeMessage } from "../../assets/messages/messages";
+import { eventSchedule } from "@managers/eventScheduleManager";
+import { timeBetweenSurvivalAndSkyblockInMillisecond } from "@constants/times";
+import { getSingleEventTimeMessage } from "@assets/messages/messages";
 import { EventScheduleItem } from "../../@types/eventSchedule";
 
 export async function execute(interaction: ChatInputCommandInteraction) {

@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { ServerEmoteEnum, ServerNameChineseEnum } from "../../enums/servers";
-import { getEventBanlist } from "../../utils/database";
-import { embedColor } from "../../constants/embeds";
+import { ServerEmoteEnum, ServerNameChineseEnum } from "@enums/servers";
+import { getEventBanlist } from "@utils/database";
+import { embedColor } from "@constants/embeds";
 import { EmbedBuilder } from "discord.js";
 import { WinnerRecord } from "../../@types/database";
 export async function execute(interaction: ChatInputCommandInteraction) {
