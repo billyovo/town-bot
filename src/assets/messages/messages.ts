@@ -80,7 +80,7 @@ export function getEventMazeTodayMessage(options: { nextResetDate: Date}) {
 
 export function getEventWinnerMessage(options:{server: string, game: string, name: string}) {
 	return `${DateTime.now().toFormat("LL 月 dd 日")}
-${options.server}服: ${options.game} - `${options.name}` , 禁賽一次`;
+${options.server}服: ${options.game} - \`${options.name}\` , 禁賽一次`;
 }
 
 export function getEventDrawMessage(options:{server: string, game: string}) {
