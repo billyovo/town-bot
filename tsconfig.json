@@ -9,15 +9,23 @@
       "@constants/*": ["./src/constants/*"],
       "@enums/*": ["./src/enums/*"],
       "@commands/*": ["./src/commands/*"],
-      "@types/*": ["./src/types/*"],
+      "@types/*": ["./src/@types/*"],
       "@managers/*": ["./src/managers/*"],
-      "@configs/*": ["./src/configs/*"],
+      "@configs/*": ["./src/configs/*"]
     },
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "include": [
+    "src/**/*",
+    "jest.config.js"
+  ]
 }

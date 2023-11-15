@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { getUUIDFromPlayerName } from "../utils/mojang";
+import { getUUIDFromPlayerName } from "../../utils/mojang";
 
 describe("Test Minecraft UUID Getter", () => {
 	test("Should return a UUID if valid", async () => {

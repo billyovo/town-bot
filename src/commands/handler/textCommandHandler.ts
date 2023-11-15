@@ -4,6 +4,9 @@ import { handleWinnerAnnouncement, setWinner } from "@utils/discord/textCommands
 import { createWinnerRecord } from "@utils/database";
 import { handleDrawAnnoucement } from "@utils/discord/textCommands/draw";
 import { logger } from "../../logger/logger";
+import { ServerNameChineseEnum } from "@enums/servers";
+import { eventSchedule } from "@managers/eventScheduleManager";
+import { isValidMinecraftUsername } from "@utils/mojang";
 
 export async function handleTextCommand(message: Message) {
 	if (!message.content.startsWith(config.prefix)) return;
@@ -16,6 +19,20 @@ export async function handleTextCommand(message: Message) {
 		const server = args[0];
 		const playerName = args[1];
 		const gameName = args[3] ? `${args[2]} ${args[3]}` : args[2];
+
+		if (!Object.values(ServerNameChineseEnum).includes(server as ServerNameChineseEnum)) {
+			logger(`Invalid server name: ${server}`);
+			return;
+		}
+		if (!isValidMinecraftUsername(playerName)) {
+			logger(`Invalid player name: ${playerName}`);
+			return;
+		}
+		if (!eventSchedule.list.find(event => event.title === gameName)) {
+			logger(`Invalid game name: ${gameName}`);
+			return;
+		}
+
 		message.delete();
 		await setWinner({
 			server: server,
@@ -34,6 +51,15 @@ export async function handleTextCommand(message: Message) {
 		logger(`${message.author.username} used draw: ${args.join(" ")}`);
 		const server = args[0];
 		const gameName = args[2] ? `${args[1]} ${args[2]}` : args[1];
+
+		if (!Object.values(ServerNameChineseEnum).includes(server as ServerNameChineseEnum)) {
+			logger(`Invalid server name: ${server}`);
+			return;
+		}
+		if (!eventSchedule.list.find(event => event.title === gameName)) {
+			logger(`Invalid game name: ${gameName}`);
+			return;
+		}
 		message.delete();
 		await createWinnerRecord({
 			UUID: "draw_result",

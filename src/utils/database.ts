@@ -1,11 +1,16 @@
 import { WinnerRecord } from "../@types/database";
 import { CreateWinnerOptions } from "../@types/textCommands";
-import { ServerNameChineseEnum } from "@enums/servers";
-import { winnerCollection } from "@managers/databaseManager";
+import { ServerNameChineseEnum } from "../enums/servers";
+import { winnerCollection } from "../managers/databaseManager";
 
 export async function getWinnerFromDB(playerName: string) : Promise<{ UUID: string, name: string } | null> {
-	const winner = await winnerCollection.findOne({ name: playerName }, { projection: { UUID: 1, name: 1 } });
+	const winner = await winnerCollection.findOne({ name: playerName }, { projection: { UUID: 1, name: 1, _id: 0 } });
 	return winner as Pick<WinnerRecord, "UUID" | "name"> | null;
+}
+
+export async function getExistingNameFromUUID(UUID: string) : Promise<string | null> {
+	const winner = await winnerCollection.findOne({ UUID: UUID }, { projection: { name: 1, _id: 0 } });
+	return winner?.name ?? null;
 }
 
 export async function updateWinnerNameFromUUID(fromUUID: string, toName: string) : Promise<void> {

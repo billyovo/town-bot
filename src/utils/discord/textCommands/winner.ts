@@ -1,5 +1,5 @@
 import { SetWinnerOptions } from "../../../@types/textCommands";
-import { createWinnerRecord, getWinnerFromDB, updateWinnerNameFromUUID } from "@utils/database";
+import { createWinnerRecord, getExistingNameFromUUID, getWinnerFromDB, updateWinnerNameFromUUID } from "@utils/database";
 import { Message } from "discord.js";
 import { getEventWinnerMessage } from "@assets/messages/messages";
 import { getUUIDFromPlayerName } from "@utils/mojang";
@@ -10,16 +10,16 @@ export async function setWinner(options: SetWinnerOptions) {
 	if (!winner) {
 		try {
 			const UUID = await getUUIDFromPlayerName(options.playerName);
+			const existingRecord = await getExistingNameFromUUID(UUID as string);
+			if (existingRecord) {
+				await updateWinnerNameFromUUID(UUID as string, options.playerName);
+			}
 			winner = { UUID: UUID as string, name: options.playerName };
 		}
 		catch (e) {
 			logger("Cannot get UUID from mojang!");
 			return;
 		}
-	}
-
-	if (winner.name !== options.playerName) {
-		await updateWinnerNameFromUUID(winner.UUID, options.playerName);
 	}
 
 	await createWinnerRecord({

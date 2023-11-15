@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
-import { EventData } from "../@types/eventSchedule";
-import { generateSchedule } from "../utils/eventScheduleGenerator/eventScheduleGenerator";
+import { EventData } from "../../@types/eventSchedule";
+import { generateSchedule } from "@utils/eventScheduleGenerator/eventScheduleGenerator";
 
 
 describe("Event Schedule Generator", () => {

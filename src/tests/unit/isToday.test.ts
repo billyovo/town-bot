@@ -1,4 +1,4 @@
-import { isToday } from "../utils/eventScheduleGenerator/helper";
+import { isToday } from "@utils/eventScheduleGenerator/helper";
 import { test, expect, describe } from "@jest/globals";
 
 describe("isToday()", () => {
