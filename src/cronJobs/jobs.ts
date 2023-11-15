@@ -5,6 +5,7 @@ import { annoucementChannel, client } from "@managers/discord/discordManager";
 import { Guild, TextChannel } from "discord.js";
 import { checkGuildScheduledEvents } from "@utils/discord/guildScheduledEvents/checkGuildScheduledEvents";
 import { sendMazeTodayMessage, sendMazeTomorrowMessage } from "@utils/discord/scheduledMessages/mazeMessages";
+import { updateStatus } from "@utils/discord/updateStatus";
 // daily updates schedule and messages
 scheduleJob("1 0 * * *", async () => {
 	updateEventSchedule();
@@ -19,6 +20,8 @@ scheduleJob("1 0 * * *", async () => {
 		avatarURL: client.user?.displayAvatarURL() ?? "",
 		tomorrowEvents: eventSchedule.tomorrow,
 	});
+
+	updateStatus(client, eventSchedule.today);
 
 	await checkGuildScheduledEvents({
 		guild: annoucementChannel?.guild as Guild,
