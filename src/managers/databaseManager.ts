@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { logger } from "../logger/logger";
 
-const client : MongoClient = new MongoClient((process.env.DB_CONNECTION_STRING ?? process.env.MONGO_URL)as string);
+export const client : MongoClient = new MongoClient((process.env.DB_CONNECTION_STRING ?? process.env.MONGO_URL)as string);
 
 client.connect().then(() => {
 	logger("Connected to DB!");

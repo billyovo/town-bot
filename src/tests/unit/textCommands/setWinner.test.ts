@@ -1,10 +1,16 @@
 import { describe, jest } from "@jest/globals";
 import { setWinner } from "../../../utils/discord/textCommands/winner";
 import testPlayerData from "../../data/players.json";
+import { client } from "@managers/databaseManager";
 
 describe("setWinner", () => {
 	afterEach(async () => {
 		jest.clearAllMocks();
+	});
+
+	afterAll(done => {
+		client.close();
+		done();
 	});
 
 	// when the player is not in the database
