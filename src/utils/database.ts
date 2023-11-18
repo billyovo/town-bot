@@ -31,6 +31,14 @@ export async function getEventBanlist(server: ServerNameChineseEnum) : Promise<W
 	const pipeline = [{ "$match": { "server": server } }, { "$sort": { "date": -1 } }, { "$group": { "_id": { "event": "$event" }, "name": { "$first": "$name" } } }, { "$project": { "event": "$_id.event", "name": "$name" } }, { "$unset": "_id" }];
 
 	const result = await winnerCollection.aggregate(pipeline).toArray();
-
-	return result as WinnerRecord[];
+	const sortedResult = result.sort((a, b) => {
+		if (a.event < b.event) {
+			return -1;
+		}
+		if (a.event > b.event) {
+			return 1;
+		}
+		return 0;
+	});
+	return sortedResult as WinnerRecord[];
 }
