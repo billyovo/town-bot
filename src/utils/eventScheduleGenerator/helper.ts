@@ -3,9 +3,13 @@ import { DateTime } from "luxon";
 
 export function getOccurrencFromRRuleString(fromDate: Date, rrule: string) : Date {
 	const rule : RRule = RRule.fromString(rrule);
-	const fromDateUTC : Date = DateTime.fromJSDate(fromDate).plus({ hours: 8 }).toJSDate();
-	const nextOccurrence : Date = rule.after(fromDateUTC, true) as Date;
 
+	// no dtstart will generate bad date!
+	// https://github.com/jkbrzt/rrule/issues/428
+	rule.options.dtstart = fromDate;
+	const fromDateUTC : Date = DateTime.fromJSDate(fromDate).plus({ hours: 8 }).toJSDate();
+
+	const nextOccurrence : Date = rule.after(fromDateUTC, true) as Date;
 	// by pass the timezone bug in rrule by substracting, very smart.
 	return DateTime.fromJSDate(nextOccurrence).minus({ hours: 8 }).toJSDate();
 }

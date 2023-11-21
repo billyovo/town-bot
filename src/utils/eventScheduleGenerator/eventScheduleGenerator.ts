@@ -21,12 +21,12 @@ export function generateSchedule(fromDate: Date, schedule: EventData[] = []) : E
 
 		output.list.set(eventScheduleItem.id, eventScheduleItem);
 
-		if (isToday(new Date(), nextOccurrence)) {
+		if (isToday(fromDate, nextOccurrence)) {
 			output.today.set(eventScheduleItem.id, eventScheduleItem);
 			continue;
 		}
 
-		if (isTomorrow(new Date(), nextOccurrence)) {
+		if (isTomorrow(fromDate, nextOccurrence)) {
 			output.tomorrow.set(eventScheduleItem.id, eventScheduleItem);
 		}
 	}

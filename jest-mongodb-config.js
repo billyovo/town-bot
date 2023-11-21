@@ -6,6 +6,7 @@ module.exports = {
       autoStart: false,
       instance: {
         dbName: "admin_minigames"
-      }
+      },
+      useSharedDBForAllJestWorkers: false,
     },
   };

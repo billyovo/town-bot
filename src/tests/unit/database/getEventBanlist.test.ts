@@ -1,11 +1,17 @@
 import { describe, beforeAll } from "@jest/globals";
-import { winnerCollection } from "../../../managers/databaseManager";
+import { client, winnerCollection } from "../../../managers/databaseManager";
 import testPlayerData from "../../data/players.json";
 import { getEventBanlist } from "../../../utils/database";
 import { ServerNameChineseEnum } from "../../../enums/servers";
 import { WinnerRecord } from "../../../@types/database";
 describe("getEventBanlist", () => {
+	afterAll(done => {
+		client.close();
+		done();
+	});
+
 	beforeAll(async () => {
+		await winnerCollection.deleteMany({});
 		await winnerCollection.insertMany([
 			{
 				name: testPlayerData[0].name,

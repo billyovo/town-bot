@@ -2,8 +2,8 @@ import { describe, expect, test } from "@jest/globals";
 import { EventData } from "../../@types/eventSchedule";
 import { generateSchedule } from "@utils/eventScheduleGenerator/eventScheduleGenerator";
 
-
 describe("Event Schedule Generator", () => {
+	process.env.TZ = "Asia/Taipei";
 	test("should generate a valid schedule", () => {
 		const testSchedule : EventData[] = [
 			{
@@ -13,7 +13,8 @@ describe("Event Schedule Generator", () => {
 				emote: "🤖",
 			},
 		];
-		const schedule = generateSchedule(new Date(2023, 10, 6), testSchedule);
+		const schedule = generateSchedule(new Date(2022, 10, 6), testSchedule);
+		console.log(schedule);
 		expect(schedule.list.size).toBe(1);
 		expect(schedule.today.size).toBe(1);
 		expect(schedule.tomorrow.size).toBe(0);
@@ -34,7 +35,7 @@ describe("Event Schedule Generator", () => {
 				emote: "🤖",
 			},
 		];
-		const schedule = generateSchedule(new Date(2023, 10, 6), testSchedule);
+		const schedule = generateSchedule(new Date(2022, 10, 6, 0, 0, 0), testSchedule);
 		expect(schedule.list.size).toBe(2);
 		expect(schedule.today.size).toBe(2);
 		expect(schedule.tomorrow.size).toBe(0);
@@ -49,7 +50,7 @@ describe("Event Schedule Generator", () => {
 				"emote": "🦙",
 			},
 		];
-		const schedule = generateSchedule(new Date(2023, 10, 6), testSchedule);
+		const schedule = generateSchedule(new Date(2022, 10, 6, 0, 0, 0), testSchedule);
 		expect(schedule.list.size).toBe(1);
 		expect(schedule.today.size).toBe(0);
 		expect(schedule.tomorrow.size).toBe(0);
@@ -64,7 +65,7 @@ describe("Event Schedule Generator", () => {
 				"emote": "🪂",
 			},
 		];
-		const schedule = generateSchedule(new Date(2023, 10, 6), testSchedule);
+		const schedule = generateSchedule(new Date(2022, 10, 7, 0, 0, 0), testSchedule);
 		expect(schedule.list.size).toBe(1);
 		expect(schedule.today.size).toBe(1);
 		expect(schedule.tomorrow.size).toBe(0);
@@ -81,11 +82,11 @@ describe("Event Schedule Generator", () => {
 			{
 				"title": "test2",
 				"id": "test2",
-				"rrule": "FREQ=MONTHLY;BYDAY=1TU;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+				"rrule": "FREQ=MONTHLY;BYDAY=1SU;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
 				"emote": "🪂",
 			},
 		];
-		const schedule = generateSchedule(new Date(2023, 10, 6), testSchedule);
+		const schedule = generateSchedule(new Date(2022, 10, 6), testSchedule);
 		expect(schedule.list.size).toBe(2);
 		expect(schedule.today.size).toBe(1);
 		expect(schedule.tomorrow.size).toBe(1);
@@ -96,18 +97,18 @@ describe("Event Schedule Generator", () => {
 			{
 				"title": "test",
 				"id": "test",
-				"rrule": "FREQ=MONTHLY;BYDAY=1MO;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+				"rrule": "FREQ=MONTHLY;BYDAY=1SU;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
 				"emote": "🪂",
 			},
-			// should ignore 2TU, since 1MO is closer
+			// should ignore 1MO, since 1SU is closer
 			{
 				"title": "test2",
 				"id": "test2",
-				"rrule": "FREQ=MONTHLY;BYDAY=1MO,1TU;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
+				"rrule": "FREQ=MONTHLY;BYDAY=1SU,1MO;TZID=Asia/Taipei;BYHOUR=21;BYMINUTE=0;BYSECOND=0",
 				"emote": "🪂",
 			},
 		];
-		const schedule = generateSchedule(new Date(2023, 10, 6), testSchedule);
+		const schedule = generateSchedule(new Date(2022, 10, 6), testSchedule);
 		expect(schedule.list.size).toBe(2);
 		expect(schedule.today.size).toBe(2);
 		expect(schedule.tomorrow.size).toBe(0);

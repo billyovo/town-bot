@@ -1,11 +1,14 @@
 import { describe, jest } from "@jest/globals";
 import { setWinner } from "../../../utils/discord/textCommands/winner";
 import testPlayerData from "../../data/players.json";
-import { client } from "@managers/databaseManager";
+import { client, winnerCollection } from "@managers/databaseManager";
+import path from "path";
+
 
 describe("setWinner", () => {
 	afterEach(async () => {
 		jest.clearAllMocks();
+		await winnerCollection.deleteMany({});
 	});
 
 	afterAll(done => {
@@ -15,12 +18,15 @@ describe("setWinner", () => {
 
 	// when the player is not in the database
 	test("should insert a new winner correctly", async () => {
-		const getWinnerFromDB = jest.spyOn(await import("../../../utils/database"), "getWinnerFromDB");
-		const createWinnerRecord = jest.spyOn(await import("../../../utils/database"), "createWinnerRecord");
-		const updateWinnerNameFromUUID = jest.spyOn(await import("../../../utils/database"), "updateWinnerNameFromUUID");
-		const getExistingNameFromUUID = jest.spyOn(await import("../../../utils/database"), "getExistingNameFromUUID");
+		const dbImport = await import(path.resolve(__dirname, "../../../utils/database"));
+		const mojangImport = await import(path.resolve(__dirname, "../../../utils/mojang"));
 
-		const getUUIDFromPlayerName = jest.spyOn(await import("../../../utils/mojang"), "getUUIDFromPlayerName").mockImplementation(() => Promise.resolve(testPlayerData[0].UUID));
+		const getWinnerFromDB = jest.spyOn(dbImport, "getWinnerFromDB").mockImplementation(() => Promise.resolve(null));
+		const createWinnerRecord = jest.spyOn(dbImport, "createWinnerRecord").mockImplementation(() => Promise.resolve());
+		const updateWinnerNameFromUUID = jest.spyOn(dbImport, "updateWinnerNameFromUUID");
+		const getExistingNameFromUUID = jest.spyOn(dbImport, "getExistingNameFromUUID").mockImplementation(() => Promise.resolve(null));
+
+		const getUUIDFromPlayerName = jest.spyOn(mojangImport, "getUUIDFromPlayerName").mockImplementation(() => Promise.resolve(testPlayerData[0].UUID));
 
 		await setWinner({
 			server: "生存",
@@ -43,11 +49,14 @@ describe("setWinner", () => {
 
 	// when the player is in the database, but the name is different
 	test("should update the winner name correctly", async () => {
-		const getWinnerFromDB = jest.spyOn(await import("../../../utils/database"), "getWinnerFromDB").mockImplementation(() => Promise.resolve(null));
-		const createWinnerRecord = jest.spyOn(await import("../../../utils/database"), "createWinnerRecord");
-		const updateWinnerNameFromUUID = jest.spyOn(await import("../../../utils/database"), "updateWinnerNameFromUUID");
-		const getExistingNameFromUUID = jest.spyOn(await import("../../../utils/database"), "getExistingNameFromUUID").mockImplementation(() => Promise.resolve(testPlayerData[0].name));
-		const getUUIDFromPlayerName = jest.spyOn(await import("../../../utils/mojang"), "getUUIDFromPlayerName").mockImplementation(() => Promise.resolve(testPlayerData[0].UUID));
+		const dbImport = await import(path.resolve(__dirname, "../../../utils/database"));
+		const mojangImport = await import(path.resolve(__dirname, "../../../utils/mojang"));
+
+		const getWinnerFromDB = jest.spyOn(dbImport, "getWinnerFromDB").mockImplementation(() => Promise.resolve(null));
+		const createWinnerRecord = jest.spyOn(dbImport, "createWinnerRecord").mockImplementation(() => Promise.resolve());
+		const updateWinnerNameFromUUID = jest.spyOn(dbImport, "updateWinnerNameFromUUID").mockImplementation(() => Promise.resolve());
+		const getExistingNameFromUUID = jest.spyOn(dbImport, "getExistingNameFromUUID").mockImplementation(() => Promise.resolve(testPlayerData[0].name));
+		const getUUIDFromPlayerName = jest.spyOn(mojangImport, "getUUIDFromPlayerName").mockImplementation(() => Promise.resolve(testPlayerData[0].UUID));
 
 		await setWinner({
 			server: "生存",
@@ -68,14 +77,17 @@ describe("setWinner", () => {
 	});
 
 	test("should use existing uuid from database if exist", async () => {
-		const getWinnerFromDB = jest.spyOn(await import("../../../utils/database"), "getWinnerFromDB").mockImplementation(() => Promise.resolve({
+		const dbImport = await import(path.resolve(__dirname, "../../../utils/database"));
+		const mojangImport = await import(path.resolve(__dirname, "../../../utils/mojang"));
+
+		const getWinnerFromDB = jest.spyOn(dbImport, "getWinnerFromDB").mockImplementation(() => Promise.resolve({
 			UUID: testPlayerData[0].UUID,
 			name: testPlayerData[0].name,
 		}));
-		const createWinnerRecord = jest.spyOn(await import("../../../utils/database"), "createWinnerRecord");
-		const updateWinnerNameFromUUID = jest.spyOn(await import("../../../utils/database"), "updateWinnerNameFromUUID").mockImplementation(() => Promise.resolve());
-		const getExistingNameFromUUID = jest.spyOn(await import("../../../utils/database"), "getExistingNameFromUUID");
-		const getUUIDFromPlayerName = jest.spyOn(await import("../../../utils/mojang"), "getUUIDFromPlayerName");
+		const createWinnerRecord = jest.spyOn(dbImport, "createWinnerRecord").mockImplementation(() => Promise.resolve());
+		const updateWinnerNameFromUUID = jest.spyOn(dbImport, "updateWinnerNameFromUUID").mockImplementation(() => Promise.resolve());
+		const getExistingNameFromUUID = jest.spyOn(dbImport, "getExistingNameFromUUID").mockImplementation(() => Promise.resolve(null));
+		const getUUIDFromPlayerName = jest.spyOn(mojangImport, "getUUIDFromPlayerName").mockImplementation(() => Promise.resolve(testPlayerData[0].UUID));
 
 		await setWinner({
 			server: "生存",

@@ -1,13 +1,13 @@
 import { describe, test } from "@jest/globals";
-import { winnerCollection } from "../../../managers/databaseManager";
+import { client, winnerCollection } from "../../../managers/databaseManager";
 import testPlayerData from "../../data/players.json";
 import { updateWinnerNameFromUUID } from "../../../utils/database";
 import "../../../managers/databaseManager";
 
 describe("updateWinnerNameFromUUID", () => {
 	const date = new Date().toISOString().substring(0, 10);
-	beforeAll(() => {
-		winnerCollection.insertOne({
+	beforeAll(async () => {
+		await winnerCollection.insertOne({
 			name: "WrongName",
 			UUID: testPlayerData[0].UUID,
 			server: "生存",
@@ -15,13 +15,18 @@ describe("updateWinnerNameFromUUID", () => {
 			date: date,
 		});
 
-		winnerCollection.insertOne({
+		await winnerCollection.insertOne({
 			name: testPlayerData[1].name,
 			UUID: testPlayerData[1].UUID,
 			server: "生存",
 			event: "testEvent",
 			date: date,
 		});
+	});
+
+	afterAll(done => {
+		client.close();
+		done();
 	});
 
 	test("should update the winner name correctly and does not affect other data", async () => {
@@ -45,9 +50,7 @@ describe("updateWinnerNameFromUUID", () => {
 		});
 	});
 
-	test("should not throw error if the winner does not exist", () => {
-		expect(() => {
-			updateWinnerNameFromUUID("testUUID", "testName");
-		}).not.toThrow();
+	test("should not throw error if the winner does not exist", async () => {
+		await expect(updateWinnerNameFromUUID("testUUID", "testName")).resolves.not.toThrow();
 	});
 });

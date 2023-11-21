@@ -1,5 +1,4 @@
-const { pathsToModuleNameMapper } = require('ts-jest')
-const { compilerOptions } = require('./tsconfig')
+process.env.TZ = "Asia/Taipei";
 
 module.exports = {
     preset: '@shelf/jest-mongodb',
@@ -16,5 +15,7 @@ module.exports = {
       "@types/(.*)": "<rootDir>/src/types/$1",
       "@managers/(.*)": "<rootDir>/src/managers/$1",
       "@configs/(.*)": "<rootDir>/src/configs/$1",
-    }
+    },
+    modulePathIgnorePatterns: ["<rootDir>/dist/"]
+
   };

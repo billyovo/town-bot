@@ -1,9 +1,13 @@
 import { describe, test, expect } from "@jest/globals";
 import { createWinnerRecord } from "../../../utils/database";
 import testPlayerData from "../../data/players.json";
-import { winnerCollection } from "../../../managers/databaseManager";
+import { client, winnerCollection } from "../../../managers/databaseManager";
 describe("createWinnerRecord", () => {
 	const date = new Date().toISOString().substring(0, 10);
+	afterAll(done => {
+		client.close();
+		done();
+	});
 
 	test("should create a winner record correctly", async () => {
 		await createWinnerRecord({
