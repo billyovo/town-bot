@@ -38,8 +38,8 @@ export function getSingleEventTimeMessage(options: EventTimeOptions) : string {
 	const skyblockTime = DateTime.fromJSDate(options.event?.nextOccurrence);
 	const survivalTime = DateTime.fromJSDate(options.event?.nextOccurrence).plus({ milliseconds: options.timeBetweenEvent });
 
-	const skyblock = `${ServerEmoteEnum.SKYBLOCK} ${ServerNameChineseEnum.SKYBLOCK}: <t:${skyblockTime.toSeconds()}:f>`;
-	const survival = `${ServerEmoteEnum.SURVIVAL} ${ServerNameChineseEnum.SURVIVAL}: <t:${survivalTime.toSeconds()}:f>`;
+	const skyblock = `${ServerEmoteEnum.SKYBLOCK} ${ServerNameChineseEnum.SKYBLOCK}: <t:${skyblockTime.toSeconds()}:${options.timestampType}>`;
+	const survival = `${ServerEmoteEnum.SURVIVAL} ${ServerNameChineseEnum.SURVIVAL}: <t:${survivalTime.toSeconds()}:${options.timestampType}>`;
 
 	return `${title}\r\n${skyblock}\r\n${survival}`;
 }

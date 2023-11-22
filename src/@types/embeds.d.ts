@@ -12,5 +12,6 @@ export interface EventTodayMessageOptions{
 
 export interface EventTimeOptions{
     event: EventScheduleItem,
-    timeBetweenEvent: number
+    timeBetweenEvent: number,
+    timestampType: TimeStampOptionEnum
 }

@@ -3,6 +3,7 @@ import { ChatInputCommandInteraction, Collection } from "discord.js";
 import { eventSchedule } from "@managers/eventScheduleManager";
 import { timeBetweenSurvivalAndSkyblockInMillisecond } from "@constants/times";
 import { EventScheduleItem } from "../../@types/eventSchedule";
+import { TimeStampOptionEnum } from "@enums/timestamp";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const targetEventCollection : Collection<string, EventScheduleItem> = eventSchedule.today;
@@ -12,6 +13,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return getSingleEventTimeMessage({
 			event: event,
 			timeBetweenEvent: timeBetweenSurvivalAndSkyblockInMillisecond,
+			timestampType: TimeStampOptionEnum.COUNTDOWN,
 		});
 	}).join("\n\n");
 

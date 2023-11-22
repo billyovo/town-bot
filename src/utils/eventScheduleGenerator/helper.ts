@@ -11,7 +11,7 @@ export function getOccurrencFromRRuleString(fromDate: Date, rrule: string) : Dat
 
 	const nextOccurrence : Date = rule.after(fromDateUTC, true) as Date;
 	// by pass the timezone bug in rrule by substracting, very smart.
-	return DateTime.fromJSDate(nextOccurrence).minus({ hours: 8 }).toJSDate();
+	return DateTime.fromJSDate(nextOccurrence).minus({ hours: 8 }).set({ millisecond: 0 }).toJSDate();
 }
 
 export function isToday(date1: Date, date2: Date) : boolean {

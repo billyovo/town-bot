@@ -3,6 +3,7 @@ import { eventSchedule } from "@managers/eventScheduleManager";
 import { timeBetweenSurvivalAndSkyblockInMillisecond } from "@constants/times";
 import { getSingleEventTimeMessage } from "@assets/messages/messages";
 import { EventScheduleItem } from "../../@types/eventSchedule";
+import { TimeStampOptionEnum } from "@enums/timestamp";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const targetEventCollection : Collection<string, EventScheduleItem> = eventSchedule.tomorrow;
@@ -12,6 +13,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return getSingleEventTimeMessage({
 			event: event,
 			timeBetweenEvent: timeBetweenSurvivalAndSkyblockInMillisecond,
+			timestampType: TimeStampOptionEnum.COUNTDOWN,
 		});
 	}).join("\n\n");
 
