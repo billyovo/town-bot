@@ -9,6 +9,7 @@
     "build": "tsup src/index.ts --minify",
     "register": "ts-node ./src/commands/register",
     "fix": "eslint src --fix",
+    "test:lint": "eslint src",
     "test": "jest --silent"
   },
   "keywords": [],
