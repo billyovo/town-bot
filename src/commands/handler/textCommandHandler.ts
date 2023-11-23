@@ -20,6 +20,8 @@ export async function handleTextCommand(message: Message) {
 		const playerName = args[1];
 		const gameName = args[3] ? `${args[2]} ${args[3]}` : args[2];
 
+		message.delete();
+
 		if (!Object.values(ServerNameChineseEnum).includes(server as ServerNameChineseEnum)) {
 			logger(`Invalid server name: ${server}`);
 			return;
@@ -33,7 +35,6 @@ export async function handleTextCommand(message: Message) {
 			return;
 		}
 
-		message.delete();
 		await setWinner({
 			server: server,
 			playerName: playerName,
@@ -55,6 +56,8 @@ export async function handleTextCommand(message: Message) {
 		const server = args[0];
 		const gameName = args[2] ? `${args[1]} ${args[2]}` : args[1];
 
+		message.delete();
+
 		if (!Object.values(ServerNameChineseEnum).includes(server as ServerNameChineseEnum)) {
 			logger(`Invalid server name: ${server}`);
 			return;
@@ -63,7 +66,6 @@ export async function handleTextCommand(message: Message) {
 			logger(`Invalid game name: ${gameName}`);
 			return;
 		}
-		message.delete();
 		await createWinnerRecord({
 			UUID: "draw_result",
 			playerName: "平手",

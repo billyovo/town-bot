@@ -13,7 +13,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 19
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -41,9 +41,21 @@ jobs:
           path: ~/.cache/mongodb-binaries
           key: ${{ runner.os }}
 
+      - name: Create Testing Config
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "config.json"
+          json: ${{ vars.TESTINGCONFIG }}
+          dir: 'src/configs'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run Test
         run: |
-          npm run test
+          pnpm run test
+
+      - name: Run Lint
+        run: |
+          pnpm run test:lint

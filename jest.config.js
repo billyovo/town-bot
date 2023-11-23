@@ -13,7 +13,7 @@ module.exports = {
       "@constants/(.*)": "<rootDir>/src/constants/$1",
       "@enums/(.*)": "<rootDir>/src/enums/$1",
       "@commands/(.*)": "<rootDir>/src/commands/$1",
-      "@types/(.*)": "<rootDir>/src/types/$1",
+      "@types/(.*)": "<rootDir>/src/@types/$1",
       "@managers/(.*)": "<rootDir>/src/managers/$1",
       "@configs/(.*)": "<rootDir>/src/configs/$1",
     },
