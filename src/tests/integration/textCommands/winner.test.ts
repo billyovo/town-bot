@@ -6,7 +6,7 @@ import events from "@configs/events.json";
 import config from "@configs/config.json";
 import { getEventWinnerMessage } from "@assets/messages/messages";
 
-describe("textCommandHandler", () => {
+describe("Winner Text Command", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
