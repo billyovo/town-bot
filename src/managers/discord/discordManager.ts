@@ -21,7 +21,9 @@ export const client : DiscordClient = new ExtendedDiscordClient({
 });
 export let annoucementChannel : TextChannel | null = null;
 
-client.login(process.env.DISCORD_TOKEN);
+export async function connectDiscord(token : string) {
+	await client.login(token);
+}
 
 client.on(Events.InteractionCreate, handleInteraction);
 client.on(Events.MessageCreate, handleTextCommand);

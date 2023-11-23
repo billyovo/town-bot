@@ -1,18 +1,33 @@
-import { MongoClient } from "mongodb";
+import { Collection, Db, MongoClient } from "mongodb";
 import { logger } from "../logger/logger";
 
-export const client : MongoClient = new MongoClient((process.env.DB_CONNECTION_STRING ?? process.env.MONGO_URL)as string);
+let client: MongoClient;
+let db : Db;
+let winnerCollection : Collection;
 
-client.connect().then(() => {
-	logger("Connected to DB!");
-})
-	.catch((err) => {
-		if (process.env.NODE_ENV !== "development") {
-			logger(err);
-			logger("DB connection failed. Aborting...");
-			process.exit(1);
-		}
-	});
+export async function connectDatabase(connectionString: string) {
+	client = new MongoClient(connectionString);
 
-const db = client.db("admin_minigames");
-export const winnerCollection = db.collection("winner");
+	client.connect().then(() => {
+		logger("Connected to DB!");
+	})
+		.catch((err) => {
+			if (process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test") {
+				logger(err);
+				logger("DB connection failed. Aborting...");
+				process.exit(1);
+			}
+		});
+
+	db = client.db("admin_minigames");
+	winnerCollection = db.collection("winner");
+}
+
+export async function disconnectDatabase() {
+	await client.close();
+}
+
+export {
+	winnerCollection,
+	db,
+};

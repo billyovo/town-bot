@@ -1,5 +1,5 @@
 import { describe, test } from "@jest/globals";
-import { client, winnerCollection } from "../../../managers/databaseManager";
+import { winnerCollection } from "../../../managers/databaseManager";
 import testPlayerData from "../../data/players.json";
 import { updateWinnerNameFromUUID } from "../../../utils/database";
 import "../../../managers/databaseManager";
@@ -22,11 +22,6 @@ describe("updateWinnerNameFromUUID", () => {
 			event: "testEvent",
 			date: date,
 		});
-	});
-
-	afterAll(done => {
-		client.close();
-		done();
 	});
 
 	test("should update the winner name correctly and does not affect other data", async () => {
@@ -53,4 +48,5 @@ describe("updateWinnerNameFromUUID", () => {
 	test("should not throw error if the winner does not exist", async () => {
 		await expect(updateWinnerNameFromUUID("testUUID", "testName")).resolves.not.toThrow();
 	});
+
 });

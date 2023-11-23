@@ -1,12 +1,12 @@
 import { Message, PermissionsBitField } from "discord.js";
 import config from "@configs/config.json";
-import { handleWinnerAnnouncement, setWinner } from "@utils/discord/textCommands/winner";
+import { setWinner } from "@utils/discord/textCommands/winner";
 import { createWinnerRecord } from "@utils/database";
-import { handleDrawAnnoucement } from "@utils/discord/textCommands/draw";
 import { logger } from "../../logger/logger";
 import { ServerNameChineseEnum } from "@enums/servers";
 import { eventSchedule } from "@managers/eventScheduleManager";
 import { isValidMinecraftUsername } from "@utils/mojang";
+import { getEventDrawMessage, getEventWinnerMessage } from "@assets/messages/messages";
 
 export async function handleTextCommand(message: Message) {
 	if (!message.content.startsWith(config.prefix)) return;
@@ -39,11 +39,14 @@ export async function handleTextCommand(message: Message) {
 			playerName: playerName,
 			gameName: gameName,
 		});
-		handleWinnerAnnouncement(message, {
+
+		message.channel.send(getEventWinnerMessage({
 			server: server,
-			playerName: playerName,
-			gameName: gameName,
-		});
+			game: gameName,
+			name: playerName,
+		}));
+
+
 		return;
 	}
 
@@ -68,9 +71,10 @@ export async function handleTextCommand(message: Message) {
 			gameName: gameName,
 			date: new Date(),
 		});
-		handleDrawAnnoucement(message, {
+
+		message.channel.send(getEventDrawMessage({
 			server: server,
-			gameName: gameName,
-		});
+			game: gameName,
+		}));
 	}
 }

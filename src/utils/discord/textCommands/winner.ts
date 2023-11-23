@@ -1,7 +1,5 @@
 import { SetWinnerOptions } from "../../../@types/textCommands";
 import { createWinnerRecord, getExistingNameFromUUID, getWinnerFromDB, updateWinnerNameFromUUID } from "@utils/database";
-import { Message } from "discord.js";
-import { getEventWinnerMessage } from "@assets/messages/messages";
 import { getUUIDFromPlayerName } from "@utils/mojang";
 import { logger } from "../../../logger/logger";
 
@@ -29,12 +27,4 @@ export async function setWinner(options: SetWinnerOptions) {
 		gameName: options.gameName,
 		date: new Date(),
 	});
-}
-
-export function handleWinnerAnnouncement(message : Message, options: { server: string, gameName: string, playerName: string }) {
-	message.channel.send(getEventWinnerMessage({
-		server: options.server,
-		game: options.gameName,
-		name: options.playerName,
-	}));
 }

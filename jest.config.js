@@ -1,7 +1,8 @@
 process.env.TZ = "Asia/Taipei";
 
 module.exports = {
-    preset: '@shelf/jest-mongodb',
+    preset: 'ts-jest',
+    testTimeout: 30000,
     transform: {
       '^.+\\.ts?$': 'ts-jest',
     },
@@ -16,6 +17,6 @@ module.exports = {
       "@managers/(.*)": "<rootDir>/src/managers/$1",
       "@configs/(.*)": "<rootDir>/src/configs/$1",
     },
-    modulePathIgnorePatterns: ["<rootDir>/dist/"]
-
+    modulePathIgnorePatterns: ["<rootDir>/dist/"],
+    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts']
   };

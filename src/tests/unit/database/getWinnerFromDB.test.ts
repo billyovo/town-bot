@@ -1,6 +1,6 @@
 import { describe, test } from "@jest/globals";
 import { getWinnerFromDB } from "../../../utils/database";
-import { client, winnerCollection } from "../../../managers/databaseManager";
+import { winnerCollection } from "../../../managers/databaseManager";
 import testPlayerData from "../../data/players.json";
 
 
@@ -27,13 +27,7 @@ describe("getWinnerFromDB", () => {
 			},
 		);
 	});
-	afterEach(async () => {
-		await winnerCollection.deleteMany({});
-	});
-	afterAll(done => {
-		client.close();
-		done();
-	});
+
 	test("should return a winner correctly", async () => {
 		const winner = await getWinnerFromDB(testPlayerData[0].name);
 		expect(winner).toStrictEqual({
@@ -46,4 +40,5 @@ describe("getWinnerFromDB", () => {
 		const winner = await getWinnerFromDB("testPlayer");
 		expect(winner).toBeNull();
 	});
+
 });

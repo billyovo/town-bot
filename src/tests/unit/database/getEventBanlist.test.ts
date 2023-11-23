@@ -1,17 +1,12 @@
 import { describe, beforeAll } from "@jest/globals";
-import { client, winnerCollection } from "../../../managers/databaseManager";
+import { winnerCollection } from "../../../managers/databaseManager";
 import testPlayerData from "../../data/players.json";
 import { getEventBanlist } from "../../../utils/database";
 import { ServerNameChineseEnum } from "../../../enums/servers";
 import { WinnerRecord } from "../../../@types/database";
 describe("getEventBanlist", () => {
-	afterAll(done => {
-		client.close();
-		done();
-	});
 
 	beforeAll(async () => {
-		await winnerCollection.deleteMany({});
 		await winnerCollection.insertMany([
 			{
 				name: testPlayerData[0].name,
@@ -57,9 +52,8 @@ describe("getEventBanlist", () => {
 
 	test("should return the latest winner of each event", async () => {
 		const list : WinnerRecord[] = await getEventBanlist(ServerNameChineseEnum.SURVIVAL);
-		const sortedList = list.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
-		expect(sortedList).toEqual([
+		expect(list).toEqual([
 			{
 				name: testPlayerData[0].name,
 				event: "testEvent",
@@ -72,6 +66,7 @@ describe("getEventBanlist", () => {
 				name: testPlayerData[4].name,
 				event: "testEvent3",
 			},
-		].sort((a, b) => (a.name > b.name) ? 1 : -1));
+		]);
 	});
+
 });
