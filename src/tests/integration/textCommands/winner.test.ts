@@ -3,6 +3,7 @@ import { describe, test, expect, jest } from "@jest/globals";
 import { handleTextCommand } from "@commands/handler/textCommandHandler";
 import { ServerNameChineseEnum } from "@enums/servers";
 import events from "@configs/events.json";
+import config from "@configs/config.json";
 import { getEventWinnerMessage } from "@assets/messages/messages";
 
 describe("textCommandHandler", () => {
@@ -12,7 +13,7 @@ describe("textCommandHandler", () => {
 	test("should return correct response", async () => {
 		const setWinnerSpy = jest.spyOn(await import("@utils/discord/textCommands/winner"), "setWinner").mockImplementation(() => Promise.resolve());
 		const message = {
-			content: `!winner ${ServerNameChineseEnum.SKYBLOCK} billyovo ${events[0].title}`,
+			content: `${config.prefix}winner ${ServerNameChineseEnum.SKYBLOCK} billyovo ${events[0].title}`,
 			member: {
 				permissions: {
 					has: jest.fn().mockReturnValue(true),
@@ -57,7 +58,7 @@ describe("textCommandHandler", () => {
 
 	test("Should ignore message without permission", async () => {
 		const message = {
-			content: `!winner ${ServerNameChineseEnum.SURVIVAL} billyovo ${events[0].title}`,
+			content: `${config.prefix}winner ${ServerNameChineseEnum.SURVIVAL} billyovo ${events[0].title}`,
 			member: {
 				permissions: {
 					has: jest.fn().mockReturnValue(false),
@@ -80,7 +81,7 @@ describe("textCommandHandler", () => {
 
 		const setWinnerSpy = jest.spyOn(await import("@utils/discord/textCommands/winner"), "setWinner").mockImplementation(() => Promise.resolve());
 		const message = {
-			content: `!winner ${ServerNameChineseEnum.SKYBLOCK} BADNAME@v@ ${events[0].title}`,
+			content: `${config.prefix}winner ${ServerNameChineseEnum.SKYBLOCK} BADNAME@v@ ${events[0].title}`,
 			member: {
 				permissions: {
 					has: jest.fn().mockReturnValue(true),
@@ -106,7 +107,7 @@ describe("textCommandHandler", () => {
 	test("Should reject invalid server name", async () => {
 		const setWinnerSpy = jest.spyOn(await import("@utils/discord/textCommands/winner"), "setWinner").mockImplementation(() => Promise.resolve());
 		const message = {
-			content: `!winner SKYBLOCK billyovo ${events[0].title}`,
+			content: `${config.prefix}winner SKYBLOCK billyovo ${events[0].title}`,
 			member: {
 				permissions: {
 					has: jest.fn().mockReturnValue(true),
@@ -132,7 +133,7 @@ describe("textCommandHandler", () => {
 	test("Should reject invalid event name", async () => {
 		const setWinnerSpy = jest.spyOn(await import("@utils/discord/textCommands/winner"), "setWinner").mockImplementation(() => Promise.resolve());
 		const message = {
-			content: `!winner ${ServerNameChineseEnum.SKYBLOCK} billyovo SomeRandomGameName`,
+			content: `${config.prefix}winner ${ServerNameChineseEnum.SKYBLOCK} billyovo SomeRandomGameName`,
 			member: {
 				permissions: {
 					has: jest.fn().mockReturnValue(true),

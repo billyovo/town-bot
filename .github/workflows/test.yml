@@ -41,6 +41,14 @@ jobs:
           path: ~/.cache/mongodb-binaries
           key: ${{ runner.os }}
 
+      - name: Create Testing Config
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "config.json"
+          json: ${{ vars.TESTINGCONFIG }}
+          dir: 'src/configs'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

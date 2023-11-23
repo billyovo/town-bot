@@ -1,10 +1,10 @@
 import { EmbedBuilder } from "discord.js";
-import { timeBetweenSurvivalAndSkyblockInMillisecond } from "../../constants/times";
-import config from "../../configs/config.json";
+import { timeBetweenSurvivalAndSkyblockInMillisecond } from "@constants/times";
+import config from "@configs/config.json";
 import { EventTimeOptions, EventTodayMessageOptions, EventTomorrowEmbedOptions } from "../../@types/embeds";
 import { DateTime } from "luxon";
-import { embedColor } from "../../constants/embeds";
-import { ServerEmoteEnum, ServerNameChineseEnum, ServerRoleMentionEnum } from "../../enums/servers";
+import { embedColor } from "@constants/embeds";
+import { ServerEmoteEnum, ServerNameChineseEnum, ServerRoleMentionEnum } from "@enums/servers";
 
 export function getEventTomorrowEmbed(options: EventTomorrowEmbedOptions) : EmbedBuilder {
 	const eventTime = DateTime.fromJSDate(options.event.nextOccurrence);
