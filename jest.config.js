@@ -15,7 +15,7 @@ module.exports = {
       "@commands/(.*)": "<rootDir>/src/commands/$1",
       "@types/(.*)": "<rootDir>/src/types/$1",
       "@managers/(.*)": "<rootDir>/src/managers/$1",
-      "@configs/(.*)": "<rootDir>/src/configs/$1",
+      "@configs/(.*)": "<rootDir>/src/tests/configs/$1",
     },
     modulePathIgnorePatterns: ["<rootDir>/dist/"],
     setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts']
