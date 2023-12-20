@@ -30,3 +30,5 @@ export enum PriceAlertResult {
     FAIL = "FAIL",
     PRICE_CHANGE = "PRICE_CHANGE"
 }
+
+export type ShopParseFunctionReturn = Promise<PriceOutput | null>;

@@ -1,9 +1,10 @@
 import { parse } from "node-html-parser";
 import { axiosClient } from "../client";
-import { PriceOutput } from "../../../@types/priceAlert";
+import { ShopParseFunctionReturn } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { parsePriceToFloat } from "./parse";
 
-export async function parseHktvmallPrice(url : string) : Promise<PriceOutput | null> {
+export async function parseHktvmallPrice(url : string) : ShopParseFunctionReturn {
 	const html = await axiosClient.get(url);
 	const root = parse(html.data);
 
@@ -19,7 +20,7 @@ export async function parseHktvmallPrice(url : string) : Promise<PriceOutput | n
 
 	if (!price || !brand || !productName) return null;
 	return {
-		price: parseFloat(price?.replace(/[$,]/g, "")),
+		price: parsePriceToFloat(price),
 		productName: productName,
 		brand: brand,
 		productImage: img_sanitized ?? "",
