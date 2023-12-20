@@ -2,6 +2,7 @@ import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./hktvmall";
 import type { ShopParseFunctionReturn } from "../../../@types/priceAlert";
 import { parseAmazonPrice } from "./amazon";
+import { parseAeonPrice } from "./aeon";
 
 type ParseFunctions = {
     [key in PriceAlertShopOption]?: (url: string) => ShopParseFunctionReturn
@@ -32,6 +33,7 @@ export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
 	const parseFunctions: ParseFunctions = {
 		[PriceAlertShopOption.HKTVMALL]: parseHktvmallPrice,
 		[PriceAlertShopOption.AMAZON]: parseAmazonPrice,
+		[PriceAlertShopOption.AEONCITY]: parseAeonPrice,
 	};
 
 	return parseFunctions[shop as keyof typeof PriceAlertShopOption] ?? null;
