@@ -8,5 +8,5 @@ export function sanitizeURL(url: string) {
 	}
 	if (!parsed?.origin || !parsed?.pathname) return null;
 
-	return `${parsed.origin}${parsed.pathname}`;
+	return `${parsed.origin}${parsed.origin.endsWith("/") ? "" : "/"}${parsed.pathname}`;
 }
