@@ -14,7 +14,6 @@ export async function parseAeonPrice(url : string) : ShopParseFunctionReturn {
 
 	const productName = root.querySelector(".base")?.text;
 	const productImage = root.querySelector(".product")?.querySelector("img")?.getAttribute("src");
-	console.log(root.querySelector(".product")?.querySelector("img"));
 	if (!price || !productName) return null;
 
 	return {
