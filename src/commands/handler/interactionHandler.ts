@@ -6,5 +6,5 @@ export function handleInteraction(interaction: BaseInteraction) {
 	if (!interaction.isChatInputCommand()) return;
 	logger(`${interaction.user.username} used ${interaction.commandName}`);
 	const subCommand = interaction.options.getSubcommand(false);
-	client.commands.get(`${interaction.commandName}${subCommand ? `>${subCommand}` : ""}`)?.execute(interaction);
+	client.commands.get(`${interaction.commandName}${subCommand ? `\\${subCommand}` : ""}`)?.execute(interaction);
 }

@@ -18,7 +18,7 @@ export function getShopFromURL(url: string) : { shop: PriceAlertShopOption | nul
 	};
 }
 
-export async function parseShopWebsite(url: string) {
+export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionReturn | null> {
 	const shop = getShopFromURL(url);
 
 	const parseFunction = getParseWebsiteFunction(shop.shop as PriceAlertShopOption);
