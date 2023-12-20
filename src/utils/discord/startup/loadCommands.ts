@@ -18,7 +18,7 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 		else {
 			const command = url.pathToFileURL(filePath).toString();
 			const module = await import(command);
-			const commandName = relative(rootPath, filePath).replace(".ts", "");
+			const commandName = relative(rootPath, filePath).replace(".ts", "").replace("/", "\\");
 			commandsCollection.set(commandName, module);
 			logger(`Loaded command: ${commandName}`);
 		}
