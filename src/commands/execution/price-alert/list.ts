@@ -6,7 +6,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	let list = "";
 	for (let i = 0; i < products.length; i++) {
-		list += `${i + 1} ${products[i].brand} [${products[i].productName}](${products[i].url})\n`;
+		list += `${i + 1}. ${products[i].brand} [${products[i].productName}](<${products[i].url}>)\n`;
 	}
 	await interaction.reply({ content: list });
 }

@@ -35,7 +35,6 @@ function getWatsonsPrice(root : HTMLElement) : number {
 
 		const priceText = option.querySelector(".price > span")?.nextSibling?.innerText ?? "";
 		const priceNumber = parsePriceToFloat(priceText);
-		console.log(priceNumber, priceText);
 		if (!priceNumber) continue;
 
 		const pricePerUnit = priceNumber / quantityNumber;
