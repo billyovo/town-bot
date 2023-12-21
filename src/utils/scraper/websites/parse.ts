@@ -1,8 +1,9 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./hktvmall";
-import type { ShopParseFunctionReturn } from "../../../@types/priceAlert";
-import { parseAmazonPrice } from "./amazon";
 import { parseAeonPrice } from "./aeon";
+import type { ShopParseFunctionReturn } from "../../../@types/priceAlert";
+import { parseWatsonsPrice } from "./watsons";
+
 
 type ParseFunctions = {
     [key in PriceAlertShopOption]?: (url: string) => ShopParseFunctionReturn
@@ -32,13 +33,13 @@ export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionR
 export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
 	const parseFunctions: ParseFunctions = {
 		[PriceAlertShopOption.HKTVMALL]: parseHktvmallPrice,
-		[PriceAlertShopOption.AMAZON]: parseAmazonPrice,
 		[PriceAlertShopOption.AEONCITY]: parseAeonPrice,
+		[PriceAlertShopOption.WATSONS]: parseWatsonsPrice,
 	};
 
 	return parseFunctions[shop as keyof typeof PriceAlertShopOption] ?? null;
 }
 
 export function parsePriceToFloat(price: string) : number {
-	return parseFloat(price.replace(/[$¥,]/g, ""));
+	return parseFloat(price.replace(/[^0-9.]/g, ""));
 }

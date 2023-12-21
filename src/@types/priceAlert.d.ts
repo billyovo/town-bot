@@ -6,7 +6,7 @@ export type PriceOutput = {
     productName: string,
     productImage: string,
     brand: string,
-    shop: PriceAlertShopOption
+    shop: PriceAlertShopOption,
 }
 
 export type PriceAlertItem = {
