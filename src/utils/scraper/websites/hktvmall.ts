@@ -1,11 +1,16 @@
 import { parse } from "node-html-parser";
 import { axiosClient } from "../client";
-import { ShopParseFunctionReturn } from "../../../@types/priceAlert";
+import { ShopParseFunction } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parsePriceToFloat } from "./parse";
+import { logger } from "../../../logger/logger";
 
-export async function parseHktvmallPrice(url : string) : ShopParseFunctionReturn {
-	const html = await axiosClient.get(url);
+export const parseHktvmallPrice : ShopParseFunction = async (url : string) => {
+	const html = await axiosClient.get(url).catch(() => {
+		logger(`Failed to fetch ${url}`);
+		return null;
+	});
+	if (!html) return null;
 	const root = parse(html.data);
 
 	const price = root.querySelector(".price > span")?.innerText;
@@ -26,4 +31,4 @@ export async function parseHktvmallPrice(url : string) : ShopParseFunctionReturn
 		productImage: img_sanitized ?? "",
 		shop: PriceAlertShopOption.HKTVMALL,
 	};
-}
+};

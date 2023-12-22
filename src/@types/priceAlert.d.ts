@@ -1,4 +1,5 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { AttachmentBuilder } from "discord.js";
 import { ObjectId } from "mongodb";
 
 export type PriceOutput = {
@@ -7,6 +8,9 @@ export type PriceOutput = {
     productImage: string,
     brand: string,
     shop: PriceAlertShopOption,
+
+    // this is productImage, but we need to fetch it from the URL first sometimes.
+    attachment?: AttachmentBuilder | null
 }
 
 export type PriceAlertItem = {
@@ -32,3 +36,4 @@ export enum PriceAlertResult {
 }
 
 export type ShopParseFunctionReturn = Promise<PriceOutput | null>;
+export type ShopParseFunction = (url: string) => ShopParseFunctionReturn;

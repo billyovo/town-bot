@@ -16,6 +16,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 	await interaction.reply({ content: list[0] });
 	for (let i = 1; i < list.length; i++) {
-		await interaction.followUp({ content: list[i] });
+		await interaction?.channel?.send({ content: list[i] });
 	}
 }

@@ -1,7 +1,9 @@
 import { EmbedBuilder } from "discord.js";
 import { PriceAlertItem } from "../../@types/priceAlert";
+import { PriceAlertShopOptionImage } from "@enums/priceAlertShopOption";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
+	const storeImage : string = PriceAlertShopOptionImage[product.shop];
 	const embed = new EmbedBuilder()
 		.setTitle("Price Changed!")
 		.setURL(product.url)
@@ -12,11 +14,14 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 		)
 		.setColor((product.price > (product?.previous?.price ?? Infinity) ? "Red" : "Green"));
 	if (product.productImage) embed.setImage(product.productImage);
+	if (storeImage) embed.setThumbnail(storeImage);
 
 	return embed;
 }
 
 export function getAddedToAlertEmbed(product: PriceAlertItem) {
+	const storeImage : string = PriceAlertShopOptionImage[product.shop];
+
 	const embed = new EmbedBuilder()
 		.setTitle(product.productName)
 		.setURL(product.url)
@@ -27,6 +32,7 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 		.setFooter({ text: "Added to price alert" })
 		.setColor("Green");
 	if (product.productImage) embed.setImage(product.productImage);
+	if (storeImage) embed.setThumbnail(storeImage);
 
 	return embed;
 }

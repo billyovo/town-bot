@@ -3,9 +3,10 @@ import { parseHktvmallPrice } from "./hktvmall";
 import { parseAeonPrice } from "./aeon";
 import type { ShopParseFunctionReturn } from "../../../@types/priceAlert";
 import { parseWatsonsPrice } from "./watsons";
+import { parsePNSPrice } from "./pns";
 
 
-type ParseFunctions = {
+type ParseFunctionsMap = {
     [key in PriceAlertShopOption]?: (url: string) => ShopParseFunctionReturn
 };
 
@@ -31,10 +32,11 @@ export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionR
 }
 
 export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
-	const parseFunctions: ParseFunctions = {
+	const parseFunctions: ParseFunctionsMap = {
 		[PriceAlertShopOption.HKTVMALL]: parseHktvmallPrice,
 		[PriceAlertShopOption.AEONCITY]: parseAeonPrice,
 		[PriceAlertShopOption.WATSONS]: parseWatsonsPrice,
+		[PriceAlertShopOption.PNS]: parsePNSPrice,
 	};
 
 	return parseFunctions[shop as keyof typeof PriceAlertShopOption] ?? null;
