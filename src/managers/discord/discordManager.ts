@@ -1,9 +1,10 @@
-import { Events, GatewayIntentBits, TextChannel } from "discord.js";
+import { Events, GatewayIntentBits } from "discord.js";
 import { DiscordClient } from "../../@types/discord";
 import { ExtendedDiscordClient } from "./client";
 import { loadSlashCommands } from "@utils/discord/startup/loadCommands";
 import { handleInteraction } from "@commands/handler/interactionHandler";
 import { logger } from "../../logger/logger";
+import { chatgpt } from "@commands/handler/chatgpt";
 
 export const client : DiscordClient = new ExtendedDiscordClient({
 	intents: [
@@ -12,13 +13,14 @@ export const client : DiscordClient = new ExtendedDiscordClient({
 		GatewayIntentBits.MessageContent,
 	],
 });
-export const annoucementChannel : TextChannel | null = null;
 
 export async function connectDiscord(token : string) {
 	await client.login(token);
 }
 
 client.on(Events.InteractionCreate, handleInteraction);
+
+client.on(Events.MessageCreate, chatgpt);
 
 client.on(Events.ClientReady, async () => {
 	client.commands = await loadSlashCommands();

@@ -3,3 +3,6 @@ node_modules
 .env.github
 dist
 /src/configs/config.json
+.infisical.json
+Tesseract_Data/
+docker.ps1
