@@ -2,6 +2,7 @@ import { OpenAI } from "openai";
 import { Message, Snowflake } from "discord.js";
 import { client } from "@managers/discord/discordManager";
 
+const delMessageTime = 60 * 60 * 1000;
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
@@ -34,7 +35,7 @@ const sendMessage = (message : Message, content : string) => {
 	}).then((msg) => {
 		setTimeout(() => {
 			msg.delete();
-		}, 3000000);
+		}, delMessageTime);
 	});
 };
 

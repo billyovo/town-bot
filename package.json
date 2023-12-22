@@ -27,6 +27,7 @@
     "node-html-parser": "^6.1.11",
     "node-schedule": "^2.1.1",
     "node-tesseract-ocr": "^2.2.1",
+    "openai": "^4.24.1",
     "rrule": "^2.7.2"
   },
   "devDependencies": {
