@@ -11,7 +11,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const collection = db.collection("products");
 	const products = collection.find({});
 
+	let count = 0;
 	for await (const product of products) {
+		count++;
 		const scrapeResult = await getPriceChange(product as PriceAlertItem);
 		if (!scrapeResult?.data) continue;
 
@@ -25,6 +27,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		}
 		await updateDatabaseFromScrapeResult(scrapeResult);
 	}
-
+	interaction.channel?.send(`Success! Checked ${count} products.`);
 
 }
