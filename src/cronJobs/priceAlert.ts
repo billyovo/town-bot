@@ -6,7 +6,8 @@ import { logger } from "../logger/logger";
 import { getPriceChangeEmbed } from "@assets/embeds/priceEmbeds";
 import { db } from "@managers/database/databaseManager";
 import { getPriceChange } from "@utils/scraper/scrapePrices";
-import { PriceAlertItem, PriceAlertResult } from "../@types/priceAlert.d";
+import type { PriceAlertItem } from "../@types/priceAlert";
+import { PriceAlertResult } from "@enums/priceAlertShopOption";
 
 scheduleJob("7 10 * * *", async () => {
 	logger("Running price alert check");

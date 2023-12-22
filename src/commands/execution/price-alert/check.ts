@@ -3,7 +3,8 @@ import { updateDatabaseFromScrapeResult } from "@utils/scraper/db/db";
 import { ChatInputCommandInteraction } from "discord.js";
 import { db } from "@managers/database/databaseManager";
 import { getPriceChange } from "@utils/scraper/scrapePrices";
-import { PriceAlertItem, PriceAlertResult } from "../../../@types/priceAlert.d";
+import type { PriceAlertItem } from "../../../@types/priceAlert";
+import { PriceAlertResult } from "@enums/priceAlertShopOption";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	await interaction.reply({ content: "Fetching..." });

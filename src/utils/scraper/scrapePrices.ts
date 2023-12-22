@@ -1,5 +1,6 @@
 import { parseShopWebsite } from "./websites/parse";
-import { PriceAlertChecked, PriceAlertItem, PriceAlertResult } from "../../@types/priceAlert.d";
+import type { PriceAlertChecked, PriceAlertItem } from "../../@types/priceAlert";
+import { PriceAlertResult } from "../../enums/priceAlertShopOption";
 import { logger } from "../../logger/logger";
 
 async function waitFor(ms: number) {

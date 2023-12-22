@@ -29,11 +29,5 @@ export type PriceAlertChecked = {
     data: PriceAlertItem
 }
 
-export enum PriceAlertResult {
-    SUCCESS = "SUCCESS",
-    FAIL = "FAIL",
-    PRICE_CHANGE = "PRICE_CHANGE"
-}
-
 export type ShopParseFunctionReturn = Promise<PriceOutput | null>;
 export type ShopParseFunction = (url: string) => ShopParseFunctionReturn;

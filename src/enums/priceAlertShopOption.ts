@@ -16,3 +16,9 @@ export enum PriceAlertListMode {
     ALL = "all",
     DETAILED = "detailed",
 }
+
+export enum PriceAlertResult {
+    SUCCESS = "SUCCESS",
+    FAIL = "FAIL",
+    PRICE_CHANGE = "PRICE_CHANGE"
+}
