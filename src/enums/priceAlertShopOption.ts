@@ -11,3 +11,8 @@ export enum PriceAlertShopOptionImage {
     AEONCITY = "https://i.imgur.com/nopW4EX.png",
     PNS = "https://i.imgur.com/cT0UG1S.png",
 }
+
+export enum PriceAlertListMode {
+    ALL = "all",
+    DETAILED = "detailed",
+}

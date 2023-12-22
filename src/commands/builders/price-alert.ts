@@ -1,3 +1,4 @@
+import { PriceAlertListMode } from "../../enums/priceAlertShopOption";
 import { SlashCommandBuilder } from "discord.js";
 
 export const command = new SlashCommandBuilder()
@@ -33,5 +34,20 @@ export const command = new SlashCommandBuilder()
 	.addSubcommand(subcommand =>
 		subcommand
 			.setName("list")
-			.setDescription("list price alerts"),
+			.setDescription("list price alerts")
+			.addStringOption(option =>
+				option.setName("mode")
+					.setDescription("mode")
+					.setRequired(true)
+					.addChoices(
+						{
+							name: "all",
+							value: PriceAlertListMode.ALL,
+						},
+						{
+							name: "detailed",
+							value: PriceAlertListMode.DETAILED,
+						},
+					),
+			),
 	);
