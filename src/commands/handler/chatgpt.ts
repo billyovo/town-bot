@@ -25,18 +25,57 @@ const getGptMessage = async (chatMessages: OpenAI.Chat.ChatCompletionMessagePara
 	}
 };
 
+const splitRespondMessage = (RespondMessage : string): string[] => {
+	const splitMessage = RespondMessage.split("\n");
+	const messageArray : string[] = [];
+	let message = "";
+	for (let i = 0; i < splitMessage.length; i++) {
+		if (message.length + splitMessage[i].length > 2000) {
+			messageArray.push(message);
+			message = "";
+		}
+		message += splitMessage[i] + "\n";
+	}
+	messageArray.push(message);
+	return messageArray;
+};
 
-const sendMessage = (message : Message, content : string) => {
-	message.channel.send({
-		content: content,
-		reply: {
-			messageReference: message,
-		},
-	}).then((msg) => {
-		setTimeout(() => {
-			msg.delete();
-		}, delMessageTime);
-	});
+
+const sendMessage = async (message : Message, content : string) => {
+	const limit = 2000;
+	console.log(content.length);
+	if (content.length < limit) {
+		message.channel.send({
+			content: content,
+			reply: {
+				messageReference: message,
+			},
+		}).then((msg) => {
+			setTimeout(() => {
+				msg.delete();
+			}, delMessageTime);
+		});
+	}
+	else {
+
+		const messageArray = splitRespondMessage(content);
+		console.log(messageArray);
+		let messageId = message.id;
+		for (let i = 0; i < messageArray.length; i++) {
+			const sent = await message.channel.send({
+				content: messageArray[i],
+				reply: {
+					messageReference: messageId,
+				},
+			});
+
+			messageId = sent.id;
+
+			setTimeout(() => {
+				sent.delete();
+			}, delMessageTime);
+		}
+	}
 };
 
 const getChatMessages = async (message : Message, botID : Snowflake, chatMessages : OpenAI.Chat.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.ChatCompletionMessageParam[] | null> => {
