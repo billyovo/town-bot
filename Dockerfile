@@ -1,4 +1,6 @@
 FROM node:21-slim
+
+ENV NODE_ENV=production
 RUN npm i -g pnpm
 
 COPY ["package.json", "package-lock.json*", "./"]
@@ -6,7 +8,6 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN apt-get update && apt-get install -y bash curl && curl -1sLf \
 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
 && apt-get update && apt-get install -y infisical
-
 RUN apt-get update \
     &&  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
     
@@ -19,6 +20,7 @@ RUN apt-get install tesseract-ocr -y
 RUN pnpm install
 COPY . .
 RUN mv Tesseract_Data/* /usr/share/tesseract-ocr/5/tessdata 
-# ENV NODE_ENV=production
-CMD ["infisical", "run", "--env=prod", "--","npm", "run", "dev"]
+
+ENTRYPOINT ["infisical", "run"]
+CMD ["--env=prod", "--","npm", "run", "start"]
 

@@ -18,7 +18,7 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 		else {
 			const command = url.pathToFileURL(filePath).toString();
 			const module = await import(command);
-			const commandName = relative(rootPath, filePath).replace(".ts", "").replace("/", "\\");
+			const commandName = relative(rootPath, filePath).replace(".ts", "").replace(".js", "").replace("/", "\\");
 			commandsCollection.set(commandName, module);
 			logger(`Loaded command: ${commandName}`);
 		}
@@ -28,7 +28,7 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 }
 
 export async function loadSlashCommands(): Promise<CommandsCollection> {
-	const rootPath = join(process.cwd(), "./src/commands/execution");
+	const rootPath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/commands/execution" : "./src/commands/execution");
 	const commandsCollection: CommandsCollection = new Collection();
 
 	await loadCommandsFromFolder(rootPath, rootPath, commandsCollection);
