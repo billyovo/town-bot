@@ -1,6 +1,4 @@
 FROM node:21-slim
-
-ENV NODE_ENV=production
 RUN npm i -g pnpm
 
 COPY ["package.json", "package-lock.json*", "./"]
@@ -8,19 +6,31 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN apt-get update && apt-get install -y bash curl && curl -1sLf \
 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
 && apt-get update && apt-get install -y infisical
+
 RUN apt-get update \
-    &&  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
-    
-RUN TZ=Asia/Taipei \
+    && apt-get install -y bash curl tesseract-ocr \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
+    && apt-get update \
+    && apt-get install -y infisical \
+    && apt-get install -y --no-install-recommends tzdata \
+    && TZ=Asia/Taipei \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone \
-    && dpkg-reconfigure -f noninteractive tzdata
-     
-RUN apt-get install tesseract-ocr -y
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm i -g pnpm
+
+COPY "Tesseract_Data" /usr/share/tesseract-ocr/5/tessdata
+
+WORKDIR /app
+
+COPY package.json package-lock.json* pnpm-lock.yaml /app/
+
 RUN pnpm install
+
 COPY . .
 RUN mv Tesseract_Data/* /usr/share/tesseract-ocr/5/tessdata 
-
-ENTRYPOINT ["infisical", "run"]
-CMD ["--env=prod", "--","npm", "run", "start"]
+# ENV NODE_ENV=production
+CMD ["infisical", "run", "--env=prod", "--","npm", "run", "dev"]
 
