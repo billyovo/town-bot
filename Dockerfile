@@ -24,4 +24,4 @@ RUN pnpm install --frozen-lockfile
 ENV NODE_ENV=production
 COPY . .
 RUN ["npm", "run", "build"]
-CMD ["infisical", "run", "--env=prod", "--","npm", "run", "start"]
+ENTRYPOINT ["infisical", "run", "--env=prod", "--","npm", "run", "start"]
