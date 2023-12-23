@@ -22,7 +22,7 @@ WORKDIR /app
 COPY package.json package-lock.json* pnpm-lock.yaml /app/
 
 RUN pnpm install
-CMD ["npm", "run", "build"]
 COPY . .
+CMD ["npm", "run", "build"]
 CMD ["infisical", "run"]
 ENTRYPOINT ["--env=prod", "--","npm", "run", "start"]
