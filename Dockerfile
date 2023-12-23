@@ -25,4 +25,4 @@ RUN pnpm install
 
 COPY . .
 CMD ["infisical", "run"]
-ENTRYPOINT ["--env=prod", "--","npm", "run", "dev"]
+ENTRYPOINT ["--env=prod", "--","npm", "run", "start"]
