@@ -45,7 +45,6 @@ const splitRespondMessage = (RespondMessage : string): string[] => {
 
 const sendMessage = async (message : Message, content : string) => {
 	const limit = 2000;
-	console.log(content.length);
 	if (content.length < limit) {
 		message.channel.send({
 			content: content,

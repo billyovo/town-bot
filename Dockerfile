@@ -1,6 +1,5 @@
-FROM node:21-slim
+FROM node:21
 
-ENV NODE_ENV=production
 RUN apt-get update \
     && apt-get install -y bash curl tesseract-ocr \
     && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
@@ -18,10 +17,10 @@ RUN apt-get update \
 COPY "Tesseract_Data" /usr/share/tesseract-ocr/5/tessdata
 
 WORKDIR /app
+
 COPY package.json package-lock.json* pnpm-lock.yaml /app/
 
 RUN pnpm install --frozen-lockfile
-RUN ["npm", "run", "build"]
 COPY . .
-CMD ["infisical", "run"]
-ENTRYPOINT ["--env=prod", "--","npm", "run", "start"]
+RUN ["npm", "run", "build"]
+CMD ["infisical", "run", "--env=prod", "--","npm", "run", "start"]
