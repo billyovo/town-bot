@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import { PriceAlertItem } from "../../@types/priceAlert";
 import { PriceAlertShopOptionImage } from "@enums/priceAlertShopOption";
+import { DateTime } from "luxon";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
 	const storeImage : string = PriceAlertShopOptionImage[product.shop];
@@ -34,5 +35,25 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
 
+	return embed;
+}
+
+export function getPriceListEmbed(product: PriceAlertItem) {
+	const storeImage : string = PriceAlertShopOptionImage[product.shop];
+	const embed = new EmbedBuilder()
+		.setAuthor({ name: product.brand })
+		.setTitle(product.productName)
+		.setURL(product.url)
+		.addFields(
+			{ name: "Price", value: `$${product.price.toString()}`, inline: true },
+			{ name: "Last Checked", value: DateTime.fromJSDate(product.lastChecked).toFormat("yyyy-MM-dd hh:mm"), inline: true },
+		)
+		.setColor("Green");
+	if (product.previous) {
+		embed.setFooter({ text: `Previous Price: $${product.previous.price}` });
+		embed.setTimestamp(product.previous.date);
+	}
+	if (product.productImage) embed.setImage(product.productImage);
+	if (storeImage) embed.setThumbnail(storeImage);
 	return embed;
 }
