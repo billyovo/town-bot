@@ -1,7 +1,7 @@
 import { OpenAI } from "openai";
 import { Message, Snowflake } from "discord.js";
 import { client } from "@managers/discord/discordManager";
-import config from "../../../config/chatgpt.json";
+import { config } from "@configs/chatgpt";
 
 
 const delMessageTime = config.delMessageTimeHours * 60 * 60 * 1000;
