@@ -1,8 +1,10 @@
 import { OpenAI } from "openai";
 import { Message, Snowflake } from "discord.js";
 import { client } from "@managers/discord/discordManager";
+import config from "../../../config/chatgpt.json";
 
-const delMessageTime = 60 * 60 * 1000;
+
+const delMessageTime = config.delMessageTimeHours * 60 * 60 * 1000;
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +15,7 @@ const getGptMessage = async (chatMessages: OpenAI.Chat.ChatCompletionMessagePara
 
 		const parms : OpenAI.Chat.ChatCompletionCreateParams = {
 			messages: chatMessages,
-			model: "gpt-3.5-turbo",
+			model: config.model,
 		};
 
 		const response : OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(parms);
