@@ -4,6 +4,7 @@ import { PriceAlertListMode } from "@enums/priceAlertShopOption";
 import { getPriceListEmbed } from "@assets/embeds/priceEmbeds";
 import { PriceAlertItem } from "../../../@types/priceAlert";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
+import { splitMessage } from "@utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const mode : PriceAlertListMode = interaction.options.get("mode")?.value as PriceAlertListMode;
@@ -11,17 +12,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const collection = db.collection("products");
 	const productsCursor = collection.find({}).sort({ shop: 1 });
 	const productsArray = await productsCursor.toArray();
+
 	if (mode === PriceAlertListMode.ALL) {
-		const list : string[] = [""];
-		let current = 0;
-		for (let i = 0; i < productsArray.length; i++) {
-			const message = `${i + 1}. ${productsArray[i].shop} | ${productsArray[i].brand} [${productsArray[i].productName}](<${productsArray[i].url}>)\n`;
-			if ((list[current].length + message.length) > 2000) {
-				current++;
-				list[current] = "";
-			}
-			list[current] += message;
-		}
+		const formattedProducts = productsArray.map((product, index) => {
+			return `${index + 1}. ${product.shop} | ${product.brand} [${product.productName}](<${product.url}>)\n`;
+		});
+
+		const list : string[] = splitMessage(formattedProducts);
 		await interaction.reply({ content: list[0] });
 		for (let i = 1; i < list.length; i++) {
 			await interaction?.channel?.send({ content: list[i] });
@@ -29,33 +26,36 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 
 	if (mode === PriceAlertListMode.DETAILED) {
-		let pointer = 0;
+		const pointer = 0;
 		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+		createProductDetailButtonCollector(interaction, productsArray as PriceAlertItem[]);
 		await interaction.reply({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
-
-		const filter = (i: Interaction) => i.user.id === interaction.user.id;
-		const collector = interaction.channel?.createMessageComponentCollector({ filter, time: 300000 });
-		collector?.on("collect", async (i) => {
-			if (i.customId === "currentPage") return;
-			if (i.customId === "previous") {
-				pointer--;
-				if (pointer < 0) pointer = productsArray.length - 1;
-				const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-				await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
-			}
-			if (i.customId === "next") {
-				pointer++;
-				if (pointer >= productsArray.length) pointer = 0;
-				const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-				await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
-			}
-		});
-		collector?.on("end", async () => {
-			await interaction.editReply({ components: [] });
-		});
 	}
 }
 
+async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, productsArray: PriceAlertItem[]) {
+	let pointer = 0;
+
+	const filter = (i: Interaction) => i.user.id === interaction.user.id;
+	const collector = interaction.channel?.createMessageComponentCollector({ filter, time: 300000 });
+	collector?.on("collect", async (i) => {
+		if (i.customId === "previous") {
+			pointer--;
+			if (pointer < 0) pointer = productsArray.length - 1;
+		}
+		if (i.customId === "next") {
+			pointer++;
+			if (pointer >= productsArray.length) pointer = 0;
+		}
+
+		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+		await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
+	});
+
+	collector?.on("end", async () => {
+		await interaction.editReply({ components: [] });
+	});
+}
 
 function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<ButtonBuilder> {
 	const previous = new ButtonBuilder()

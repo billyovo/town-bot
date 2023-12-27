@@ -1,0 +1,2 @@
+export type GetChatMessageHistory = (message : Message, botID : Snowflake, chatMessages : OpenAI.Chat.ChatCompletionMessageParam[] = []) => Promise<OpenAI.Chat.ChatCompletionMessageParam[] | null>;
+export type GetGptMessage = (chatMessages: OpenAI.Chat.ChatCompletionMessageParam[]) => Promise<OpenAI.Chat.ChatCompletion| null>;

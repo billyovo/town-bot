@@ -1,23 +1,20 @@
 import { OpenAI } from "openai";
-import { Message, Snowflake } from "discord.js";
+import { Message, Snowflake, TextChannel } from "discord.js";
 import { client } from "@managers/discord/discordManager";
-import { config } from "@configs/chatgpt";
-
-
-const delMessageTime = config.delMessageTimeHours * 60 * 60 * 1000;
+import { delMessageTime, config } from "@configs/chatgpt";
+import { splitMessage } from "@utils/discord/splitMessage";
+import type { GetChatMessageHistory, GetGptMessage } from "../../@types/chatgpt";
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
-const getGptMessage = async (chatMessages: OpenAI.Chat.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.ChatCompletion| null> => {
+const getGptMessage : GetGptMessage = async (chatMessages) => {
 	try {
-
 		const parms : OpenAI.Chat.ChatCompletionCreateParams = {
 			messages: chatMessages,
 			model: config.model,
 		};
-
 		const response : OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(parms);
 		return response;
 	}
@@ -27,79 +24,37 @@ const getGptMessage = async (chatMessages: OpenAI.Chat.ChatCompletionMessagePara
 	}
 };
 
-const splitRespondMessage = (RespondMessage : string): string[] => {
-	const splitMessage = RespondMessage.split("\n");
-	const messageArray : string[] = [];
-	let message = "";
-	for (let i = 0; i < splitMessage.length; i++) {
-		if (message.length + splitMessage[i].length > 2000) {
-			messageArray.push(message);
-			message = "";
-		}
-		message += splitMessage[i] + "\n";
-	}
-	messageArray.push(message);
-	return messageArray;
-};
-
-
-const sendMessage = async (message : Message, content : string) => {
-	const limit = 2000;
-	if (content.length < limit) {
-		message.channel.send({
-			content: content,
-			reply: {
-				messageReference: message,
-			},
-		}).then((msg) => {
-			setTimeout(() => {
-				msg.delete();
-			}, delMessageTime);
+const sendMessage = async (content : string, channel: TextChannel, replyID?: Snowflake) => {
+	const messageArray = splitMessage(content.split("\n"));
+	let updatedReplyID = replyID;
+	for (let i = 0; i < messageArray.length; i++) {
+		const sendOptions = updatedReplyID ? { reply: { messageReference: updatedReplyID } } : {};
+		const sent = await channel.send({
+			content: messageArray[i],
+			...sendOptions,
 		});
-	}
-	else {
-
-		const messageArray = splitRespondMessage(content);
-		console.log(messageArray);
-		let messageId = message.id;
-		for (let i = 0; i < messageArray.length; i++) {
-			const sent = await message.channel.send({
-				content: messageArray[i],
-				reply: {
-					messageReference: messageId,
-				},
-			});
-
-			messageId = sent.id;
-
-			setTimeout(() => {
-				sent.delete();
-			}, delMessageTime);
-		}
+		updatedReplyID = sent.id;
+		setTimeout(() => {
+			sent.delete();
+		}, delMessageTime);
 	}
 };
 
-const getChatMessages = async (message : Message, botID : Snowflake, chatMessages : OpenAI.Chat.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.ChatCompletionMessageParam[] | null> => {
+const getChatMessageHistory : GetChatMessageHistory = async (message, botID, chatMessages = []) => {
 	try {
-		const filter = new RegExp(`^<@${botID}>+([^]*)`);
-		const originalMessage = message.content.match(filter);
-		const filteredMessage = originalMessage ? originalMessage[1] : message.content;
+		const filter = new RegExp(`^<@${botID}>+([^]*)`, "g");
+		const filteredMessage = message.content.replace(filter, "");
 
-		if (chatMessages.length === 0 && filteredMessage == "") {
-			return null;
-		}
+		if (chatMessages.length === 0 && filteredMessage == "") return null;
 
-		if (message.author.id === botID) {
-			chatMessages.unshift({ "role": "assistant", "content": filteredMessage });
-		}
-		else {
-			chatMessages.unshift({ "role": "user", "content": filteredMessage });
-		}
-
+		chatMessages.unshift({
+			"role": message.author.id === botID ? "assistant" : "user",
+			"content": filteredMessage,
+		});
 		if (message.reference) {
 			const refeMessageId = message.reference.messageId;
 			const refMessage = await message.channel.messages.fetch(refeMessageId!);
-			return await getChatMessages(refMessage, botID, chatMessages);
+			return await getChatMessageHistory(refMessage, botID, chatMessages);
 		}
 
 		return chatMessages;
@@ -115,27 +70,22 @@ export async function chatgpt(message : Message) {
 	try {
 		const botID = client.user?.id;
 		if (message.author.bot) return;
-		if (message.mentions.has(botID!) && !message.mentions.everyone) {
-			const chatMessages : OpenAI.Chat.ChatCompletionMessageParam[] = [];
+		if (!message.mentions.has(botID!) || message.mentions.everyone) return;
 
-			const messages = await getChatMessages(message, botID!, chatMessages);
+		const messagesHistory = await getChatMessageHistory(message, botID!);
+		if (!messagesHistory) return sendMessage("Hello! How can I assist you today?", message.channel as TextChannel, message.id);
 
-			if (!messages) {
-				sendMessage(message, "Hello! How can I assist you today?");
-			}
-			else {
-				const response = await getGptMessage(messages!);
-				if (!response) {
-					sendMessage(message, "Some Error Occured, Please try again later :(");
-				}
-				else {
-					sendMessage(message, response.choices[0].message.content!);
-				}
-			}
-		}
+		const response = await getGptMessage(messagesHistory!);
+		if (!response) throw new Error("Some Error Occured, Please try again later :(");
+
+		sendMessage(
+			response.choices[0].message.content!,
+			message.channel as TextChannel,
+			message.id,
+		);
 	}
 	catch (error) {
 		console.log(error);
-		sendMessage(message, "Some Error Occured, Please try again later :(");
+		sendMessage("Some Error Occured, Please try again later :(", message.channel as TextChannel, message.id);
 	}
 }
