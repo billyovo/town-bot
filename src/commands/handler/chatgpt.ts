@@ -42,7 +42,7 @@ const sendMessage = async (content : string, channel: TextChannel, replyID?: Sno
 
 const getChatMessageHistory : GetChatMessageHistory = async (message, botID, chatMessages = []) => {
 	try {
-		const filter = new RegExp(`^<@${botID}>+([^]*)`, "g");
+		const filter = new RegExp(`^<@${botID}>`, "g");
 		const filteredMessage = message.content.replace(filter, "");
 
 		if (chatMessages.length === 0 && filteredMessage == "") return null;
