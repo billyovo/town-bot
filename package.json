@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc -p . && tsc-alias",
+    "build": "tsc -p . && tsc-alias && copyfiles -u 1 src/assets/* dist/",
     "register": "ts-node ./src/commands/register",
     "fix": "eslint src --fix",
     "test:lint": "eslint src",
@@ -37,6 +37,7 @@
     "@types/node": "^20.8.5",
     "@types/node-schedule": "^2.1.2",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.51.0",
     "husky": "^8.0.3",
     "jest": "^29.7.0",
