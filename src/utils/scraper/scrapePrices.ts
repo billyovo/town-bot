@@ -7,7 +7,7 @@ async function waitFor(ms: number) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAlertChecked | null> {
+export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAlertChecked> {
 	const delay = Math.random() * 300000;
 	logger(`Delaying for ${delay}ms`);
 	await waitFor(delay);

@@ -17,14 +17,13 @@ scheduleJob("7 10 * * *", async () => {
 
 	for await (const product of products) {
 		const scrapeResult = await getPriceChange(product as PriceAlertItem);
-		if (!scrapeResult?.data) continue;
 
 		switch (scrapeResult.result) {
 		case PriceAlertResult.PRICE_CHANGE:
 			await channel?.send({ embeds: [getPriceChangeEmbed(scrapeResult.data)] });
 			break;
 		case PriceAlertResult.FAIL:
-			await channel?.send(`Failed to check [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} ${scrapeResult.data.failCount} times.`);
+			await channel?.send(`Failed to check [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} ${scrapeResult.data.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
 			break;
 		}
 		await updateDatabaseFromScrapeResult(scrapeResult);

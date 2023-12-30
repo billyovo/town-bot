@@ -16,7 +16,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	for await (const product of products) {
 		count++;
 		const scrapeResult = await getPriceChange(product as PriceAlertItem);
-		if (!scrapeResult?.data) continue;
 
 		switch (scrapeResult.result) {
 		case PriceAlertResult.PRICE_CHANGE:
@@ -26,6 +25,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			await interaction.channel?.send(`Failed to check [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} ${scrapeResult.data.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
 			break;
 		}
+
 		await updateDatabaseFromScrapeResult(scrapeResult);
 	}
 	interaction.channel?.send(`Success! Checked ${count} products.`);
