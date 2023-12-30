@@ -13,6 +13,20 @@ export type PriceOutput = {
     attachment?: AttachmentBuilder | null
 }
 
+type Success = {
+    data: PriceOutput,
+    error: null,
+    success: true
+}
+
+type Failure = {
+    data: null,
+    error: string,
+    success: false
+}
+
+export type ShopParseFunctionReturn = Success | Failure;
+
 export type PriceAlertItem = {
     _id?: ObjectId | undefined,
     previous?: {
@@ -26,8 +40,8 @@ export type PriceAlertItem = {
 
 export type PriceAlertChecked = {
     result: PriceAlertResult,
-    data: PriceAlertItem
+    data: PriceAlertItem,
+    error?: string
 }
 
-export type ShopParseFunctionReturn = Promise<PriceOutput | null>;
-export type ShopParseFunction = (url: string) => ShopParseFunctionReturn;
+export type ShopParseFunction = (url: string) => Promise<ShopParseFunctionResponse>;

@@ -9,10 +9,15 @@ import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 export const parsePNSPrice : ShopParseFunction = async (url) => {
 	const html = await axiosClient.get(url).catch(() => {
 		logger(`Failed to fetch ${url}`);
-		return null;
+		return { data: null, success: false, error: "Failed to fetch url" };
 	});
-	if (!html) return null;
-	const root = parse(html.data);
+	let root;
+	try {
+		root = parse(html.data);
+	}
+	catch (e) {
+		return { success: false, error: "Failed to parse html", data: null };
+	}
 
 	// buy X get Y offer price
 	// then normal price
@@ -28,14 +33,18 @@ export const parsePNSPrice : ShopParseFunction = async (url) => {
 		productAttachment = new AttachmentBuilder(image.data, { name: "productImage.png" });
 	}
 
-	if (!price || !productName) return null;
+	if (!price || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
 
 	return {
-		price: parsePriceToFloat(price),
-		productName: productName,
-		productImage: "",
-		brand: brand ?? "",
-		shop: PriceAlertShopOption.PNS,
-		attachment: productAttachment,
+		data: {
+			price: parsePriceToFloat(price),
+			productName: productName,
+			productImage: "",
+			brand: brand ?? "",
+			shop: PriceAlertShopOption.PNS,
+			attachment: productAttachment,
+		},
+		error: null,
+		success: true,
 	};
 };

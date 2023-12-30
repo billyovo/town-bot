@@ -9,10 +9,15 @@ import { logger } from "../../../logger/logger";
 export const parseWatsonsPrice : ShopParseFunction = async (url) => {
 	const html = await axiosClient.get(url).catch(() => {
 		logger(`Failed to fetch ${url}`);
-		return null;
+		return { data: null, success: false, error: "Failed to fetch url" };
 	});
-	if (!html) return null;
-	const root = parse(html.data);
+	let root;
+	try {
+		root = parse(html.data);
+	}
+	catch (e) {
+		return { success: false, error: "Failed to parse html", data: null };
+	}
 
 	const productName = root.querySelector(".product-name")?.text;
 	const brand = root.querySelector(".product-brand")?.firstChild?.text;
@@ -26,22 +31,26 @@ export const parseWatsonsPrice : ShopParseFunction = async (url) => {
 		productAttachment = new AttachmentBuilder(image.data, { name: "productImage.png" });
 	}
 
-	if (!price || !productName) return null;
+	if (!price || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
 
 	return {
-		price: price,
-		productName: productName,
-		productImage: "",
-		brand: brand ?? "",
-		shop: PriceAlertShopOption.WATSONS,
-		attachment: productAttachment,
+		data: {
+			price: price,
+			productName: productName,
+			productImage: "",
+			brand: brand ?? "",
+			shop: PriceAlertShopOption.WATSONS,
+			attachment: productAttachment,
+		},
+		error: null,
+		success: true,
 	};
 };
 
-function getWatsonsPrice(root : HTMLElement) : number {
+function getWatsonsPrice(root : HTMLElement) : number | null {
 	let price = Infinity;
 	const discountsOption = root.querySelector(".option-group")?.querySelectorAll(".option");
-
+	if (!discountsOption) return null;
 	for (const option of discountsOption || []) {
 		const quantity = option.querySelector(".quantity > span")?.innerHTML ?? "";
 		const quantityNumber = parseInt(quantity.replace(/[^0-9]/g, ""));
@@ -60,5 +69,5 @@ function getWatsonsPrice(root : HTMLElement) : number {
 	const normalPriceNumber = parsePriceToFloat(normalPrice);
 
 	price = Math.min(price, normalPriceNumber);
-	return price;
+	return price === Infinity ? null : price;
 }

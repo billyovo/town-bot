@@ -8,7 +8,7 @@ import { parseSephoraPrice } from "./sephora";
 
 
 type ParseFunctionsMap = {
-    [key in PriceAlertShopOption]?: (url: string) => ShopParseFunctionReturn
+    [key in PriceAlertShopOption]?: (url: string) => Promise<ShopParseFunctionReturn>
 };
 
 export function getShopFromURL(url: string) : { shop: PriceAlertShopOption | null, domain: string } {
@@ -22,12 +22,18 @@ export function getShopFromURL(url: string) : { shop: PriceAlertShopOption | nul
 	};
 }
 
-export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionReturn | null> {
+export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionReturn> {
 	const shop = getShopFromURL(url);
 
 	const parseFunction = getParseWebsiteFunction(shop.shop as PriceAlertShopOption);
 
-	if (!parseFunction) return null;
+	if (!parseFunction) {
+		return {
+			data: null,
+			error: "Shop not supported",
+			success: false,
+		};
+	}
 
 	return await parseFunction(url);
 }

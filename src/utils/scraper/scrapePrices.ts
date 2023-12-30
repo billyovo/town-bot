@@ -12,9 +12,8 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 	logger(`Delaying for ${delay}ms`);
 	await waitFor(delay);
 	const updatedProduct = await parseShopWebsite(product.url);
-	logger(`Checked Product: ${updatedProduct?.productName}`);
 
-	if (!updatedProduct) {
+	if (!updatedProduct.success) {
 		return {
 			data: {
 				brand: product.brand,
@@ -27,9 +26,11 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 				failCount: product.failCount ? (product.failCount + 1) : 1,
 			},
 			result: PriceAlertResult.FAIL,
+			error: updatedProduct.error,
 		};
 	}
-	if (updatedProduct.price !== product.price) {
+	logger(`Checked Product: ${updatedProduct.data.productName}`);
+	if (updatedProduct.data.price !== product.price) {
 		return {
 			data: {
 				brand: product.brand,
@@ -38,7 +39,7 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 				shop: product.shop,
 				url: product.url,
 				lastChecked: new Date(),
-				price: updatedProduct.price,
+				price: updatedProduct.data.price,
 				previous: {
 					price: product.price,
 					date: product.lastChecked,
@@ -57,7 +58,7 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 				shop: product.shop,
 				url: product.url,
 				lastChecked: new Date(),
-				price: updatedProduct.price,
+				price: updatedProduct.data.price,
 				failCount: 0,
 			},
 			result: PriceAlertResult.SUCCESS,

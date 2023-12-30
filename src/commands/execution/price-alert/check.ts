@@ -23,7 +23,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			await interaction.channel?.send({ embeds: [getPriceChangeEmbed(scrapeResult.data)] });
 			break;
 		case PriceAlertResult.FAIL:
-			await interaction.channel?.send(`Failed to check [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} ${scrapeResult.data.failCount} times.`);
+			await interaction.channel?.send(`Failed to check [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} ${scrapeResult.data.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
 			break;
 		}
 		await updateDatabaseFromScrapeResult(scrapeResult);

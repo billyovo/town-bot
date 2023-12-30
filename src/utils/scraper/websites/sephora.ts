@@ -24,7 +24,7 @@ export const parseSephoraPrice : ShopParseFunction = async (url) => {
 		productData = response.data;
 	}
 	catch (e) {
-		return null;
+		return { success: false, error: "Failed to fetch", data: null };
 	}
 
 	const productName = `${productData.data.attributes.name} ${productData.data.attributes.heading ?? ""}`.trim();
@@ -32,13 +32,17 @@ export const parseSephoraPrice : ShopParseFunction = async (url) => {
 	const productImage = productData.data.attributes["image-urls"] ? productData.data.attributes["image-urls"][0] : null;
 	const brand = productData.data.attributes["brand-name"];
 
-	if (!productPrice || !productName) return null;
+	if (!productPrice || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
 
 	return {
-		productName: productName,
-		price: parsePriceToFloat(productPrice),
-		productImage: productImage,
-		brand: brand,
-		shop: PriceAlertShopOption.SEPHORA,
+		data: {
+			productName: productName,
+			price: parsePriceToFloat(productPrice),
+			productImage: productImage,
+			brand: brand,
+			shop: PriceAlertShopOption.SEPHORA,
+		},
+		error: null,
+		success: true,
 	};
 };
