@@ -4,6 +4,7 @@ import { axiosClient } from "../client";
 import { parsePriceToFloat } from "./parse";
 
 export const parseSephoraPrice : ShopParseFunction = async (url) => {
+	if (url.indexOf("sephora.hk") === -1) return { success: false, error: "Only sephora.hk supported!", data: null };
 	const regex = /\/products\/(.*)/g;
 	const regexResult = regex.exec(url);
 	const slug : string = regexResult ? regexResult[1] : "";
