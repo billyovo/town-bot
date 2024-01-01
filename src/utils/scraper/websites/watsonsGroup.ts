@@ -113,7 +113,6 @@ async function fetchPromotionPrice(url : string) {
 	if (!promotionPriceRes) {
 		return null;
 	}
-	console.log(url);
 	const promotionPrice = promotionPriceRes.data.elabMultiBuyPromotionList.reduce((minPrice : number, item : PromotionPriceResponse) => {
 		return (Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice);
 	}, Infinity);
