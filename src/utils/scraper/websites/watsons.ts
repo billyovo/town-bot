@@ -1,73 +1,114 @@
-import { HTMLElement, parse } from "node-html-parser";
 import { axiosClient } from "../client";
 import { ShopParseFunction } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
-import { parsePriceToFloat } from "./parse";
 import { AttachmentBuilder } from "discord.js";
-import { logger } from "../../../logger/logger";
 
 export const parseWatsonsPrice : ShopParseFunction = async (url) => {
-	const html = await axiosClient.get(url).catch(() => {
-		logger(`Failed to fetch ${url}`);
-		return { data: null, success: false, error: "Failed to fetch url" };
-	});
-	let root;
-	try {
-		root = parse(html.data);
-	}
-	catch (e) {
-		return { success: false, error: "Failed to parse html", data: null };
+	const regex = /BP_.*/g;
+	const productID = regex.exec(url)?.[0]?.replace("BP_", "");
+
+	if (!productID) {
+		return {
+			data: null,
+			error: "Invalid URL",
+			success: false,
+		};
 	}
 
-	const productName = root.querySelector(".product-name")?.text;
-	const brand = root.querySelector(".product-brand")?.firstChild?.text;
-	const price = getWatsonsPrice(root);
-	const productImage = root.querySelector(".largePhoto")?.querySelector("img")?.getAttribute("src");
+	const API_URL = "https://api.watsons.com.hk";
+	const productDetails = await fetchProductDetail(`${API_URL}/api/v2/wtchk/products/search?fields=FULL&query=BP_${productID}&ignoreSort=true&lang=zh_HK&curr=HKD`);
+	const promotionPrice = await fetchPromotionPrice(`${API_URL}/api/v2/wtchk/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
+
+	const productCDNImage = `${API_URL}${productDetails.data?.productImage}`;
+
 	let productAttachment : AttachmentBuilder | null = null;
-
-	// fetch image from src
-	if (productImage) {
-		const image = await axiosClient.get(productImage, { responseType: "arraybuffer" });
+	if (productCDNImage) {
+		const image = await axiosClient.get(productCDNImage, { responseType: "arraybuffer" });
 		productAttachment = new AttachmentBuilder(image.data, { name: "productImage.png" });
 	}
 
-	if (!price || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
-
-	return {
-		data: {
-			price: price,
-			productName: productName,
-			productImage: "",
-			brand: brand ?? "",
-			shop: PriceAlertShopOption.WATSONS,
-			attachment: productAttachment,
-		},
-		error: null,
-		success: true,
-	};
-};
-
-function getWatsonsPrice(root : HTMLElement) : number | null {
-	let price = Infinity;
-	const discountsOption = root.querySelector(".option-group")?.querySelectorAll(".option");
-	if (!discountsOption) return null;
-	for (const option of discountsOption || []) {
-		const quantity = option.querySelector(".quantity > span")?.innerHTML ?? "";
-		const quantityNumber = parseInt(quantity.replace(/[^0-9]/g, ""));
-
-		if (!quantityNumber) continue;
-
-		const priceText = option.querySelector(".price > span")?.nextSibling?.innerText ?? "";
-		const priceNumber = parsePriceToFloat(priceText);
-		if (!priceNumber) continue;
-
-		const pricePerUnit = priceNumber / quantityNumber;
-		price = Math.min(price, pricePerUnit);
+	if (!productDetails.data || !productDetails.success) {
+		return {
+			data: null,
+			error: productDetails.error,
+			success: false,
+		};
 	}
 
-	const normalPrice = root.querySelector(".display-price-group")?.querySelector("span.price")?.innerHTML ?? "";
-	const normalPriceNumber = parsePriceToFloat(normalPrice);
+	return {
+		data:{
+			brand: productDetails.data.brand,
+			productName: productDetails.data.productName,
+			productImage: "",
+			price: Math.min(promotionPrice, productDetails.data.discountedPriceWithoutPromotion),
+			attachment: productAttachment,
+			shop: PriceAlertShopOption.WATSONS,
+		},
+		success: true,
+	};
 
-	price = Math.min(price, normalPriceNumber);
-	return price === Infinity ? null : price;
+};
+
+async function fetchProductDetail(url : string) {
+	const productDetailsRes = await axiosClient.get(url, {
+		headers: {
+			Accept: "application/json",
+		},
+	})
+		.catch(() => {
+			return {
+				success: false,
+				data: null,
+				error: "Cannot fetch product details",
+			};
+		});
+	const productDetail = productDetailsRes.data?.products?.[0];
+	if (!productDetail) {
+		return {
+			data: null,
+			error: "Product not found",
+			success: false,
+		};
+	}
+
+	const brand = productDetail.masterBrand.name;
+	const productName = productDetail.elabProductName;
+	const productImage = productDetail.images[0].url;
+	const discountedPriceWithoutPromotion = productDetail.elabMarkDownPrice?.value || productDetail.price?.value;
+
+	return {
+		data:{
+			brand,
+			productName,
+			productImage,
+			discountedPriceWithoutPromotion,
+		},
+		success: true,
+	};
+}
+
+
+type PromotionPriceResponse = {
+	avgDiscountedPrice: {
+		value: number
+	}
+}
+async function fetchPromotionPrice(url : string) {
+	const promotionPriceRes = await axiosClient.get(url, {
+		headers: {
+			Accept: "application/json",
+		},
+	})
+		.catch(() => {
+			return null;
+		});
+
+	if (!promotionPriceRes) {
+		return null;
+	}
+	const promotionPrice = promotionPriceRes.data.elabMultiBuyPromotionList.reduce((minPrice : number, item : PromotionPriceResponse) => {
+		return (Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice);
+	}, Infinity);
+
+	return promotionPrice;
 }
