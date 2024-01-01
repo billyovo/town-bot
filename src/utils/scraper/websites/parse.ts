@@ -2,8 +2,7 @@ import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./hktvmall";
 import { parseAeonPrice } from "./aeon";
 import type { ShopParseFunctionReturn } from "../../../@types/priceAlert";
-import { parseWatsonsPrice } from "./watsons";
-import { parsePNSPrice } from "./pns";
+import { parseWatsonsGroupPrice } from "./watsonsGroup";
 import { parseSephoraPrice } from "./sephora";
 
 
@@ -42,8 +41,8 @@ export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
 	const parseFunctions: ParseFunctionsMap = {
 		[PriceAlertShopOption.HKTVMALL]: parseHktvmallPrice,
 		[PriceAlertShopOption.AEONCITY]: parseAeonPrice,
-		[PriceAlertShopOption.WATSONS]: parseWatsonsPrice,
-		[PriceAlertShopOption.PNS]: parsePNSPrice,
+		[PriceAlertShopOption.WATSONS]: parseWatsonsGroupPrice,
+		[PriceAlertShopOption.PNS]: parseWatsonsGroupPrice,
 		[PriceAlertShopOption.SEPHORA]: parseSephoraPrice,
 	};
 
