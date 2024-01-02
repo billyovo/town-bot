@@ -128,6 +128,7 @@ async function fetchPromotionPrice(url : string) : Promise<number> {
 		logger(`Cannot Get ${url}: ${error}`);
 		return Infinity;
 	}
+	if (!promotionPriceRes.data.elabMultiBuyPromotionList?.length) return Infinity;
 
 	const promotionPrice : number = promotionPriceRes.data.elabMultiBuyPromotionList.reduce((minPrice : number, item : PromotionPriceResponse) => {
 		return (Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice);
