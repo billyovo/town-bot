@@ -1,7 +1,7 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./hktvmall";
 import { parseAeonPrice } from "./aeon";
-import type { ShopParseFunctionReturn } from "../../../@types/priceAlert";
+import type { ShopDetails, ShopParseFunctionReturn } from "../../../@types/priceAlert";
 import { parseWatsonsGroupPrice } from "./watsonsGroup";
 import { parseSephoraPrice } from "./sephora";
 
@@ -10,7 +10,7 @@ type ParseFunctionsMap = {
     [key in PriceAlertShopOption]?: (url: string) => Promise<ShopParseFunctionReturn>
 };
 
-export function getShopFromURL(url: string) : { shop: PriceAlertShopOption | null, domain: string } {
+export function getShopFromURL(url: string) : ShopDetails {
 	const urlObj = new URL(url);
 	const domain: string = urlObj.hostname.split(".")[1].toUpperCase();
 	const shop = PriceAlertShopOption[domain as keyof typeof PriceAlertShopOption];

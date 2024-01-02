@@ -13,19 +13,21 @@ export type PriceOutput = {
     attachment?: AttachmentBuilder | null
 }
 
-type Success = {
-    data: PriceOutput,
-    error: null,
+export type ShopDetails = { shop: PriceAlertShopOption | null, domain: string };
+
+export type Success<T> = {
+    data: T,
+    error?: null,
     success: true
 }
 
-type Failure = {
+export type Failure = {
     data: null,
     error: string,
     success: false
 }
 
-export type ShopParseFunctionReturn = Success | Failure;
+export type ShopParseFunctionReturn = Success<PriceOutput> | Failure;
 
 export type PriceAlertItem = {
     _id?: ObjectId | undefined,
