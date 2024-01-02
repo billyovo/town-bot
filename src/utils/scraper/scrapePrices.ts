@@ -16,13 +16,8 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 	if (!updatedProduct.success) {
 		return {
 			data: {
-				brand: product.brand,
-				productName: product.productName,
-				productImage: product.productImage,
-				shop: product.shop,
-				url: product.url,
+				...product,
 				lastChecked: new Date(),
-				price: product.price,
 				failCount: product.failCount ? (product.failCount + 1) : 1,
 			},
 			result: PriceAlertResult.FAIL,
@@ -30,14 +25,11 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 		};
 	}
 	logger(`Checked Product: ${updatedProduct.data.productName}`);
+
 	if (updatedProduct.data.price !== product.price) {
 		return {
 			data: {
-				brand: product.brand,
-				productName: product.productName,
-				productImage: product.productImage,
-				shop: product.shop,
-				url: product.url,
+				...product,
 				lastChecked: new Date(),
 				price: updatedProduct.data.price,
 				previous: {
@@ -52,18 +44,11 @@ export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAle
 	else {
 		return {
 			data:{
-				brand: product.brand,
-				productName: product.productName,
-				productImage: product.productImage,
-				shop: product.shop,
-				url: product.url,
+				...product,
 				lastChecked: new Date(),
-				price: updatedProduct.data.price,
 				failCount: 0,
 			},
 			result: PriceAlertResult.SUCCESS,
 		};
 	}
-
-
 }
