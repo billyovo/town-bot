@@ -3,6 +3,7 @@ import { ShopParseFunction } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { AttachmentBuilder } from "discord.js";
 import { getShopFromURL } from "./parse";
+import { logger } from "../../../logger/logger";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 	const shop = getShopFromURL(url);
@@ -60,18 +61,23 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 };
 
 async function fetchProductDetail(url : string) {
-	const productDetailsRes = await axiosClient.get(url, {
-		headers: {
-			Accept: "application/json",
-		},
-	})
-		.catch(() => {
-			return {
-				success: false,
-				data: null,
-				error: "Cannot fetch product details",
-			};
+	let productDetailsRes;
+	try {
+		productDetailsRes = await axiosClient.get(url, {
+			headers: {
+				Accept: "application/json",
+			},
 		});
+	}
+	catch (error) {
+		logger(`Cannot Get ${url}: ${error}`);
+		return {
+			data: null,
+			error: "Product not found",
+			success: false,
+		};
+	}
+
 	const productDetail = productDetailsRes.data?.products?.[0];
 	if (!productDetail) {
 		return {
@@ -104,15 +110,19 @@ type PromotionPriceResponse = {
 	}
 }
 async function fetchPromotionPrice(url : string) {
-	const promotionPriceRes = await axiosClient.get(url, {
-		headers: {
-			Accept: "application/json",
-		},
-	});
-
-	if (!promotionPriceRes) {
-		return null;
+	let promotionPriceRes;
+	try {
+		promotionPriceRes = await axiosClient.get(url, {
+			headers: {
+				Accept: "application/json",
+			},
+		});
 	}
+	catch (error) {
+		logger(`Cannot Get ${url}: ${error}`);
+		return Infinity;
+	}
+
 	const promotionPrice = promotionPriceRes.data.elabMultiBuyPromotionList.reduce((minPrice : number, item : PromotionPriceResponse) => {
 		return (Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice);
 	}, Infinity);
