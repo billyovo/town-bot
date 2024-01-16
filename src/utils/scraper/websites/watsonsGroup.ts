@@ -30,7 +30,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 		};
 	}
 
-	const productDetails : Success<ProductDetail> | Failure = await fetchProductDetail(`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&ignoreSort=true&lang=zh_HK&curr=HKD`);
+	const productDetails : Success<ProductDetail> | Failure = await fetchProductDetail(`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`);
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
 
 	const productCDNImage = `${baseURL}${productDetails.data?.productImage}`;
@@ -82,7 +82,6 @@ async function fetchProductDetail(url : string) : Promise<Success<ProductDetail>
 			success: false,
 		};
 	}
-
 	const productDetail = productDetailsRes.data?.products?.[0];
 	if (!productDetail) {
 		return {
