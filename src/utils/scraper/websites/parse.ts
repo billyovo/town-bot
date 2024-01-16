@@ -4,6 +4,7 @@ import { parseAeonPrice } from "./aeon";
 import type { ShopDetails, ShopParseFunctionReturn } from "../../../@types/priceAlert";
 import { parseWatsonsGroupPrice } from "./watsonsGroup";
 import { parseSephoraPrice } from "./sephora";
+import { parseManningsPrice } from "./mannings";
 
 
 type ParseFunctionsMap = {
@@ -44,6 +45,7 @@ export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
 		[PriceAlertShopOption.WATSONS]: parseWatsonsGroupPrice,
 		[PriceAlertShopOption.PNS]: parseWatsonsGroupPrice,
 		[PriceAlertShopOption.SEPHORA]: parseSephoraPrice,
+		[PriceAlertShopOption.MANNINGS]: parseManningsPrice,
 	};
 
 	return parseFunctions[shop as keyof typeof PriceAlertShopOption] ?? null;
