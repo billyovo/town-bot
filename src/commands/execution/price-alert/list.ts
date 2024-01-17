@@ -13,7 +13,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const productsCursor = collection.find({}).sort({ shop: 1 });
 	const productsArray = await productsCursor.toArray();
 
-	if (productsArray.length === 0) return interaction.reply({ content: "No products found" });
+	if (productsArray.length === 0) {
+		await interaction.reply({ content: "No products found" });
+		return;
+	}
 
 	if (mode === PriceAlertListMode.ALL) {
 		const formattedProducts = productsArray.map((product, index) => {
@@ -30,34 +33,33 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	if (mode === PriceAlertListMode.DETAILED) {
 		const pointer = 0;
 		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-		createProductDetailButtonCollector(interaction, productsArray as PriceAlertItem[]);
+
+		createProductDetailButtonCollector(interaction, productsArray as PriceAlertItem[], async (url : string) => {
+			const result = await collection.deleteOne({ url: url });
+			if (result.deletedCount === 0) {
+				await interaction.followUp({ content: "Product not found", ephemeral: true });
+			}
+			else {
+				await interaction.followUp({ content: "Product deleted", ephemeral: true });
+			}
+		});
+
 		await interaction.reply({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
 	}
 }
 
-async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, productsArray: PriceAlertItem[]) {
+async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, productsArray: PriceAlertItem[], deleteProduct: (url : string) => void) {
 	let pointer = 0;
 	const filter = (i: Interaction) => i.user.id === interaction.user.id;
 	const collector = interaction.channel?.createMessageComponentCollector({ filter, time: 300000 });
 
 	collector?.on("collect", async (i) => {
-		let updateMessage = "";
-
 		if (i.customId === "remove") {
-			const collection = db.collection("products");
-			const rul = productsArray[pointer].url;
-			const result = await collection.deleteOne({ url: rul });
-			if (result.deletedCount === 0) {
-				await i.update({ content: "Failed to delete product" });
-				return;
-			}
+			await deleteProduct(productsArray[pointer].url);
 			productsArray.splice(pointer, 1);
-			if (pointer === productsArray.length - 1) pointer-- || pointer++;
-			if (productsArray.length === 0) {
-				await i.update({ embeds: [], content: "No products found", components: [] });
-				return;
-			}
-			updateMessage = "Deleted product Sucessfully";
+			pointer--;
+			if (pointer < 0) pointer = 0;
+			if (productsArray.length === 0) return interaction.deleteReply();
 		}
 		if (i.customId === "previous") {
 			pointer--;
@@ -69,7 +71,7 @@ async function createProductDetailButtonCollector(interaction: ChatInputCommandI
 		}
 
 		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-		await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)], content: updateMessage });
+		await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
 	});
 
 	collector?.on("end", async () => {
