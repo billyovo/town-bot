@@ -22,7 +22,10 @@ COPY package.json package-lock.json* pnpm-lock.yaml /app/
 
 RUN pnpm install --frozen-lockfile
 ENV NODE_ENV=production
-COPY . .
+
+COPY src /app/src
+COPY tsconfig.json /app/
+
 RUN ["npm", "run", "build"]
 CMD ["npm", "run", "start"]
 ENTRYPOINT ["infisical", "run", "--env=prod", "--"]
