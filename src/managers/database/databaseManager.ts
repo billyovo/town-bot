@@ -17,8 +17,7 @@ export async function connectDatabase(connectionString: string) {
 				process.exit(1);
 			}
 		});
-
-	db = client.db("price");
+	db = client.db(process.env.DATABASE_NAME as string);
 }
 
 export async function disconnectDatabase() {

@@ -13,6 +13,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const productsCursor = collection.find({}).sort({ shop: 1 });
 	const productsArray = await productsCursor.toArray();
 
+	if (productsArray.length === 0) return interaction.reply({ content: "No products found" });
+
 	if (mode === PriceAlertListMode.ALL) {
 		const formattedProducts = productsArray.map((product, index) => {
 			return `${index + 1}. ${product.shop} | ${product.brand} [${product.productName}](<${product.url}>)\n`;
@@ -35,10 +37,28 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, productsArray: PriceAlertItem[]) {
 	let pointer = 0;
-
 	const filter = (i: Interaction) => i.user.id === interaction.user.id;
 	const collector = interaction.channel?.createMessageComponentCollector({ filter, time: 300000 });
+
 	collector?.on("collect", async (i) => {
+		let updateMessage = "";
+
+		if (i.customId === "remove") {
+			const collection = db.collection("products");
+			const rul = productsArray[pointer].url;
+			const result = await collection.deleteOne({ url: rul });
+			if (result.deletedCount === 0) {
+				await i.update({ content: "Failed to delete product" });
+				return;
+			}
+			productsArray.splice(pointer, 1);
+			if (pointer === productsArray.length - 1) pointer-- || pointer++;
+			if (productsArray.length === 0) {
+				await i.update({ embeds: [], content: "No products found", components: [] });
+				return;
+			}
+			updateMessage = "Deleted product Sucessfully";
+		}
 		if (i.customId === "previous") {
 			pointer--;
 			if (pointer < 0) pointer = productsArray.length - 1;
@@ -49,7 +69,7 @@ async function createProductDetailButtonCollector(interaction: ChatInputCommandI
 		}
 
 		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-		await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
+		await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)], content: updateMessage });
 	});
 
 	collector?.on("end", async () => {
@@ -70,7 +90,10 @@ function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<But
 		.setCustomId("next")
 		.setLabel("➡️")
 		.setStyle(ButtonStyle.Primary);
-
-	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next);
+	const remove = new ButtonBuilder()
+		.setCustomId("remove")
+		.setLabel("🗑️")
+		.setStyle(ButtonStyle.Danger);
+	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next, remove);
 	return row;
 }
