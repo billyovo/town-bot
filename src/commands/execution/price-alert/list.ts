@@ -88,14 +88,14 @@ function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<But
 		.setCustomId("currentPage")
 		.setLabel(`Item ${currentPage + 1}/${maxPage}`)
 		.setStyle(ButtonStyle.Secondary);
+		const remove = new ButtonBuilder()
+			.setCustomId("remove")
+			.setLabel("🗑️")
+			.setStyle(ButtonStyle.Danger);
 	const next = new ButtonBuilder()
 		.setCustomId("next")
 		.setLabel("➡️")
 		.setStyle(ButtonStyle.Primary);
-	const remove = new ButtonBuilder()
-		.setCustomId("remove")
-		.setLabel("🗑️")
-		.setStyle(ButtonStyle.Danger);
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next, remove);
 	return row;
 }
