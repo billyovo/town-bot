@@ -3,6 +3,7 @@ import { ShopParseFunction } from "../../../../@types/priceAlert";
 import { logger } from "../../../../logger/logger";
 import { axiosClient } from "../../client";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { parsePriceToFloat } from "../parse";
 
 
 export const parseManningsPrice : ShopParseFunction = async (url) => {
@@ -38,10 +39,10 @@ export const parseManningsPrice : ShopParseFunction = async (url) => {
 
 	return {
 		data: {
-			price: parseFloat(price),
+			price: parsePriceToFloat(price),
 			productName: productName,
 			productImage: productImage ?? "",
-			brand: brand,
+			brand: brand ?? "",
 			shop: PriceAlertShopOption.MANNINGS,
 		},
 		error: null,

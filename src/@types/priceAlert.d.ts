@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 export type PriceOutput = {
     price: number,
     productName: string,
-    productImage: string,
+    productImage: string | null,
     brand: string,
     shop: PriceAlertShopOption,
 

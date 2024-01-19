@@ -13,7 +13,13 @@ export const parseSephoraPrice : ShopParseFunction = async (url) => {
 	const nameSlug = slugArray[0];
 	const typeSlug = slugArray[2];
 
-	if (!slug) return null;
+	if (!slug) {
+		return {
+			success: false,
+			error: "Invalid URL",
+			data: null,
+		};
+	}
 	const api = `https://www.sephora.hk/api/v2.1/products/${nameSlug}?v=${typeSlug}`;
 	let productData;
 	try {
