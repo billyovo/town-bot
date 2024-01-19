@@ -1,9 +1,8 @@
 import { Failure, ShopDetails, ShopParseFunction, Success } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
-import { AttachmentBuilder } from "discord.js";
 import { getShopFromURL } from "../parse";
 import { logger } from "../../../logger/logger";
-import { createAttachmentFromImageURL } from "@utils/discord/createAttachmentFromImageURL";
+import { createImgurURLFromImageURL } from "@utils/discord/createImgurURLFromImageURL";
 import axios from "axios";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
@@ -34,7 +33,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
 
 	const productCDNImage = `${baseURL}${productDetails.data?.productImage}`;
-	const productAttachment : AttachmentBuilder | null = await createAttachmentFromImageURL(productCDNImage);
+	const productImageURL : string | null = await createImgurURLFromImageURL(productCDNImage);
 
 	if (!productDetails.success) {
 		return {
@@ -48,9 +47,8 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 		data:{
 			brand: productDetails.data.brand,
 			productName: productDetails.data.productName,
-			productImage: "",
+			productImage: productImageURL,
 			price: Math.min(promotionPrice, productDetails.data.discountedPriceWithoutPromotion),
-			attachment: productAttachment,
 			shop: shopOption,
 		},
 		success: true,
@@ -71,8 +69,8 @@ async function fetchProductDetail(url : string) : Promise<Success<ProductDetail>
 		productDetailsRes = await axios.get(url, {
 			headers: {
 				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-			}
-		})
+			},
+		});
 	}
 	catch (error) {
 		logger(`Cannot Get ${url}: ${error}`);
@@ -120,8 +118,8 @@ async function fetchPromotionPrice(url : string) : Promise<number> {
 		promotionPriceRes = await axios.get(url, {
 			headers: {
 				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-			}
-		})
+			},
+		});
 	}
 	catch (error) {
 		logger(`Cannot Get ${url}: ${error}`);
