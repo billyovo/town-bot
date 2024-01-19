@@ -1,8 +1,11 @@
+# town-bot
+
+**if there is no Tesseract traineddata remove the line 17 in Dockerfile**
+
 Build Docker:
 ```
     docker build -t IMAGE_NAME .
 ```
-if there is no Tesseract traineddata remove the line 17 in Dockerfile
 
 Run Docker
 ```
