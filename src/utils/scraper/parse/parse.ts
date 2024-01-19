@@ -1,14 +1,14 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./websites/hktvmall";
 import { parseAeonPrice } from "./websites/aeon";
-import type { ShopDetails, ShopParseFunctionReturn, ShopParseOptions } from "../../../@types/priceAlert";
+import type { ShopDetails, ShopParseFunction, ShopParseFunctionReturn, ShopParseOptions } from "../../../@types/priceAlert";
 import { parseWatsonsGroupPrice } from "./websites/watsonsGroup";
 import { parseSephoraPrice } from "./websites/sephora";
 import { parseManningsPrice } from "./websites/mannings";
 
 
 type ParseFunctionsMap = {
-    [key in PriceAlertShopOption]?: (url: string, options?: ShopParseOptions) => Promise<ShopParseFunctionReturn>
+    [key in PriceAlertShopOption]?: ShopParseFunction
 };
 
 export function getShopFromURL(url: string) : ShopDetails {

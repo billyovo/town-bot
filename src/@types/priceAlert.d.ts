@@ -49,4 +49,4 @@ export type PriceAlertChecked = {
 export type ShopParseOptions = {
     skipImageFetch: boolean
 }
-export type ShopParseFunction = (url: string, options? : ShopParseOptions) => Promise<ShopParseFunctionResponse>;
+export type ShopParseFunction = (url: string, options? : ShopParseOptions) => Promise<ShopParseFunctionReturn>;
