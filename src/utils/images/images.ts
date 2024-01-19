@@ -21,7 +21,6 @@ export async function getImageBase64FromLink(url : string) : Promise<string | nu
 }
 
 export async function createImgurURLFromBase64(data : Base64String): Promise<string | null> {
-	if (!data) return null;
 	try {
 		const imgurResponse = await axios.post("https://api.imgur.com/3/image", data, {
 			headers: {
