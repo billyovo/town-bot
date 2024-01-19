@@ -1,4 +1,4 @@
-import { parseShopWebsite } from "./parse";
+import { parseShopWebsite } from "./parse/parse";
 import type { PriceAlertChecked, PriceAlertItem } from "../../@types/priceAlert";
 import { PriceAlertResult } from "../../enums/priceAlertShopOption";
 import { logger } from "../../logger/logger";

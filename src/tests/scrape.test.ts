@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
 import { PriceOutput } from "../@types/priceAlert";
-import { parseHktvmallPrice } from "@utils/scraper/websites/hktvmall";
+import { parseHktvmallPrice } from "@utils/scraper/parse/websites/hktvmall";
 
 describe("scrape", () => {
 	test("should scrape", async () => {

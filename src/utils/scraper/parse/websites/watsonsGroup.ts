@@ -1,8 +1,8 @@
-import { Failure, ShopDetails, ShopParseFunction, Success } from "../../../@types/priceAlert";
+import { Failure, ShopDetails, ShopParseFunction, Success } from "../../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { getShopFromURL } from "../parse";
-import { logger } from "../../../logger/logger";
-import { createImgurURLFromImageURL } from "@utils/discord/createImgurURLFromImageURL";
+import { logger } from "../../../../logger/logger";
+import { getImageBase64FromLink, createImgurURLFromBase64 } from "@utils/images/images";
 import axios from "axios";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
@@ -33,7 +33,12 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
 
 	const productCDNImage = `${baseURL}${productDetails.data?.productImage}`;
-	const productImageURL : string | null = await createImgurURLFromImageURL(productCDNImage);
+	const productImageBase64 : string | null = await getImageBase64FromLink(productCDNImage);
+
+	let imgurURL : string | null = null;
+	if (productImageBase64) {
+		imgurURL = await createImgurURLFromBase64(productImageBase64);
+	}
 
 	if (!productDetails.success) {
 		return {
@@ -47,7 +52,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 		data:{
 			brand: productDetails.data.brand,
 			productName: productDetails.data.productName,
-			productImage: productImageURL,
+			productImage: imgurURL,
 			price: Math.min(promotionPrice, productDetails.data.discountedPriceWithoutPromotion),
 			shop: shopOption,
 		},

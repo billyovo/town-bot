@@ -1,9 +1,9 @@
-import { ShopParseFunction } from "../../../@types/priceAlert";
-import { axiosClient } from "../client";
+import { ShopParseFunction } from "../../../../@types/priceAlert";
+import { axiosClient } from "../../client";
 import { parse } from "node-html-parser";
 import { parsePriceToFloat } from "../parse";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
-import { logger } from "../../../logger/logger";
+import { logger } from "../../../../logger/logger";
 
 export const parseAeonPrice : ShopParseFunction = async (url) => {
 	const html = await axiosClient.get(url).catch(() => {
