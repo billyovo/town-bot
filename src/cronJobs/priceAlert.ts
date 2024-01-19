@@ -17,7 +17,7 @@ scheduleJob("7 10 * * *", async () => {
 	const channel = await client.channels.fetch((process.env.WEATHER_CHANNEL) as string, { force: true, cache: false }) as TextChannel;
 
 	for await (const product of products) {
-		const scrapeResult = await getPriceChange(product as PriceAlertItem);
+		const scrapeResult = await getPriceChange(product as PriceAlertItem, { skipImageFetch: true });
 
 		switch (scrapeResult.result) {
 		case PriceAlertResult.PRICE_CHANGE:

@@ -1,5 +1,5 @@
 import { parseShopWebsite } from "./parse/parse";
-import type { PriceAlertChecked, PriceAlertItem } from "../../@types/priceAlert";
+import type { PriceAlertChecked, PriceAlertItem, ShopParseOptions } from "../../@types/priceAlert";
 import { PriceAlertResult } from "../../enums/priceAlertShopOption";
 import { logger } from "../../logger/logger";
 import { scrapeDelayTime } from "@configs/scraper";
@@ -8,11 +8,11 @@ async function waitFor(ms: number) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function getPriceChange(product: PriceAlertItem) : Promise<PriceAlertChecked> {
+export async function getPriceChange(product: PriceAlertItem, options?: ShopParseOptions) : Promise<PriceAlertChecked> {
 	const delay = Math.random() * scrapeDelayTime;
 	logger(`Delaying for ${delay}ms`);
 	await waitFor(delay);
-	const updatedProduct = await parseShopWebsite(product.url);
+	const updatedProduct = await parseShopWebsite(product.url, options);
 
 	if (!updatedProduct.success) {
 		return {

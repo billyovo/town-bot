@@ -1,14 +1,14 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./websites/hktvmall";
 import { parseAeonPrice } from "./websites/aeon";
-import type { ShopDetails, ShopParseFunctionReturn } from "../../../@types/priceAlert";
+import type { ShopDetails, ShopParseFunctionReturn, ShopParseOptions } from "../../../@types/priceAlert";
 import { parseWatsonsGroupPrice } from "./websites/watsonsGroup";
 import { parseSephoraPrice } from "./websites/sephora";
 import { parseManningsPrice } from "./websites/mannings";
 
 
 type ParseFunctionsMap = {
-    [key in PriceAlertShopOption]?: (url: string) => Promise<ShopParseFunctionReturn>
+    [key in PriceAlertShopOption]?: (url: string, options?: ShopParseOptions) => Promise<ShopParseFunctionReturn>
 };
 
 export function getShopFromURL(url: string) : ShopDetails {
@@ -22,7 +22,7 @@ export function getShopFromURL(url: string) : ShopDetails {
 	};
 }
 
-export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionReturn> {
+export async function parseShopWebsite(url: string, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
 	const shop = getShopFromURL(url);
 
 	const parseFunction = getParseWebsiteFunction(shop.shop as PriceAlertShopOption);
@@ -35,7 +35,7 @@ export async function parseShopWebsite(url: string) : Promise<ShopParseFunctionR
 		};
 	}
 
-	return await parseFunction(url);
+	return await parseFunction(url, options);
 }
 
 export function getParseWebsiteFunction(shop: PriceAlertShopOption) {

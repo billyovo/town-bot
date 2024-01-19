@@ -15,7 +15,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	let count = 0;
 	for await (const product of products) {
 		count++;
-		const scrapeResult = await getPriceChange(product as PriceAlertItem);
+		const scrapeResult = await getPriceChange(product as PriceAlertItem, { skipImageFetch: true });
 
 		switch (scrapeResult.result) {
 		case PriceAlertResult.PRICE_CHANGE:

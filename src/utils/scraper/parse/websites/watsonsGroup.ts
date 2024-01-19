@@ -5,7 +5,7 @@ import { logger } from "../../../../logger/logger";
 import { getImageBase64FromLink, createImgurURLFromBase64 } from "@utils/images/images";
 import axios from "axios";
 
-export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
+export const parseWatsonsGroupPrice : ShopParseFunction = async (url, options) => {
 	const shop : ShopDetails = getShopFromURL(url);
 	const shopDetail : WatsonsGroupShopDetails | null = getBaseURLAndCode(shop.shop as PriceAlertShopOption);
 	if (!shopDetail) {
@@ -33,7 +33,11 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
 
 	const productCDNImage = `${baseURL}${productDetails.data?.productImage}`;
-	const productImageBase64 : string | null = await getImageBase64FromLink(productCDNImage);
+
+	let productImageBase64 : string | null = null;
+	if (!options?.skipImageFetch) {
+		productImageBase64 = await getImageBase64FromLink(productCDNImage);
+	}
 
 	let imgurURL : string | null = null;
 	if (productImageBase64) {
