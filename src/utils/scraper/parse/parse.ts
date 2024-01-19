@@ -1,7 +1,7 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./websites/hktvmall";
 import { parseAeonPrice } from "./websites/aeon";
-import type { ShopDetails, ShopParseFunctionReturn } from "../../@types/priceAlert";
+import type { ShopDetails, ShopParseFunctionReturn } from "../../../@types/priceAlert";
 import { parseWatsonsGroupPrice } from "./websites/watsonsGroup";
 import { parseSephoraPrice } from "./websites/sephora";
 import { parseManningsPrice } from "./websites/mannings";
