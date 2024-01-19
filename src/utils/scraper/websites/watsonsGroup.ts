@@ -1,7 +1,7 @@
 import { Failure, ShopDetails, ShopParseFunction, Success } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { AttachmentBuilder } from "discord.js";
-import { getShopFromURL } from "./parse";
+import { getShopFromURL } from "../parse";
 import { logger } from "../../../logger/logger";
 import { createAttachmentFromImageURL } from "@utils/discord/createAttachmentFromImageURL";
 import axios from "axios";

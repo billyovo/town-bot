@@ -2,7 +2,7 @@ import { getAddedToAlertEmbed } from "@assets/embeds/priceEmbeds";
 import { PriceAlertItem } from "../../../@types/priceAlert";
 import { addProductToAlert } from "@utils/scraper/db/db";
 import { sanitizeURL } from "@utils/scraper/url/sanitizeURL";
-import { getShopFromURL, parseShopWebsite } from "@utils/scraper/websites/parse";
+import { getShopFromURL, parseShopWebsite } from "@utils/scraper/parse";
 import { AttachmentBuilder, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 
 type Reply = {

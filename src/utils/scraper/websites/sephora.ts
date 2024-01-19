@@ -1,7 +1,7 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { ShopParseFunction } from "../../../@types/priceAlert";
 import { axiosClient } from "../client";
-import { parsePriceToFloat } from "./parse";
+import { parsePriceToFloat } from "../parse";
 
 export const parseSephoraPrice : ShopParseFunction = async (url) => {
 	if (url.indexOf("sephora.hk") === -1) return { success: false, error: "Only sephora.hk supported!", data: null };

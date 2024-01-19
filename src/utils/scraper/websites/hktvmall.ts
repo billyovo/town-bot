@@ -2,7 +2,7 @@ import { parse } from "node-html-parser";
 import { axiosClient } from "../client";
 import { ShopParseFunction } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
-import { parsePriceToFloat } from "./parse";
+import { parsePriceToFloat } from "../parse";
 import { logger } from "../../../logger/logger";
 
 export const parseHktvmallPrice : ShopParseFunction = async (url : string) => {
