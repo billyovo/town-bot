@@ -6,3 +6,4 @@ dist
 .infisical.json
 Tesseract_Data/
 docker.ps1
+*.bat
