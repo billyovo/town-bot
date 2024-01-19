@@ -44,7 +44,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			}
 		});
 
-		await interaction.reply({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
+		await interaction.reply({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 	}
 }
 
@@ -71,7 +71,7 @@ async function createProductDetailButtonCollector(interaction: ChatInputCommandI
 		}
 
 		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-		await i.update({ embeds: [embed], components: [getButtons(pointer, productsArray.length)] });
+		await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 	});
 
 	collector?.on("end", async () => {
@@ -79,7 +79,7 @@ async function createProductDetailButtonCollector(interaction: ChatInputCommandI
 	});
 }
 
-function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<ButtonBuilder> {
+function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<ButtonBuilder>[] {
 	const previous = new ButtonBuilder()
 		.setCustomId("previous")
 		.setLabel("⬅️")
@@ -88,14 +88,16 @@ function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<But
 		.setCustomId("currentPage")
 		.setLabel(`Item ${currentPage + 1}/${maxPage}`)
 		.setStyle(ButtonStyle.Secondary);
-		const remove = new ButtonBuilder()
-			.setCustomId("remove")
-			.setLabel("🗑️")
-			.setStyle(ButtonStyle.Danger);
 	const next = new ButtonBuilder()
 		.setCustomId("next")
 		.setLabel("➡️")
 		.setStyle(ButtonStyle.Primary);
-	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next, remove);
-	return row;
+
+	const remove = new ButtonBuilder()
+		.setCustomId("remove")
+		.setLabel("🗑️")
+		.setStyle(ButtonStyle.Danger);
+	const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next);
+	const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(remove);
+	return [row1, row2];
 }
