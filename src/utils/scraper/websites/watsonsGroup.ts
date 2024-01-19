@@ -1,10 +1,10 @@
-import { axiosClient } from "../client";
 import { Failure, ShopDetails, ShopParseFunction, Success } from "../../../@types/priceAlert";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { AttachmentBuilder } from "discord.js";
 import { getShopFromURL } from "./parse";
 import { logger } from "../../../logger/logger";
 import { createAttachmentFromImageURL } from "@utils/discord/createAttachmentFromImageURL";
+import axios from "axios";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url) => {
 	const shop : ShopDetails = getShopFromURL(url);
@@ -68,11 +68,11 @@ type ProductDetail = {
 async function fetchProductDetail(url : string) : Promise<Success<ProductDetail> | Failure> {
 	let productDetailsRes;
 	try {
-		productDetailsRes = await axiosClient.get(url, {
+		productDetailsRes = await axios.get(url, {
 			headers: {
-				Accept: "application/json",
-			},
-		});
+				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+			}
+		})
 	}
 	catch (error) {
 		logger(`Cannot Get ${url}: ${error}`);
@@ -117,11 +117,11 @@ type PromotionPriceResponse = {
 async function fetchPromotionPrice(url : string) : Promise<number> {
 	let promotionPriceRes;
 	try {
-		promotionPriceRes = await axiosClient.get(url, {
+		promotionPriceRes = await axios.get(url, {
 			headers: {
-				Accept: "application/json",
-			},
-		});
+				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+			}
+		})
 	}
 	catch (error) {
 		logger(`Cannot Get ${url}: ${error}`);
