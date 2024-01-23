@@ -14,14 +14,14 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && npm i -g pnpm
 
-COPY "Tesseract_Data" /usr/share/tesseract-ocr/5/tessdata
+
+COPY Tesseract_* /usr/share/tesseract-ocr/5/tessdata
 
 WORKDIR /app
 
 COPY package.json package-lock.json* pnpm-lock.yaml /app/
 
 RUN pnpm install --frozen-lockfile
-ENV NODE_ENV=production
 
 COPY src /app/src
 COPY tsconfig.json /app/
