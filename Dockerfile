@@ -6,7 +6,6 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y infisical \
     && apt-get install -y --no-install-recommends tzdata \
-    && TZ=Asia/Taipei \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone \
     && dpkg-reconfigure -f noninteractive tzdata \
