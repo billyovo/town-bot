@@ -4,16 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - town-data:/app
-    ports:
-      - "3000:3000"
     restart: always
     env_file:
       - .env
     environment:
       - NODE_ENV=production
       - INFISICAL_TOKEN=${INFISICAL_TOKEN}
-
-volumes:
-  town-data:
