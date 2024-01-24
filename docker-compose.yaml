@@ -9,6 +9,6 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=production
       - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+      - NODE_ENV=production
       - TZ=Asia/Taipei

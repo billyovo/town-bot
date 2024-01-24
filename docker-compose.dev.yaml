@@ -12,5 +12,6 @@ services:
     environment:
       - INFISICAL_TOKEN=${INFISICAL_TOKEN_DEV}
       - NODE_ENV=development
+      - TZ=Asia/Taipei
 volumes:
   town-dev:
