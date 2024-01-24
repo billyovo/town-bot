@@ -1,13 +1,11 @@
 import axios from "axios";
 import { logger } from "../../logger/logger";
 import { Base64String } from "discord.js";
+import { HTMLClient } from "@utils/scraper/client";
 
 export async function getImageBase64FromLink(url : string) : Promise<string | null> {
 	try {
-		const image = await axios.get(url, {
-			headers: {
-				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-			},
+		const image = await HTMLClient.get(url, {
 			responseType: "arraybuffer",
 		});
 		return image.data.toString("base64");
