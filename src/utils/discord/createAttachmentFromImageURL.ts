@@ -1,4 +1,4 @@
-import { axiosClient } from "@utils/scraper/client";
+import { HTMLClient } from "@utils/scraper/client";
 import { AttachmentBuilder } from "discord.js";
 import { logger } from "../../logger/logger";
 
@@ -8,7 +8,7 @@ export async function createAttachmentFromImageURL(url : string) : Promise<Attac
 	let productAttachment : AttachmentBuilder | null = null;
 	try {
 		if (url) {
-			const image = await axiosClient.get(url, { responseType: "arraybuffer" });
+			const image = await HTMLClient.get(url, { responseType: "arraybuffer" });
 			productAttachment = new AttachmentBuilder(image.data, { name: "productImage.png" });
 		}
 	}

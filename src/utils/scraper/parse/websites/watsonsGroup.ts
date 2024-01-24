@@ -3,7 +3,7 @@ import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { getShopFromURL } from "../parse";
 import { logger } from "../../../../logger/logger";
 import { getImageBase64FromLink, createImgurURLFromBase64 } from "@utils/images/images";
-import axios from "axios";
+import { APIClient } from "@utils/scraper/client";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, options) => {
 	const shop : ShopDetails = getShopFromURL(url);
@@ -75,11 +75,7 @@ type ProductDetail = {
 async function fetchProductDetail(url : string) : Promise<Success<ProductDetail> | Failure> {
 	let productDetailsRes;
 	try {
-		productDetailsRes = await axios.get(url, {
-			headers: {
-				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-			},
-		});
+		productDetailsRes = await APIClient.get(url, {});
 	}
 	catch (error) {
 		logger(`Cannot Get ${url}: ${error}`);
@@ -124,11 +120,7 @@ type PromotionPriceResponse = {
 async function fetchPromotionPrice(url : string) : Promise<number> {
 	let promotionPriceRes;
 	try {
-		promotionPriceRes = await axios.get(url, {
-			headers: {
-				"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-			},
-		});
+		promotionPriceRes = await APIClient.get(url);
 	}
 	catch (error) {
 		logger(`Cannot Get ${url}: ${error}`);

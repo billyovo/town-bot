@@ -1,12 +1,12 @@
 import { ShopParseFunction } from "../../../../@types/priceAlert";
-import { axiosClient } from "../../client";
+import { HTMLClient } from "../../client";
 import { parse } from "node-html-parser";
 import { parsePriceToFloat } from "../parse";
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { logger } from "../../../../logger/logger";
 
 export const parseAeonPrice : ShopParseFunction = async (url) => {
-	const html = await axiosClient.get(url).catch(() => {
+	const html = await HTMLClient.get(url).catch(() => {
 		logger(`Failed to fetch ${url}`);
 		return { data: null, success: false, error: "Failed to fetch url" };
 	});

@@ -1,6 +1,6 @@
 import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
 import { ShopParseFunction } from "../../../../@types/priceAlert";
-import { axiosClient } from "../../client";
+import { APIClient } from "../../client";
 import { parsePriceToFloat } from "../parse";
 
 export const parseSephoraPrice : ShopParseFunction = async (url) => {
@@ -23,7 +23,7 @@ export const parseSephoraPrice : ShopParseFunction = async (url) => {
 	const api = `https://www.sephora.hk/api/v2.1/products/${nameSlug}?v=${typeSlug}`;
 	let productData;
 	try {
-		const response = await axiosClient.get(api, {
+		const response = await APIClient.get(api, {
 			headers: {
 				"Accept-Language": "zh-HK",
 			},
