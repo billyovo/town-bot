@@ -4,9 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: town-bot
     restart: always
     env_file:
       - .env
     environment:
       - NODE_ENV=production
       - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+      - TZ=Asia/Taipei
