@@ -2,19 +2,17 @@
 FROM node:21-slim AS build
 
 WORKDIR /app
-RUN npm i -g pnpm
 
-COPY package.json package-lock.json* pnpm-lock.yaml /app/
-
-RUN pnpm install --frozen-lockfile
+COPY package.json pnpm-lock.yaml /app/
+COPY src /app/src
+COPY tsconfig.json /app/
 
 RUN apt-get update \
     && apt-get install -y bash curl tesseract-ocr \
     && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
-    && apt-get install -y infisical 
-
-COPY src /app/src
-COPY tsconfig.json /app/
+    && apt-get install -y infisical \
+    && npm i -g pnpm \
+    && pnpm install --frozen-lockfile
 
 RUN ["pnpm", "run", "build"]
 RUN ["pnpm", "prune", "--prod"]
@@ -23,6 +21,7 @@ RUN ["pnpm", "prune", "--prod"]
 FROM node:21-slim
 
 WORKDIR /app
+
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/node_modules /app/node_modules
