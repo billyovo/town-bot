@@ -1,5 +1,5 @@
 # Build stage
-FROM node:21-slim AS build
+FROM node:21-alpine AS build
 
 WORKDIR /app
 
@@ -7,13 +7,12 @@ COPY package.json pnpm-lock.yaml /app/
 COPY src /app/src
 COPY tsconfig.json /app/
 
-RUN apt-get update \
-    && apt-get install -y bash curl tesseract-ocr \
-    && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
-    && apt-get install -y infisical \
+RUN apk add --update --no-cache make g++ jpeg-dev cairo-dev giflib-dev pango-dev bash curl tesseract-ocr \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.alpine.sh' | bash \
+    && apk add infisical \
     && npm i -g pnpm \
-    && pnpm fetch \ 
-    && pnpm install --frozen-lockfile --offline 
+    && pnpm fetch \
+    && pnpm install --frozen-lockfile --offline
 
 RUN ["pnpm", "run", "build"]
 RUN ["pnpm", "prune", "--prod"]
