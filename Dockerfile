@@ -12,7 +12,8 @@ RUN apt-get update \
     && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
     && apt-get install -y infisical \
     && npm i -g pnpm \
-    && pnpm install --frozen-lockfile
+    && pnpm fetch \ 
+    && pnpm install --frozen-lockfile --offline 
 
 RUN ["pnpm", "run", "build"]
 RUN ["pnpm", "prune", "--prod"]
