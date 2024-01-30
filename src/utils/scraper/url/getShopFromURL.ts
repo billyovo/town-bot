@@ -5,7 +5,6 @@ import tldts from "tldts";
 export function getShopFromURL(url: string) : ShopDetails {
 	const parsedURL = tldts.parse(url);
 	const domain = parsedURL.domainWithoutSuffix?.toUpperCase();
-	console.log(parsedURL);
 	return {
 		domain: domain ?? parsedURL.hostname ?? "UNKNOWN DOMAIN",
 		shop: PriceAlertShopOption[domain as keyof typeof PriceAlertShopOption],
