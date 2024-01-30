@@ -6,7 +6,7 @@ import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { parsePriceToFloat } from "../parse";
 
 
-export const parseManningsPrice : ShopParseFunction = async (url) => {
+export const parseManningsPrice : ShopParseFunction = async (url, _) => {
 	const html = await HTMLClient.get(url).catch(() => {
 		logger(`Failed to fetch ${url}`);
 		return { data: null, success: false, error: "Failed to fetch url" };

@@ -1,13 +1,11 @@
-import { Failure, ShopDetails, ShopParseFunction, Success } from "~/types/priceAlert";
+import { Failure, ShopParseFunction, Success } from "~/types/priceAlert";
 import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { logger } from "~/logger/logger";
 import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/utils/images/images";
 import { APIClient } from "~/utils/scraper/client";
-import { getShopFromURL } from "~/utils/scraper/url/getShopFromURL";
 
-export const parseWatsonsGroupPrice : ShopParseFunction = async (url, options) => {
-	const shop : ShopDetails = getShopFromURL(url);
-	const shopDetail : WatsonsGroupShopDetails | null = getBaseURLAndCode(shop.shop as PriceAlertShopOption);
+export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
+	const shopDetail : WatsonsGroupShopDetails | null = getBaseURLAndCode(shopDetails.shop as PriceAlertShopOption);
 	if (!shopDetail) {
 		return {
 			data: null,

@@ -13,7 +13,12 @@ export type PriceOutput = {
     attachment?: AttachmentBuilder | null
 }
 
-export type ShopDetails = { shop: PriceAlertShopOption | null, domain: string };
+export type ShopDetails = {
+    shop: PriceAlertShopOption | null,
+    domain: string | null,
+    domainLong: string | null,
+    hostname: string
+};
 
 export type Success<T> = {
     data: T,
@@ -49,4 +54,4 @@ export type PriceAlertChecked = {
 export type ShopParseOptions = {
     skipImageFetch: boolean
 }
-export type ShopParseFunction = (url: string, options? : ShopParseOptions) => Promise<ShopParseFunctionReturn>;
+export type ShopParseFunction = (url: string, shopDetails: ShopDetails, options? : ShopParseOptions) => Promise<ShopParseFunctionReturn>;

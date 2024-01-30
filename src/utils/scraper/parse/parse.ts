@@ -24,7 +24,7 @@ export async function parseShopWebsite(url: string, options?: ShopParseOptions) 
 		};
 	}
 
-	return await parseFunction(url, options);
+	return await parseFunction(url, shop, options);
 }
 
 export function getParseWebsiteFunction(shop: PriceAlertShopOption) {

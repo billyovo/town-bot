@@ -6,8 +6,10 @@ export function getShopFromURL(url: string) : ShopDetails {
 	const parsedURL = tldts.parse(url);
 	const domain = parsedURL.domainWithoutSuffix?.toUpperCase();
 	return {
-		domain: domain ?? parsedURL.hostname ?? "UNKNOWN DOMAIN",
+		domain: domain ?? null,
+		domainLong: parsedURL.domain,
 		shop: PriceAlertShopOption[domain as keyof typeof PriceAlertShopOption],
+		hostname: parsedURL.hostname ?? "UNKNOWN HOSTNAME",
 	};
 
 }

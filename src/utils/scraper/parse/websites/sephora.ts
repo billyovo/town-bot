@@ -3,8 +3,15 @@ import { ShopParseFunction } from "~/types/priceAlert";
 import { APIClient } from "../../client";
 import { parsePriceToFloat } from "../parse";
 
-export const parseSephoraPrice : ShopParseFunction = async (url) => {
-	if (url.indexOf("sephora.hk") === -1) return { success: false, error: "Only sephora.hk supported!", data: null };
+export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) => {
+	if (shopDetails.domainLong !== "sephora.hk") {
+		return {
+			success: false,
+			error: "Only sephora.hk supported!",
+			data: null,
+		};
+
+	}
 	const regex = /\/products\/(.*)/g;
 	const regexResult = regex.exec(url);
 	const slug : string = regexResult ? regexResult[1] : "";
