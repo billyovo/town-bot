@@ -44,6 +44,9 @@ dependencies:
   rrule:
     specifier: ^2.7.2
     version: 2.7.2
+  tldts:
+    specifier: ^6.1.4
+    version: 6.1.4
 
 devDependencies:
   '@jest/globals':
@@ -4592,6 +4595,17 @@ packages:
       readable-stream: 2.3.8
       xtend: 4.0.2
     dev: true
+
+  /tldts-core@6.1.4:
+    resolution: {integrity: sha512-9rlteMsuqWQaWlLhnqCOeAXW1jqahlBHXOhCHu1GkkNBbjitbEqhDQC1Br6W/2PZJTTh8f+QIk5GstyZFC26Bg==}
+    dev: false
+
+  /tldts@6.1.4:
+    resolution: {integrity: sha512-eplXjucWEMwmGd8PSI/cjwGid0dVRdLZwO+x8cUTzfgA/u9wP9D5C6qcg42MMBgBeEcgDiUTqH7wBlTYLIODWQ==}
+    hasBin: true
+    dependencies:
+      tldts-core: 6.1.4
+    dev: false
 
   /tmpl@1.0.5:
     resolution: {integrity: sha512-3f0uOEAQwIqGuWW2MVzYg8fV/QNnc/IpuJNG837rLuczAaLVHslWHZQj4IGiEl5Hs3kkbhwL9Ab7Hrsmuj+Smw==}

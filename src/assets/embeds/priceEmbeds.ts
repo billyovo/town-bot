@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import { PriceAlertItem } from "../../@types/priceAlert";
-import { PriceAlertShopOptionImage } from "@enums/priceAlertShopOption";
+import { PriceAlertItem } from "~/types/priceAlert";
+import { PriceAlertShopOptionImage } from "~/enums/priceAlertShopOption";
 import { DateTime } from "luxon";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {

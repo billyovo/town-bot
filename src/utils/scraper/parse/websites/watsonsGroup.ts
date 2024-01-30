@@ -1,9 +1,9 @@
-import { Failure, ShopDetails, ShopParseFunction, Success } from "../../../../@types/priceAlert";
-import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
-import { getShopFromURL } from "../parse";
-import { logger } from "../../../../logger/logger";
-import { getImageBase64FromLink, createImgurURLFromBase64 } from "@utils/images/images";
-import { APIClient } from "@utils/scraper/client";
+import { Failure, ShopDetails, ShopParseFunction, Success } from "~/types/priceAlert";
+import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
+import { logger } from "~/logger/logger";
+import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/utils/images/images";
+import { APIClient } from "~/utils/scraper/client";
+import { getShopFromURL } from "~/utils/scraper/url/getShopFromURL";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, options) => {
 	const shop : ShopDetails = getShopFromURL(url);

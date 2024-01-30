@@ -1,7 +1,7 @@
-import { HkoRainOption } from "@enums/cronOption";
-import { client } from "@managers/discord/discordManager";
-import { callhko } from "@utils/cron/hko";
-import { returnDiff } from "@utils/cron/richDay";
+import { HkoRainOption } from "~/enums/cronOption";
+import { client } from "~/managers/discord/discordManager";
+import { callhko } from "~/utils/cron/hko";
+import { returnDiff } from "~/utils/cron/richDay";
 import { Channel, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { scheduleJob } from "node-schedule";

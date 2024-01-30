@@ -1,10 +1,10 @@
-import { getPriceChangeEmbed } from "@assets/embeds/priceEmbeds";
-import { updateDatabaseFromScrapeResult } from "@utils/scraper/db/db";
+import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
+import { updateDatabaseFromScrapeResult } from "~/utils/scraper/db/db";
 import { ChatInputCommandInteraction } from "discord.js";
-import { db } from "@managers/database/databaseManager";
-import { getPriceChange } from "@utils/scraper/scrapePrices";
-import type { PriceAlertItem } from "../../../@types/priceAlert";
-import { PriceAlertResult } from "@enums/priceAlertShopOption";
+import { db } from "~/managers/database/databaseManager";
+import { getPriceChange } from "~/utils/scraper/scrapePrices";
+import type { PriceAlertItem } from "~/types/priceAlert";
+import { PriceAlertResult } from "~/enums/priceAlertShopOption";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	await interaction.reply({ content: "Fetching..." });

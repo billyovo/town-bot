@@ -1,9 +1,9 @@
 import { parse } from "node-html-parser";
 import { HTMLClient } from "../../client";
-import { ShopParseFunction } from "../../../../@types/priceAlert";
-import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { ShopParseFunction } from "~/types/priceAlert";
+import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { parsePriceToFloat } from "../parse";
-import { logger } from "../../../../logger/logger";
+import { logger } from "~/logger/logger";
 
 export const parseHktvmallPrice : ShopParseFunction = async (url : string) => {
 	const html = await HTMLClient.get(url).catch(() => {

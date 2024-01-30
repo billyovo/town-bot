@@ -1,6 +1,6 @@
-import { HTMLClient } from "@utils/scraper/client";
+import { HTMLClient } from "~/utils/scraper/client";
 import { AttachmentBuilder } from "discord.js";
-import { logger } from "../../logger/logger";
+import { logger } from "~/logger/logger";
 
 // sometimes image url is protected by token, we want to fetch the image and create an attachment from it so that we can access the image.
 

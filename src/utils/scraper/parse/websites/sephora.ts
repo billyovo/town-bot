@@ -1,5 +1,5 @@
-import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
-import { ShopParseFunction } from "../../../../@types/priceAlert";
+import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
+import { ShopParseFunction } from "~/types/priceAlert";
 import { APIClient } from "../../client";
 import { parsePriceToFloat } from "../parse";
 

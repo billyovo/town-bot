@@ -2,8 +2,8 @@ import { join, resolve, relative } from "path";
 import { lstatSync, readdirSync } from "fs";
 import url from "node:url";
 import { Collection } from "discord.js";
-import { CommandsCollection } from "../../../@types/discord";
-import { logger } from "../../../logger/logger";
+import { CommandsCollection } from "~/types/discord";
+import { logger } from "~/logger/logger";
 
 
 async function loadCommandsFromFolder(folderPath: string, rootPath: string, commandsCollection: CommandsCollection) {

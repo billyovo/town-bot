@@ -1,9 +1,9 @@
 import { OpenAI } from "openai";
 import { Message, Snowflake, TextChannel } from "discord.js";
-import { client } from "@managers/discord/discordManager";
-import { delMessageTime, config } from "@configs/chatgpt";
-import { splitMessage } from "@utils/discord/splitMessage";
-import type { GetChatMessageHistory, GetGptMessage } from "../../@types/chatgpt";
+import { client } from "~/managers/discord/discordManager";
+import { delMessageTime, config } from "~/configs/chatgpt";
+import { splitMessage } from "~/utils/discord/splitMessage";
+import type { GetChatMessageHistory, GetGptMessage } from "~/types/chatgpt";
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,

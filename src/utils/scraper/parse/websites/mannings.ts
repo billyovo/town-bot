@@ -1,8 +1,8 @@
 import { parse } from "node-html-parser";
-import { ShopParseFunction } from "../../../../@types/priceAlert";
-import { logger } from "../../../../logger/logger";
+import { ShopParseFunction } from "~/types/priceAlert";
+import { logger } from "~/logger/logger";
 import { HTMLClient } from "../../client";
-import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { parsePriceToFloat } from "../parse";
 
 

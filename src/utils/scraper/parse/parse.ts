@@ -1,26 +1,15 @@
-import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { parseHktvmallPrice } from "./websites/hktvmall";
 import { parseAeonPrice } from "./websites/aeon";
-import type { ShopDetails, ShopParseFunction, ShopParseFunctionReturn, ShopParseOptions } from "../../../@types/priceAlert";
+import type { ShopParseFunction, ShopParseFunctionReturn, ShopParseOptions } from "~/types/priceAlert";
 import { parseWatsonsGroupPrice } from "./websites/watsonsGroup";
 import { parseSephoraPrice } from "./websites/sephora";
 import { parseManningsPrice } from "./websites/mannings";
-
+import { getShopFromURL } from "../url/getShopFromURL";
 
 type ParseFunctionsMap = {
     [key in PriceAlertShopOption]?: ShopParseFunction
 };
-
-export function getShopFromURL(url: string) : ShopDetails {
-	const urlObj = new URL(url);
-	const domain: string = urlObj.hostname.split(".")[1].toUpperCase();
-	const shop = PriceAlertShopOption[domain as keyof typeof PriceAlertShopOption];
-
-	return {
-		shop: shop,
-		domain: domain,
-	};
-}
 
 export async function parseShopWebsite(url: string, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
 	const shop = getShopFromURL(url);
@@ -30,7 +19,7 @@ export async function parseShopWebsite(url: string, options?: ShopParseOptions) 
 	if (!parseFunction) {
 		return {
 			data: null,
-			error: "Shop not supported",
+			error: `Shop not supported: ${shop.domain ?? "UNKNOWN DOMAIN"}`,
 			success: false,
 		};
 	}

@@ -1,5 +1,5 @@
-import { db } from "@managers/database/databaseManager";
-import { PriceAlertChecked, PriceAlertItem } from "../../../@types/priceAlert";
+import { db } from "~/managers/database/databaseManager";
+import { PriceAlertChecked, PriceAlertItem } from "~/types/priceAlert";
 
 
 export async function addProductToAlert(product: PriceAlertItem) : Promise<{success: boolean, error: string | null}> {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { logger } from "../../logger/logger";
 import { Base64String } from "discord.js";
-import { HTMLClient } from "@utils/scraper/client";
+import { HTMLClient } from "~/utils/scraper/client";
 
 export async function getImageBase64FromLink(url : string) : Promise<string | null> {
 	try {

@@ -1,4 +1,4 @@
-import { PriceAlertShopOption } from "@enums/priceAlertShopOption";
+import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { AttachmentBuilder } from "discord.js";
 import { ObjectId } from "mongodb";
 

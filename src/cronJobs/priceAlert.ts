@@ -1,14 +1,14 @@
 import { scheduleJob } from "node-schedule";
-import { updateDatabaseFromScrapeResult } from "@utils/scraper/db/db";
-import { client } from "@managers/discord/discordManager";
+import { updateDatabaseFromScrapeResult } from "~/utils/scraper/db/db";
+import { client } from "~/managers/discord/discordManager";
 import { TextChannel } from "discord.js";
-import { logger } from "../logger/logger";
-import { getPriceChangeEmbed } from "@assets/embeds/priceEmbeds";
-import { db } from "@managers/database/databaseManager";
-import { getPriceChange } from "@utils/scraper/scrapePrices";
-import type { PriceAlertItem } from "../@types/priceAlert";
-import { PriceAlertResult } from "@enums/priceAlertShopOption";
-import { maximumFailureCount } from "@configs/scraper";
+import { logger } from "~/logger/logger";
+import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
+import { db } from "~/managers/database/databaseManager";
+import { getPriceChange } from "~/utils/scraper/scrapePrices";
+import type { PriceAlertItem } from "~/types/priceAlert";
+import { PriceAlertResult } from "~/enums/priceAlertShopOption";
+import { maximumFailureCount } from "~/configs/scraper";
 
 scheduleJob("7 10 * * *", async () => {
 	logger("Running price alert check");

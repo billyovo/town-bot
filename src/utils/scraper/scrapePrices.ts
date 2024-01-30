@@ -1,8 +1,8 @@
 import { parseShopWebsite } from "./parse/parse";
-import type { PriceAlertChecked, PriceAlertItem, ShopParseOptions } from "../../@types/priceAlert";
-import { PriceAlertResult } from "../../enums/priceAlertShopOption";
-import { logger } from "../../logger/logger";
-import { scrapeDelayTime } from "@configs/scraper";
+import type { PriceAlertChecked, PriceAlertItem, ShopParseOptions } from "~/types/priceAlert";
+import { PriceAlertResult } from "~/enums/priceAlertShopOption";
+import { logger } from "~/logger/logger";
+import { scrapeDelayTime } from "~/configs/scraper";
 
 async function waitFor(ms: number) {
 	return new Promise(resolve => setTimeout(resolve, ms));

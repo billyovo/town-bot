@@ -28,7 +28,8 @@
     "node-schedule": "^2.1.1",
     "node-tesseract-ocr": "^2.2.1",
     "openai": "^4.24.1",
-    "rrule": "^2.7.2"
+    "rrule": "^2.7.2",
+    "tldts": "^6.1.4"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { db } from "@managers/database/databaseManager";
+import { db } from "~/managers/database/databaseManager";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url = interaction.options.get("url")?.value as string;

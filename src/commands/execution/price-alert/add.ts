@@ -1,8 +1,7 @@
-import { getAddedToAlertEmbed } from "@assets/embeds/priceEmbeds";
-import { PriceAlertItem } from "../../../@types/priceAlert";
-import { addProductToAlert } from "@utils/scraper/db/db";
-import { sanitizeURL } from "@utils/scraper/url/sanitizeURL";
-import { getShopFromURL, parseShopWebsite } from "@utils/scraper/parse/parse";
+import { getAddedToAlertEmbed } from "~/assets/embeds/priceEmbeds";
+import { PriceAlertItem } from "~/types/priceAlert";
+import { addProductToAlert } from "~/utils/scraper/db/db";
+import { parseShopWebsite } from "~/utils/scraper/parse/parse";
 import { AttachmentBuilder, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 
 type Reply = {
@@ -11,20 +10,15 @@ type Reply = {
 }
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.get("url")?.value as string;
-	const link_sanitized = sanitizeURL(link);
-	if (!link_sanitized) return await interaction.reply({ content: "Invalid URL" });
-
-	const shop = getShopFromURL(link_sanitized);
-	if (!shop.shop) return interaction.reply({ content: `Shop not supported: ${shop.domain}` });
 
 	await interaction.deferReply();
 
-	const output = await parseShopWebsite(link_sanitized);
+	const output = await parseShopWebsite(link);
 	if (!output.success) return await interaction.editReply({ content: output.error ?? "Unknown error" });
 
 	const itemToBeadded : PriceAlertItem = {
 		lastChecked: new Date(),
-		url: link_sanitized,
+		url: link,
 		price: output.data.price,
 		brand: output.data.brand,
 		productName: output.data.productName,

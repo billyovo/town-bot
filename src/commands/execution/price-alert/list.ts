@@ -1,10 +1,10 @@
 import { ButtonStyle, ChatInputCommandInteraction, Interaction } from "discord.js";
-import { db } from "@managers/database/databaseManager";
-import { PriceAlertListMode } from "@enums/priceAlertShopOption";
-import { getPriceListEmbed } from "@assets/embeds/priceEmbeds";
-import { PriceAlertItem } from "../../../@types/priceAlert";
+import { db } from "~/managers/database/databaseManager";
+import { PriceAlertListMode } from "~/enums/priceAlertShopOption";
+import { getPriceListEmbed } from "~/assets/embeds/priceEmbeds";
+import { PriceAlertItem } from "~/types/priceAlert";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
-import { splitMessage } from "@utils/discord/splitMessage";
+import { splitMessage } from "~/utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const mode : PriceAlertListMode = interaction.options.get("mode")?.value as PriceAlertListMode;
