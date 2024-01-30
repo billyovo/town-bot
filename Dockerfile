@@ -1,7 +1,8 @@
 # Build stage
-FROM node:21-slim AS build
-
+FROM node:21-slim AS base
 WORKDIR /app
+
+FROM base AS build
 
 COPY package.json pnpm-lock.yaml /app/
 COPY src /app/src
@@ -19,9 +20,7 @@ RUN ["pnpm", "run", "build"]
 RUN ["pnpm", "prune", "--prod"]
 
 # Runtime stage
-FROM node:21-slim
-
-WORKDIR /app
+FROM base
 
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/package.json /app/package.json
