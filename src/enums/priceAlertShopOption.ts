@@ -5,6 +5,7 @@ export enum PriceAlertShopOption {
     PNS = "PNS",
     SEPHORA = "SEPHORA",
     MANNINGS = "MANNINGS",
+    MUJI = "MUJI",
 }
 
 export enum PriceAlertShopOptionImage {
@@ -14,6 +15,7 @@ export enum PriceAlertShopOptionImage {
     PNS = "https://i.imgur.com/cT0UG1S.png",
     SEPHORA = "https://pbs.twimg.com/profile_images/459373077822861312/nHUto8C6_400x400.jpeg",
     MANNINGS = "https://i.imgur.com/OnplWyK.jpg",
+    MUJI = "https://i.imgur.com/ykFhg6J.png",
 }
 
 export enum PriceAlertListMode {
