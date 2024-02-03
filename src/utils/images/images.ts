@@ -4,15 +4,20 @@ import { Base64String } from "discord.js";
 import { HTMLClient } from "~/utils/scraper/client";
 import sharp from "sharp";
 
-
 export async function getImageBase64FromLink(url : string) : Promise<string | null> {
 	try {
 		const image = await HTMLClient.get(url, {
 			responseType: "arraybuffer",
 		});
 
-		const jpegData = await sharp(image.data).toFormat("jpeg").toBuffer();
+		let jpegData;
 
+		if (image.headers["content-type"] in ["image/jpeg", "image/png", "image/gif", "image/jpg"]) {
+			jpegData = image.data;
+		}
+		else {
+			jpegData = await sharp(image.data).toFormat("jpeg").toBuffer();
+		}
 		return jpegData.toString("base64");
 	}
 	catch (error) {
