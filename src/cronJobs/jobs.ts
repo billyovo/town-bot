@@ -19,7 +19,7 @@ scheduleJob("1 0 * * *", () => {
 
 });
 
-scheduleJob("* 8 * * *", async () => {
+scheduleJob("0 7 * * *", async () => {
 	try {
 		const respone = await callhko();
 		const rain = respone.data.weatherForecast[0].PSR;

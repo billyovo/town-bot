@@ -1,0 +1,29 @@
+name: Rebuild
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: [self-hosted]
+    defaults:
+      run:
+        working-directory: ${{ vars.SERVER_DIRECTORY }}
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout
+
+    - name: Pull and Rebuild docker compose
+      run: |
+        git fetch origin master
+        git reset --hard origin/master
+        
+    - name: Rebuild or Restart
+      run: |
+        docker compose stop
+        docker compose up -d --build --remove-orphans
+    
