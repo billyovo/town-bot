@@ -4,6 +4,7 @@ import { Base64String } from "discord.js";
 import { HTMLClient } from "~/utils/scraper/client";
 import sharp from "sharp";
 
+
 export async function getImageBase64FromLink(url : string) : Promise<string | null> {
 	try {
 		const image = await HTMLClient.get(url, {

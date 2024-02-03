@@ -30,6 +30,7 @@
     "openai": "^4.24.1",
     "rrule": "^2.7.2",
     "sharp": "^0.33.2",
+    "tesseract.js": "^5.0.4",
     "tldts": "^6.1.4"
   },
   "devDependencies": {

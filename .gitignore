@@ -7,3 +7,4 @@ dist
 Tesseract_Data/
 docker.ps1
 *.bat
+assets/tesseract/*.traineddata
