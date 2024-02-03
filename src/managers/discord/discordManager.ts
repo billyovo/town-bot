@@ -4,7 +4,7 @@ import { ExtendedDiscordClient } from "./client";
 import { loadSlashCommands } from "~/utils/discord/startup/loadCommands";
 import { handleInteraction } from "~/commands/handler/interactionHandler";
 import { logger } from "~/logger/logger";
-import { chatgpt } from "~/commands/handler/chatgpt";
+// import { chatgpt } from "~/commands/handler/chatgpt";
 
 export const client : DiscordClient = new ExtendedDiscordClient({
 	intents: [
@@ -20,7 +20,7 @@ export async function connectDiscord(token : string) {
 
 client.on(Events.InteractionCreate, handleInteraction);
 
-client.on(Events.MessageCreate, chatgpt);
+// client.on(Events.MessageCreate, chatgpt);
 
 client.on(Events.ClientReady, async () => {
 	client.commands = await loadSlashCommands();
