@@ -29,7 +29,13 @@ export async function createImgurURLFromBase64(data : Base64String): Promise<str
 
 	}
 	catch (error) {
-		logger(`Failed to create Imgur URL from image URL: ${error}`);
+		if (axios.isAxiosError(error) && error.response) {
+			const imgurError = error.response.data;
+			logger(`Failed to create Imgur URL from image URL: ${imgurError.data.error}`);
+		}
+		else {
+			logger(`Failed to create Imgur URL from image URL: ${error}`);
+		}
 		return null;
 	}
 }
