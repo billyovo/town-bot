@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - 'src\commands\builders\*.ts'
+      - 'src/commands/builders/*.ts'
 
 jobs:
   register:
@@ -26,5 +26,3 @@ jobs:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
         run: npm run register
-
-      
