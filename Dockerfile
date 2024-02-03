@@ -29,7 +29,7 @@ COPY --from=build /app/dist /app/dist
 COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /usr/bin/infisical /usr/bin/infisical
-COPY Tesseract_Data /usr/share/tesseract-ocr/5/tessdata
+COPY Tesseract_* /usr/share/tesseract-ocr/5/tessdata
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 
 CMD ["npm", "run", "start"]
