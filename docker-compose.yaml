@@ -7,7 +7,7 @@ services:
     container_name: town-bot
     restart: always
     volumes:
-      - tessdata:/app/src/assets/tesseract
+      - tessdata:/app/dist/assets/tesseract
     env_file:
       - .env
     environment:
