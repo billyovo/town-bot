@@ -5,7 +5,8 @@ on:
       - master
     paths:
       - 'src/commands/builders/*.ts'
-
+  workflow_dispatch:
+    
 jobs:
   register:
     runs-on: ubuntu-latest
