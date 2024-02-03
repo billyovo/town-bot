@@ -35,9 +35,6 @@ dependencies:
   node-schedule:
     specifier: ^2.1.1
     version: 2.1.1
-  node-tesseract-ocr:
-    specifier: ^2.2.1
-    version: 2.2.1
   openai:
     specifier: ^4.24.1
     version: 4.24.1
@@ -3948,11 +3945,6 @@ packages:
       cron-parser: 4.9.0
       long-timeout: 0.1.1
       sorted-array-functions: 1.3.0
-    dev: false
-
-  /node-tesseract-ocr@2.2.1:
-    resolution: {integrity: sha512-Q9cD79JGpPNQBxbi1fV+OAsTxYKLpx22sagsxSyKbu1u+t6UarApf5m32uVc8a5QAP1Wk7fIPN0aJFGGEE9DyQ==}
-    engines: {node: '>=10'}
     dev: false
 
   /noms@0.0.0:
