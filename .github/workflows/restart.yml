@@ -1,5 +1,4 @@
 name: Rebuild
-
 on:
   push:
     branches:
@@ -7,23 +6,29 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
     runs-on: [self-hosted]
     defaults:
       run:
         working-directory: ${{ vars.SERVER_DIRECTORY }}
     steps:
-    - uses: actions/checkout@v3
-      name: Checkout
-
-    - name: Pull and Rebuild docker compose
+    - name: Pull Latest Code
       run: |
         git fetch origin master
         git reset --hard origin/master
         
-    - name: Rebuild or Restart
+    - name: Rebuild
       run: |
         docker compose stop
         docker compose up -d --build --remove-orphans
-    
+
+  notification:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Discord Notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '{{ EVENT_PAYLOAD.repository.full_name }} deploy finished!!'
