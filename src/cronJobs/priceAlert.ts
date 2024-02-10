@@ -1,14 +1,11 @@
 import { scheduleJob } from "node-schedule";
-import { updateDatabaseFromScrapeResult } from "~/utils/scraper/db/db";
 import { client } from "~/managers/discord/discordManager";
 import { TextChannel } from "discord.js";
 import { logger } from "~/logger/logger";
 import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
 import { db } from "~/managers/database/databaseManager";
-import { getPriceChange } from "~/utils/scraper/scrapePrices";
+import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
 import type { PriceAlertItem } from "~/types/priceAlert";
-import { PriceAlertResult } from "~/enums/priceAlertShopOption";
-import { maximumFailureCount } from "~/configs/scraper";
 
 scheduleJob("7 10 * * *", async () => {
 	logger("Running price alert check");
@@ -17,21 +14,19 @@ scheduleJob("7 10 * * *", async () => {
 	const channel = await client.channels.fetch((process.env.WEATHER_CHANNEL) as string, { force: true, cache: false }) as TextChannel;
 
 	for await (const product of products) {
+		await delayNextFetch();
 		const scrapeResult = await getPriceChange(product as PriceAlertItem, { skipImageFetch: true });
-
-		switch (scrapeResult.result) {
-		case PriceAlertResult.PRICE_CHANGE:
-			await channel?.send({ embeds: [getPriceChangeEmbed(scrapeResult.data)] });
-			break;
-		case PriceAlertResult.FAIL:
-			await channel?.send(`Failed to check [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} ${scrapeResult.data.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
-			if (scrapeResult.data.failCount && scrapeResult.data.failCount > maximumFailureCount) {
-				await collection.deleteOne({ _id: scrapeResult.data._id });
-				await channel?.send(`Deleted [${scrapeResult.data.productName}](${scrapeResult.data.url}) from ${scrapeResult.data.shop} due to too many failures.`);
-			}
-
-			break;
-		}
-		await updateDatabaseFromScrapeResult(scrapeResult);
+		handleScrapeResult(scrapeResult, {
+			onPriceChange: async (product) => {
+				await channel?.send({ embeds: [getPriceChangeEmbed(product)] });
+			},
+			onFailure: async (product) => {
+				await channel?.send(`Failed to check [${product.productName}](${product.url}) from ${product.shop} ${product.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
+			},
+			onTooManyFailures: async (product) => {
+				await collection.deleteOne({ _id: product._id });
+				await channel?.send(`Deleted [${product.productName}](${product.url}) from ${product.shop} due to too many failures.`);
+			},
+		});
 	}
 });
