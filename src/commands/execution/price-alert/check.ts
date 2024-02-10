@@ -10,8 +10,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const collection = db.collection("products");
 	const products = collection.find({});
 
-	const count = 0;
+	let count = 0;
 	for await (const product of products) {
+		count++;
 		await delayNextFetch();
 		const scrapeResult = await getPriceChange(product as PriceAlertItem, { skipImageFetch: true });
 		handleScrapeResult(scrapeResult, {
