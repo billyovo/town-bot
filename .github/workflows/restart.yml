@@ -16,9 +16,7 @@ jobs:
         run: |
           git fetch origin master
           git reset --hard origin/master
-      - name: build
-        run: |
-          docker compose build -t town-image -f Dockerfile .
+
       - name: Rebuild
         run: |
           docker compose up -d --build --remove-orphans
