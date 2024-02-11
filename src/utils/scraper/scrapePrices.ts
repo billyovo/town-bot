@@ -67,7 +67,7 @@ export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actio
 		break;
 	case PriceAlertResult.FAIL:{
 		actions.onFailure(scrapeResult.data);
-		if (scrapeResult.data.failCount && scrapeResult.data.failCount > maximumFailureCount) {
+		if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
 			actions.onTooManyFailures(scrapeResult.data);
 		}
 	}
