@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   town-bot:
+    image: town-image
     build:
       context: .
       dockerfile: Dockerfile

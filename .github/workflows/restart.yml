@@ -12,23 +12,24 @@ jobs:
       run:
         working-directory: ${{ vars.SERVER_DIRECTORY }}
     steps:
-    - name: Pull Latest Code
-      run: |
-        git fetch origin master
-        git reset --hard origin/master
-        
-    - name: Rebuild
-      run: |
-        docker compose stop
-        docker compose up -d --build --remove-orphans
+      - name: Pull Latest Code
+        run: |
+          git fetch origin master
+          git reset --hard origin/master
+      - name: build
+        run: |
+          docker compose build -t town-image -f Dockerfile .
+      - name: Rebuild
+        run: |
+          docker compose up -d --build --remove-orphans
 
   notification:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Discord Notification
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: '{{ EVENT_PAYLOAD.repository.full_name }} deploy finished!!'
+      - name: Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: "{{ EVENT_PAYLOAD.repository.full_name }} deploy finished!!"
