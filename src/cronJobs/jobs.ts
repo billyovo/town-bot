@@ -2,9 +2,10 @@ import { HkoRainOption } from "~/enums/cronOption";
 import { client } from "~/managers/discord/discordManager";
 import { callhko } from "~/utils/cron/hko";
 import { returnDiff } from "~/utils/cron/richDay";
-import { Channel, TextChannel } from "discord.js";
+import { ActivityType, Channel, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { scheduleJob } from "node-schedule";
+import { getCatFact } from "~/utils/catFact";
 
 scheduleJob("1 0 * * *", () => {
 	const now = DateTime.now().setZone("Asia/Taipei").endOf("day");
@@ -17,6 +18,11 @@ scheduleJob("1 0 * * *", () => {
 		})
 		.catch((error) => {console.error(error);});
 
+});
+
+scheduleJob("0 0 * * *", async () => {
+	const catFact = await getCatFact();
+	client.user!.setActivity({ name: catFact, type: ActivityType.Custom });
 });
 
 scheduleJob("0 7 * * *", async () => {
