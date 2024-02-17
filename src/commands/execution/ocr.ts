@@ -20,7 +20,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	try {
 		const ret = await worker.recognize(url);
 		interaction.editReply({
-			content: ret.data.text,
+			content: ret.data.text || "Nothing is recognized!",
 		});
 	}
 	catch (error) {
