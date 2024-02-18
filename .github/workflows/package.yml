@@ -58,16 +58,20 @@ jobs:
           clean: false
 
       - name: Stop and remove running containers
-        run: docker-compose down
+        run: docker compose down
 
       - name: Run new containers
-        run: docker-compose up -d
+        run: docker compose up -d --env-file .env
 
+  build-notification:
+    runs-on: ubuntu-latest
+    needs: restart
+    steps:
       - name: Discord Notification
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '{{ EVENT_PAYLOAD.repository.full_name }} deployed successfully!'
+          args: '{{ EVENT_PAYLOAD.repository.full_name }} build finished'
   
       
