@@ -19,17 +19,24 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 		return { success: false, error: "Failed to parse html", data: null };
 	}
 
-	const price = root.querySelector(".price > span")?.innerText;
-	const productBrandAndName = root.querySelector(".productBrandAndName")?.querySelectorAll("span");
+	const data = root.querySelector("[data-price]");
+
+	const price = data?.getAttribute("data-price");
+	const productName = data?.getAttribute("data-productname");
+	const brand = data?.getAttribute("data-productbrand");
+
+	if (!price || !productName || !brand) {
+		return {
+			data: null,
+			error: "Failed to parse product information",
+			success: false,
+		};
+	}
+
 	const img = root.querySelector("#prod_img_container")?.querySelector("img")?.getAttribute("src");
 	const img_sanitized = img && (img.startsWith("http") ? img : `https:${img}`);
 
-	if (!productBrandAndName) return { success: false, error: "Failed to parse product brand and name", data: null };
 
-	const brand = productBrandAndName[0]?.innerText;
-	const productName = productBrandAndName[1]?.innerText;
-
-	if (!price || !brand || !productName) return { success: false, error: "Failed to parse price, brand or product name", data: null };
 	return {
 		data: {
 			price: parsePriceToFloat(price),
