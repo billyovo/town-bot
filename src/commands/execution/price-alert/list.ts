@@ -1,11 +1,18 @@
-import { ButtonStyle, ChatInputCommandInteraction, Interaction } from "discord.js";
+import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction } from "discord.js";
 import { db } from "~/managers/database/databaseManager";
 import { PriceAlertListMode } from "~/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/assets/embeds/priceEmbeds";
 import { PriceAlertItem } from "~/types/priceAlert";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { splitMessage } from "~/utils/discord/splitMessage";
+import { EventEmitter } from "node:events";
 
+enum ButtonType {
+	NEXT = "next",
+	PREVIOUS = "previous",
+	REMOVE = "remove",
+	CHECK = "check"
+}
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const mode : PriceAlertListMode = interaction.options.get("mode")?.value as PriceAlertListMode;
 
@@ -31,57 +38,65 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 
 	if (mode === PriceAlertListMode.DETAILED) {
-		const pointer = 0;
+		let pointer = 0;
 		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+		await interaction.reply({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 
-		createProductDetailButtonCollector(interaction, productsArray as PriceAlertItem[], async (url : string) => {
-			const result = await collection.deleteOne({ url: url });
-			if (result.deletedCount === 0) {
-				await interaction.followUp({ content: "Product not found", ephemeral: true });
+		const eventEmitter = new EventEmitter();
+		createProductDetailButtonCollector(interaction, eventEmitter);
+
+		eventEmitter.on(ButtonType.NEXT, async (i : CollectedMessageInteraction) => {
+			if (pointer < productsArray.length - 1) {
+				pointer++;
 			}
 			else {
-				await interaction.followUp({ content: "Product deleted", ephemeral: true });
+				pointer = 0;
 			}
+			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
-		await interaction.reply({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+		eventEmitter.on(ButtonType.PREVIOUS, async (i : CollectedMessageInteraction) => {
+			if (pointer > 0) {
+				pointer--;
+			}
+			else {
+				pointer = productsArray.length - 1;
+			}
+
+			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+		});
+
+		eventEmitter.on(ButtonType.REMOVE, async (i : CollectedMessageInteraction) => {
+			await collection.deleteOne({ _id: productsArray[pointer]._id });
+			productsArray.splice(pointer, 1);
+			if (pointer > 0) {
+				pointer--;
+			}
+			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+		});
 	}
 }
 
-async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, productsArray: PriceAlertItem[], deleteProduct: (url : string) => void) {
-	let pointer = 0;
+async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, eventEmitter: EventEmitter) {
 	const filter = (i: Interaction) => i.user.id === interaction.user.id;
 	const collector = interaction.channel?.createMessageComponentCollector({ filter, time: 300000 });
 
 	collector?.on("collect", async (i) => {
-		if (i.customId === "remove") {
-			await deleteProduct(productsArray[pointer].url);
-			productsArray.splice(pointer, 1);
-			pointer--;
-			if (pointer < 0) pointer = 0;
-			if (productsArray.length === 0) return interaction.deleteReply();
-		}
-		if (i.customId === "previous") {
-			pointer--;
-			if (pointer < 0) pointer = productsArray.length - 1;
-		}
-		if (i.customId === "next") {
-			pointer++;
-			if (pointer >= productsArray.length) pointer = 0;
-		}
-
-		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-		await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+		eventEmitter.emit(i.customId, i);
 	});
 
 	collector?.on("end", async () => {
 		await interaction.editReply({ components: [] });
+		eventEmitter.removeAllListeners();
 	});
 }
 
 function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<ButtonBuilder>[] {
 	const previous = new ButtonBuilder()
-		.setCustomId("previous")
+		.setCustomId(ButtonType.PREVIOUS)
 		.setLabel("⬅️")
 		.setStyle(ButtonStyle.Primary);
 	const currentPageButton = new ButtonBuilder()
@@ -89,14 +104,15 @@ function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<But
 		.setLabel(`Item ${currentPage + 1}/${maxPage}`)
 		.setStyle(ButtonStyle.Secondary);
 	const next = new ButtonBuilder()
-		.setCustomId("next")
+		.setCustomId(ButtonType.NEXT)
 		.setLabel("➡️")
 		.setStyle(ButtonStyle.Primary);
 
 	const remove = new ButtonBuilder()
-		.setCustomId("remove")
+		.setCustomId(ButtonType.REMOVE)
 		.setLabel("🗑️")
 		.setStyle(ButtonStyle.Danger);
+
 	const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next);
 	const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(remove);
 	return [row1, row2];
