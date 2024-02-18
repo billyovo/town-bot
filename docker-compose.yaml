@@ -6,9 +6,13 @@ services:
       dockerfile: Dockerfile
     container_name: town-bot
     restart: always
+    image: ghcr.io/billyovo/town-bot:latest
     volumes:
       - tessdata:/app/dist/assets/tesseract
+    env_file:
+      - .env
     environment:
+      - INFISICAL_TOKEN=${INFISICAL_TOKEN}
       - NODE_ENV=production
       - TZ=Asia/Taipei
 
