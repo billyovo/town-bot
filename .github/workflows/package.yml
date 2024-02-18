@@ -35,7 +35,8 @@ jobs:
       - name: Build Docker Compose
         run: |
           docker-compose build
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
     
       - name: Push Docker Compose
         run: |
-          docker-compose push
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
