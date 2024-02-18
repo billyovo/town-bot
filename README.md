@@ -9,9 +9,9 @@
 
 1. Create .env file with INFISICAL_TOKEN=<TOKEN>
 
-2. build docker compose
+2. build docker compose (which will fetch image from github packages)
 
-`docker-compose up -d --build`
+`docker-compose up -d`
 
 
 ## Development
@@ -27,7 +27,7 @@ INFISICAL_TOKEN_DEV=<TOKEN>
 `docker-compose -f docker-compose.dev.yaml up -d --build`
 
 ### PNPM
-1. Acquire .env file in dev enviornment from infisical
+1. Acquire .env file in dev environment from infisical
 2. install dependencies
 `pnpm add`
 3. Start dev
