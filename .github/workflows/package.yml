@@ -39,14 +39,13 @@ jobs:
         with:
           args: '{{ EVENT_PAYLOAD.repository.full_name }} build started'
 
-      - name: Build and tag Docker image
-        run: |
-            docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-    
-      - name: Push Docker image
-        run: |
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
   
   restart:
     runs-on: self-hosted
