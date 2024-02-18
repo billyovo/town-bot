@@ -1,4 +1,3 @@
-#
 name: Create and publish a Docker image
 
 on:
@@ -34,9 +33,10 @@ jobs:
 
       - name: Build Docker Compose
         run: |
-          docker-compose build
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-    
+            docker-compose build
+            docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+  
       - name: Push Docker Compose
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
