@@ -62,7 +62,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ vars.SERVER_DIRECTORY }}
-            git pull origin master
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S git pull origin master
             docker compose down
             docker compose up -d
 
