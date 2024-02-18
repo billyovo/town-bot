@@ -29,5 +29,4 @@ COPY --from=build /usr/bin/infisical /usr/bin/infisical
 COPY --from=build /app/src/assets/tesseract /app/dist/assets/tesseract
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 
-CMD ["npm", "run", "start"]
-ENTRYPOINT ["infisical", "run", "--env=prod", "--"]
+CMD ["infisical", "run", "--env=prod", "--", "npm", "run", "start"]
