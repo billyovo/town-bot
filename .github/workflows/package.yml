@@ -31,12 +31,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build Docker Compose
+      - name: Build and tag Docker image
         run: |
-            docker-compose build town-bot
-            docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-  
-      - name: Push Docker Compose
+            docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+    
+      - name: Push Docker image
         run: |
             docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
