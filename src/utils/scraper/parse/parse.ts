@@ -7,6 +7,7 @@ import { parseSephoraPrice } from "./websites/sephora";
 import { parseManningsPrice } from "./websites/mannings";
 import { getShopFromURL } from "../url/getShopFromURL";
 import { parseMujiPrice } from "./websites/muji";
+import { parseWellcomePrice } from "./websites/wellcome";
 
 type ParseFunctionsMap = {
     [key in PriceAlertShopOption]?: ShopParseFunction
@@ -37,6 +38,7 @@ export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
 		[PriceAlertShopOption.SEPHORA]: parseSephoraPrice,
 		[PriceAlertShopOption.MANNINGS]: parseManningsPrice,
 		[PriceAlertShopOption.MUJI]: parseMujiPrice,
+		[PriceAlertShopOption.WELLCOME]: parseWellcomePrice,
 	};
 
 	return parseFunctions[shop as keyof typeof PriceAlertShopOption] ?? null;
