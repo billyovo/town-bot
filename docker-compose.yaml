@@ -8,10 +8,7 @@ services:
     restart: always
     volumes:
       - tessdata:/app/dist/assets/tesseract
-    env_file:
-      - .env
     environment:
-      - INFISICAL_TOKEN=${INFISICAL_TOKEN}
       - NODE_ENV=production
       - TZ=Asia/Taipei
 
