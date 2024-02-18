@@ -51,6 +51,10 @@ jobs:
   restart:
     runs-on: self-hosted
     needs: build-and-push-image
+    defaults:
+      run:
+        working-directory: ${{ vars.SERVER_DIRECTORY }}
+        
     steps:
       - name: Checkout
         uses: actions/checkout@v2
