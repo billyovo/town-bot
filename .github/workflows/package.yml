@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Docker Compose
         run: |
-            docker-compose build
+            docker-compose build town-bot
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
   
       - name: Push Docker Compose
