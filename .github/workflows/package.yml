@@ -63,8 +63,8 @@ jobs:
           script: |
             cd ${{ vars.SERVER_DIRECTORY }}
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S git pull origin master
-            docker compose down
-            docker compose up -d
+            sudo docker compose down
+            sudo docker compose up -d
 
   build-notification:
     runs-on: ubuntu-latest
