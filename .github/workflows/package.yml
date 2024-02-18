@@ -54,7 +54,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ vars.SERVER_DIRECTORY }}
-        
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -65,7 +65,7 @@ jobs:
         run: docker compose down
 
       - name: Run new containers
-        run: docker compose up -d --env-file .env
+        run: docker compose up -d
 
   build-notification:
     runs-on: ubuntu-latest
