@@ -63,6 +63,7 @@ jobs:
           script: |
             cd ${{ vars.SERVER_DIRECTORY }}
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S git pull origin master
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose pul
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d
 
