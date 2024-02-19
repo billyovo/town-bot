@@ -36,7 +36,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	if (mode === PriceAlertListMode.DETAILED) {
 		let pointer = 0;
-		const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+		const embed = getPriceListEmbed(productsArray[pointer]);
 		await interaction.reply({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 
 		const eventEmitter = new EventEmitter();
@@ -61,7 +61,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 				pointer = productsArray.length - 1;
 			}
 
-			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+			const embed = getPriceListEmbed(productsArray[pointer]);
 			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
@@ -71,7 +71,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			if (pointer > 0) {
 				pointer--;
 			}
-			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+			const embed = getPriceListEmbed(productsArray[pointer]);
 			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 	}

@@ -55,7 +55,10 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 			{ name: "Last Checked", value: DateTime.fromJSDate(product.lastChecked).toFormat("yyyy-MM-dd hh:mm"), inline: true },
 		)
 		.setColor("Green");
-	if (product.previous) {
+
+	// is there a previous price?
+	// beware price = 0 here.
+	if (product.previous?.price !== undefined) {
 		embed.setFooter({ text: `Previous Price: $${product.previous.price}` });
 		embed.setTimestamp(product.previous.date);
 	}
