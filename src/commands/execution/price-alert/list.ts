@@ -5,6 +5,7 @@ import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { splitMessage } from "~/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
 import { PriceAlertItem, PriceAlertModel } from "~/utils/scraper/db/schema";
+import { getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
 
 enum ButtonType {
 	NEXT = "next",
@@ -74,6 +75,25 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			const embed = getPriceListEmbed(productsArray[pointer]);
 			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
+
+		eventEmitter.on(ButtonType.CHECK, async (i : CollectedMessageInteraction) => {
+			const product = productsArray[pointer];
+			const result = await getPriceChange(PriceAlertModel.hydrate(product));
+
+			handleScrapeResult(result, {
+				onPriceChange: async (product) => {
+					productsArray[pointer] = product;
+					await i.update({ content: `Price changed for ${product.productName}`, embeds: [getPriceListEmbed(product)], components: [...getButtons(pointer, productsArray.length)] });
+				},
+				onFailure: async (product) => {
+					await i.update({ content: `Failed to check price for ${product.productName}`, embeds: [getPriceListEmbed(product)], components: [...getButtons(pointer, productsArray.length)] });
+				},
+				onSuccess: async (product) => {
+					productsArray[pointer] = product;
+					await i.update({ content: `Price has not changed for ${product.productName}`, embeds: [getPriceListEmbed(product)], components: [...getButtons(pointer, productsArray.length)] });
+				},
+			});
+		});
 	}
 }
 
@@ -104,13 +124,16 @@ function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<But
 		.setCustomId(ButtonType.NEXT)
 		.setLabel("➡️")
 		.setStyle(ButtonStyle.Primary);
-
+	const check = new ButtonBuilder()
+		.setCustomId(ButtonType.CHECK)
+		.setLabel("🔎")
+		.setStyle(ButtonStyle.Success);
 	const remove = new ButtonBuilder()
 		.setCustomId(ButtonType.REMOVE)
 		.setLabel("🗑️")
 		.setStyle(ButtonStyle.Danger);
 
 	const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next);
-	const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(remove);
+	const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(check, remove);
 	return [row1, row2];
 }

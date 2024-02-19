@@ -59,7 +59,8 @@ export async function getPriceChange(product: HydratedDocument<PriceAlertItem>, 
 type ScrapeResultActions = {
 	onPriceChange: (product: PriceAlertItem) =>void,
 	onFailure: (product: PriceAlertItem) => void,
-	onTooManyFailures: (product: PriceAlertItem) => void,
+	onTooManyFailures?: (product: PriceAlertItem) => void,
+	onSuccess?: (product: PriceAlertItem) => void,
 }
 
 export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions : ScrapeResultActions) => {
@@ -67,10 +68,15 @@ export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actio
 	case PriceAlertResult.PRICE_CHANGE:
 		actions.onPriceChange(scrapeResult.data);
 		break;
+	case PriceAlertResult.SUCCESS:
+		actions.onSuccess?.(scrapeResult.data);
+		break;
 	case PriceAlertResult.FAIL:{
 		actions.onFailure(scrapeResult.data);
 		if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
-			actions.onTooManyFailures(scrapeResult.data);
+			if (actions.onTooManyFailures) {
+				actions.onTooManyFailures(scrapeResult.data);
+			}
 		}
 	}
 	}
