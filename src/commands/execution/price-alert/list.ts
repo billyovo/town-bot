@@ -1,11 +1,10 @@
 import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction } from "discord.js";
-import { db } from "~/managers/database/databaseManager";
 import { PriceAlertListMode } from "~/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/assets/embeds/priceEmbeds";
-import { PriceAlertItem } from "~/types/priceAlert";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { splitMessage } from "~/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
+import { PriceAlertItem, PriceAlertModel } from "~/utils/scraper/db/schema";
 
 enum ButtonType {
 	NEXT = "next",
@@ -16,9 +15,7 @@ enum ButtonType {
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const mode : PriceAlertListMode = interaction.options.get("mode")?.value as PriceAlertListMode;
 
-	const collection = db.collection("products");
-	const productsCursor = collection.find({}).sort({ shop: 1 });
-	const productsArray = await productsCursor.toArray();
+	const productsArray : PriceAlertItem[] = await PriceAlertModel.find({}).exec();
 
 	if (productsArray.length === 0) {
 		await interaction.reply({ content: "No products found" });
@@ -26,7 +23,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 
 	if (mode === PriceAlertListMode.ALL) {
-		const formattedProducts = productsArray.map((product, index) => {
+		const formattedProducts = productsArray.map((product : PriceAlertItem, index : number) => {
 			return `${index + 1}. ${product.shop} | ${product.brand} [${product.productName}](<${product.url}>)\n`;
 		});
 
@@ -69,7 +66,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		});
 
 		eventEmitter.on(ButtonType.REMOVE, async (i : CollectedMessageInteraction) => {
-			await collection.deleteOne({ _id: productsArray[pointer]._id });
+			await PriceAlertModel.findOneAndDelete({ url: productsArray[pointer].url });
 			productsArray.splice(pointer, 1);
 			if (pointer > 0) {
 				pointer--;
