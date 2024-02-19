@@ -1,13 +1,8 @@
-import { Db, MongoClient } from "mongodb";
+import mongoose from "mongoose";
 import { logger } from "../../logger/logger";
 
-let client: MongoClient;
-let db : Db;
-
 export async function connectDatabase(connectionString: string) {
-	client = new MongoClient(connectionString);
-
-	client.connect().then(() => {
+	mongoose.connect(connectionString, {}).then(() => {
 		logger("Connected to DB!");
 	})
 		.catch((err) => {
@@ -17,13 +12,4 @@ export async function connectDatabase(connectionString: string) {
 				process.exit(1);
 			}
 		});
-	db = client.db(process.env.DATABASE_NAME as string);
 }
-
-export async function disconnectDatabase() {
-	await client.close();
-}
-
-export {
-	db,
-};

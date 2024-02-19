@@ -1,11 +1,20 @@
-import { Failure, ShopParseFunction, Success } from "~/types/priceAlert";
+import { ShopParseFunction } from "~/types/priceAlert";
 import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
 import { logger } from "~/logger/logger";
 import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/utils/images/images";
 import { APIClient } from "~/utils/scraper/client";
+import type { Failure, Success } from "~/types/utils";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
-	const shopDetail : WatsonsGroupShopDetails | null = getBaseURLAndCode(shopDetails.shop as PriceAlertShopOption);
+	if (!shopDetails.shop) {
+		return {
+			data: null,
+			error: "No Shop Found in URL",
+			success: false,
+		};
+	}
+
+	const shopDetail : WatsonsGroupShopDetails | null = getBaseURLAndCode(shopDetails.shop);
 	if (!shopDetail) {
 		return {
 			data: null,

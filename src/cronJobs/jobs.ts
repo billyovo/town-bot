@@ -2,7 +2,7 @@ import { HkoRainOption } from "~/enums/cronOption";
 import { client } from "~/managers/discord/discordManager";
 import { callhko } from "~/utils/cron/hko";
 import { returnDiff } from "~/utils/cron/richDay";
-import { ActivityType, Channel, TextChannel } from "discord.js";
+import { ActivityType, Channel, ChannelType, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { scheduleJob } from "node-schedule";
 import { getCatFact } from "~/utils/catFact";
@@ -12,9 +12,9 @@ scheduleJob("1 0 * * *", () => {
 
 	client.channels.fetch(process.env.HAPPY_CHANNEL as string, { force: true, cache: false })
 		.then((channel : Channel | null) => {
-			if (!channel) return;
+			if (channel?.type !== ChannelType.GuildText) return;
 
-			(channel as TextChannel).send(`@everyone 小妹有錢人生活 ${returnDiff(now)} **POSITIVE**`);
+			channel.send(`@everyone 小妹有錢人生活 ${returnDiff(now)} **POSITIVE**`);
 		})
 		.catch((error) => {console.error(error);});
 

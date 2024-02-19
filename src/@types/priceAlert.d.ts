@@ -1,17 +1,5 @@
-import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
-import { AttachmentBuilder } from "discord.js";
-import { ObjectId } from "mongodb";
-
-export type PriceOutput = {
-    price: number,
-    productName: string,
-    productImage: string | null,
-    brand: string,
-    shop: PriceAlertShopOption,
-
-    // this is productImage, but we need to fetch it from the URL first sometimes.
-    attachment?: AttachmentBuilder | null
-}
+import { PriceAlertResult, PriceAlertShopOption } from "~/enums/priceAlertShopOption";
+import { Failure, Success } from "./utils";
 
 export type ShopDetails = {
     shop: PriceAlertShopOption | null,
@@ -20,31 +8,9 @@ export type ShopDetails = {
     hostname: string
 };
 
-export type Success<T> = {
-    data: T,
-    error?: null,
-    success: true
-}
 
-export type Failure = {
-    data: null,
-    error: string,
-    success: false
-}
-
-export type ShopParseFunctionReturn = Success<PriceOutput> | Failure;
-
-export type PriceAlertItem = {
-    _id?: ObjectId | undefined,
-    previous?: {
-        price: number,
-        date: Date
-    },
-    lastChecked: Date,
-    url: string,
-    failCount?: number,
-} & PriceOutput;
-
+// checked by comparing existing price in db with fetched new price
+// where result is the result of the check, either price change or no change or error
 export type PriceAlertChecked = {
     result: PriceAlertResult,
     data: PriceAlertItem,
@@ -54,4 +20,19 @@ export type PriceAlertChecked = {
 export type ShopParseOptions = {
     skipImageFetch: boolean
 }
+
+// output of the parseShopWebsite function
+// we will add some metadata before saving it to the db
+// check schema.ts
+
+export type ParsePriceOutput = {
+    price: number,
+    productName: string,
+    productImage: string | null,
+    brand: string,
+    shop: PriceAlertShopOption,
+}
+
+export type ShopParseFunctionReturn = Success<ParsePriceOutput> | Failure;
+
 export type ShopParseFunction = (url: string, shopDetails: ShopDetails, options? : ShopParseOptions) => Promise<ShopParseFunctionReturn>;

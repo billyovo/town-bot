@@ -1,13 +1,9 @@
 import { getAddedToAlertEmbed } from "~/assets/embeds/priceEmbeds";
-import { PriceAlertItem } from "~/types/priceAlert";
 import { addProductToAlert } from "~/utils/scraper/db/db";
 import { parseShopWebsite } from "~/utils/scraper/parse/parse";
-import { AttachmentBuilder, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
+import { PriceAlertItem } from "~/utils/scraper/db/schema";
 
-type Reply = {
-	embeds: [EmbedBuilder],
-	files?: [AttachmentBuilder]
-}
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.get("url")?.value as string;
 
@@ -24,21 +20,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		productName: output.data.productName,
 		productImage: output.data.productImage,
 		shop: output.data.shop,
+		failCount: 0,
 	};
+
+	const result = await addProductToAlert(itemToBeadded);
+	if (!result.success) return await interaction.editReply({ content: result.error ?? "Unknown error" });
+
 	const embed = getAddedToAlertEmbed(itemToBeadded);
-
-	const reply : Reply = { embeds: [embed] };
-	if (output.data.attachment) {
-		reply.files = [output.data.attachment];
-		embed.setImage(`attachment://${output.data.attachment.name}`);
-	}
-
-	await interaction.deleteReply();
-	const response = await interaction.followUp(reply);
-	const itemToBeaddedWithAttachment : PriceAlertItem = {
-		...itemToBeadded,
-		productImage: response.attachments.first()?.url ?? response.embeds[0].image?.url ?? "",
-	};
-	const result = await addProductToAlert(itemToBeaddedWithAttachment);
-	if (!result.success) return interaction.followUp({ content: result.error ?? "Unknown error" });
+	return await interaction.editReply({ embeds: [embed] });
 }

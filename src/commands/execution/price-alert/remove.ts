@@ -1,12 +1,13 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { db } from "~/managers/database/databaseManager";
+import { PriceAlertItem, PriceAlertModel } from "~/utils/scraper/db/schema";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url = interaction.options.get("url")?.value as string;
 
-	const collection = db.collection("products");
-	const result = await collection.deleteOne({ url: url });
-	if (result.deletedCount === 0) return interaction.reply({ content: "Failed to delete product" });
-	interaction.reply({ content: "Deleted product Sucessfully" });
+	const product : PriceAlertItem | null = await PriceAlertModel.findOne({ url });
+	if (!product) return interaction.reply({ content: "Product not found" });
 
+	await PriceAlertModel.deleteOne({ url: product.url });
+
+	interaction.reply({ content: `Deleted [${product.productName}](${product.url}) from ${product.shop} successfully` });
 }

@@ -1,32 +1,38 @@
 import { scheduleJob } from "node-schedule";
 import { client } from "~/managers/discord/discordManager";
-import { TextChannel } from "discord.js";
+import { ChannelType } from "discord.js";
 import { logger } from "~/logger/logger";
 import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
-import { db } from "~/managers/database/databaseManager";
 import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
-import type { PriceAlertItem } from "~/types/priceAlert";
+import { PriceAlertModel } from "~/utils/scraper/db/schema";
 
 scheduleJob("7 10 * * *", async () => {
 	logger("Running price alert check");
-	const collection = db.collection("products");
-	const products = collection.find({});
-	const channel = await client.channels.fetch((process.env.WEATHER_CHANNEL) as string, { force: true, cache: false }) as TextChannel;
 
-	for await (const product of products) {
+	const channel = await client.channels.fetch((process.env.WEATHER_CHANNEL) as string, { force: true, cache: false });
+	if (channel?.type !== ChannelType.GuildText) {
+		logger("Failed to fetch channel or channel is not a text channel.");
+		return;
+	}
+
+	const cursor = PriceAlertModel.find({}).cursor();
+
+	for await (const product of cursor) {
 		await delayNextFetch();
-		const scrapeResult = await getPriceChange(product as PriceAlertItem, { skipImageFetch: true });
+		const scrapeResult = await getPriceChange(product, { skipImageFetch: true });
+
 		handleScrapeResult(scrapeResult, {
-			onPriceChange: async (product) => {
-				await channel?.send({ embeds: [getPriceChangeEmbed(product)] });
+			onPriceChange: async (updatedProduct) => {
+				await channel?.send({ embeds: [getPriceChangeEmbed(updatedProduct)] });
 			},
-			onFailure: async (product) => {
-				await channel?.send(`Failed to check [${product.productName}](${product.url}) from ${product.shop} ${product.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
+			onFailure: async (updatedProduct) => {
+				await channel?.send(`Failed to check [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} ${updatedProduct.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
 			},
-			onTooManyFailures: async (product) => {
-				await collection.deleteOne({ _id: product._id });
-				await channel?.send(`Deleted [${product.productName}](${product.url}) from ${product.shop} due to too many failures.`);
+			onTooManyFailures: async (updatedProduct) => {
+				await PriceAlertModel.findOneAndDelete({ url: updatedProduct.url });
+				await channel?.send(`Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`);
 			},
 		});
+
 	}
 });

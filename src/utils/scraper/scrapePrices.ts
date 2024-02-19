@@ -1,9 +1,10 @@
 import { parseShopWebsite } from "./parse/parse";
-import type { PriceAlertChecked, PriceAlertItem, ShopParseOptions } from "~/types/priceAlert";
+import type { PriceAlertChecked, ShopParseOptions } from "~/types/priceAlert";
 import { PriceAlertResult } from "~/enums/priceAlertShopOption";
 import { logger } from "~/logger/logger";
-import { updateDatabaseFromScrapeResult } from "./db/db";
 import { maximumFailureCount, scrapeDelayTime } from "~/configs/scraper";
+import { PriceAlertItem, PriceAlertModel } from "./db/schema";
+import { HydratedDocument } from "mongoose";
 
 export async function delayNextFetch() {
 	const delay = Math.random() * scrapeDelayTime;
@@ -11,15 +12,16 @@ export async function delayNextFetch() {
 	return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-export async function getPriceChange(product: PriceAlertItem, options?: ShopParseOptions) : Promise<PriceAlertChecked> {
+export async function getPriceChange(product: HydratedDocument<PriceAlertItem>, options?: ShopParseOptions) : Promise<PriceAlertChecked> {
 	const updatedProduct = await parseShopWebsite(product.url, options);
+	const oldProductData = product.toObject();
 
 	if (!updatedProduct.success) {
 		return {
 			data: {
-				...product,
+				...oldProductData,
 				lastChecked: new Date(),
-				failCount: product.failCount ? (product.failCount + 1) : 1,
+				failCount: oldProductData.failCount + 1,
 			},
 			result: PriceAlertResult.FAIL,
 			error: updatedProduct.error,
@@ -30,12 +32,12 @@ export async function getPriceChange(product: PriceAlertItem, options?: ShopPars
 	if (updatedProduct.data.price !== product.price) {
 		return {
 			data: {
-				...product,
+				...oldProductData,
 				lastChecked: new Date(),
 				price: updatedProduct.data.price,
 				previous: {
-					price: product.price,
-					date: product.lastChecked,
+					price: oldProductData.price,
+					date: oldProductData.lastChecked,
 				},
 				failCount: 0,
 			},
@@ -45,7 +47,7 @@ export async function getPriceChange(product: PriceAlertItem, options?: ShopPars
 	else {
 		return {
 			data:{
-				...product,
+				...oldProductData,
 				lastChecked: new Date(),
 				failCount: 0,
 			},
@@ -71,7 +73,6 @@ export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actio
 			actions.onTooManyFailures(scrapeResult.data);
 		}
 	}
-
 	}
-	await updateDatabaseFromScrapeResult(scrapeResult);
+	await PriceAlertModel.updateOne({ url: scrapeResult.data.url }, scrapeResult.data);
 };

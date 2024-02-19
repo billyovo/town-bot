@@ -1,19 +1,25 @@
 import { EmbedBuilder } from "discord.js";
-import { PriceAlertItem } from "~/types/priceAlert";
 import { PriceAlertShopOptionImage } from "~/enums/priceAlertShopOption";
 import { DateTime } from "luxon";
+import { PriceAlertItem } from "~/utils/scraper/db/schema";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
 	const storeImage : string = PriceAlertShopOptionImage[product.shop];
+
+	const previousPrice = product.previous?.price ?? 1;
+	const discountPercentage : string = (((previousPrice - product.price) / previousPrice) * 100).toFixed(2);
+	const embedColor = (product.price > (previousPrice) ? "Red" : "Green");
+
 	const embed = new EmbedBuilder()
 		.setTitle("Price Changed!")
 		.setURL(product.url)
 		.addFields(
 			{ name: "Product", value: product.productName },
-			{ name: "Price", value: `$~~${product.previous?.price}~~ ${product.price.toString()}`, inline: true },
-			{ name: "Discount", value: `${((((product.previous?.price ?? 1) - product.price) / (product.previous?.price ?? 1)) * 100).toFixed(2)}%`, inline: true },
+			{ name: "Brand", value: `${product.brand}`, inline: true },
+			{ name: "Price", value: `~~$${previousPrice}~~  $${product.price.toString()}`, inline: true },
+			{ name: "Discount", value: `${discountPercentage}%`, inline: true },
 		)
-		.setColor((product.price > (product?.previous?.price ?? Infinity) ? "Red" : "Green"));
+		.setColor(embedColor);
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
 

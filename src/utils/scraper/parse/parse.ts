@@ -16,7 +16,15 @@ type ParseFunctionsMap = {
 export async function parseShopWebsite(url: string, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
 	const shop = getShopFromURL(url);
 
-	const parseFunction = getParseWebsiteFunction(shop.shop as PriceAlertShopOption);
+	if (!shop?.shop) {
+		return {
+			data: null,
+			error: "No Shop Found in URL",
+			success: false,
+		};
+	}
+
+	const parseFunction = getParseWebsiteFunction(shop.shop);
 
 	if (!parseFunction) {
 		return {
@@ -41,7 +49,7 @@ export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
 		[PriceAlertShopOption.WELLCOME]: parseWellcomePrice,
 	};
 
-	return parseFunctions[shop as keyof typeof PriceAlertShopOption] ?? null;
+	return parseFunctions[shop] ?? null;
 }
 
 export function parsePriceToFloat(price: string) : number {

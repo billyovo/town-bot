@@ -5,5 +5,5 @@ import "./cronJobs/jobs";
 import "./cronJobs/priceAlert";
 
 
-connectDiscord(process.env.DISCORD_TOKEN as string);
-connectDatabase(process.env.MONGO_CONNECTION_STRING as string);
+connectDiscord(`${process.env.DISCORD_TOKEN}`);
+connectDatabase(`${process.env.MONGO_CONNECTION_STRING}/${process.env.DATABASE_NAME}`);

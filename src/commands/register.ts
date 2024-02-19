@@ -14,7 +14,7 @@ if (!process.env.CLIENT_ID || !process.env.DISCORD_TOKEN) {
 
 const commandsPath = path.resolve(__dirname, "./builders");
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts")).map((file) => path.parse(file).name);
-const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
+const rest = new REST().setToken(`${process.env.DISCORD_TOKEN}`);
 
 const commands : RESTPostAPIApplicationCommandsJSONBody[] = [];
 
@@ -26,7 +26,7 @@ const importPromises = commandFiles.map(file =>
 
 Promise.all(importPromises).then(async () => {
 	const data = await rest.put(
-		Routes.applicationCommands(process.env.CLIENT_ID as string),
+		Routes.applicationCommands(`${process.env.CLIENT_ID}`),
 		{ body: commands },
 	);
 	logger(JSON.stringify(data));
