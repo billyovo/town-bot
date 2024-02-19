@@ -1,4 +1,4 @@
-name: Build and Publish and Deploy
+name: Build and Publish
 
 on:
   push:
@@ -7,13 +7,15 @@ on:
       - 'Dockerfile'
       - 'docker-compose.yml'
       - 'src/**'
+      - '.github/workflows/**'
   workflow_dispatch:
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-publish-deploy:
+  build-publish:
     runs-on: ubuntu-latest
     permissions:
         contents: read
@@ -28,7 +30,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.PAT }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -51,27 +53,4 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-  
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd ${{ vars.SERVER_DIRECTORY }}
-            echo ${{ secrets.SSH_PASSWORD }} | sudo -S git pull origin master
-            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose pull
-            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
-            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d
-
-      - name: Discord Notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        uses: Ilshidur/action-discord@master
-        with:
-          args: '{{ EVENT_PAYLOAD.repository.full_name }} build finished'
-  
-      
+          labels: ${{ steps.meta.outputs.labels }}     
