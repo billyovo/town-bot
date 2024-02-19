@@ -9,6 +9,13 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         steps:
+            - name: Deploy Start Notification
+              env:
+                DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              uses: Ilshidur/action-discord@master
+              with:
+                args: '{{ EVENT_PAYLOAD.repository.full_name }} deploy started'
+
             - name: executing remote ssh commands using ssh key
               uses: appleboy/ssh-action@v1.0.3
               with:
@@ -23,7 +30,7 @@ jobs:
                   echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
                   echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d
             
-            - name: Discord Notification
+            - name: Deploy Finish Notification
               env:
                 DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               uses: Ilshidur/action-discord@master
