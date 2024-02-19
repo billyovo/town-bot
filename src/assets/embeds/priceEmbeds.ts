@@ -52,7 +52,7 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 		.setURL(product.url)
 		.addFields(
 			{ name: "Price", value: `$${product.price.toString()}`, inline: true },
-			{ name: "Last Checked", value: DateTime.fromJSDate(product.lastChecked).toFormat("yyyy-MM-dd hh:mm"), inline: true },
+			{ name: "Last Checked", value: DateTime.fromJSDate(product.lastChecked).toFormat("yyyy-MM-dd HH:mm"), inline: true },
 		)
 		.setColor("Green");
 
