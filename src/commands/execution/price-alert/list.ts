@@ -78,7 +78,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 		eventEmitter.on(ButtonType.CHECK, async (i : CollectedMessageInteraction) => {
 			const product = productsArray[pointer];
-			const result = await getPriceChange(PriceAlertModel.hydrate(product));
+			const result = await getPriceChange(PriceAlertModel.hydrate(product), { skipImageFetch: true });
 
 			handleScrapeResult(result, {
 				onPriceChange: async (product) => {
