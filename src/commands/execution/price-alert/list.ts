@@ -51,7 +51,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 				pointer = 0;
 			}
 			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
-			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
 		eventEmitter.on(ButtonType.PREVIOUS, async (i : CollectedMessageInteraction) => {
@@ -63,7 +63,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			}
 
 			const embed = getPriceListEmbed(productsArray[pointer]);
-			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
 		eventEmitter.on(ButtonType.REMOVE, async (i : CollectedMessageInteraction) => {
@@ -73,7 +73,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 				pointer--;
 			}
 			const embed = getPriceListEmbed(productsArray[pointer]);
-			await i.update({ embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
 		eventEmitter.on(ButtonType.CHECK, async (i : CollectedMessageInteraction) => {
