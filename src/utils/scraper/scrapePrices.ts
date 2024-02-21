@@ -65,20 +65,20 @@ type ScrapeResultActions = {
 
 export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions : ScrapeResultActions) => {
 	switch (scrapeResult.result) {
-	case PriceAlertResult.PRICE_CHANGE:
-		actions.onPriceChange(scrapeResult.data);
-		break;
-	case PriceAlertResult.SUCCESS:
-		actions.onSuccess?.(scrapeResult.data);
-		break;
-	case PriceAlertResult.FAIL:{
-		actions.onFailure(scrapeResult.data);
-		if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
-			if (actions.onTooManyFailures) {
-				actions.onTooManyFailures(scrapeResult.data);
+		case PriceAlertResult.PRICE_CHANGE:
+			actions.onPriceChange(scrapeResult.data);
+			break;
+		case PriceAlertResult.SUCCESS:
+			actions.onSuccess?.(scrapeResult.data);
+			break;
+		case PriceAlertResult.FAIL:{
+			actions.onFailure(scrapeResult.data);
+			if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
+				if (actions.onTooManyFailures) {
+					actions.onTooManyFailures(scrapeResult.data);
+				}
 			}
 		}
-	}
 	}
 	await PriceAlertModel.updateOne({ url: scrapeResult.data.url }, scrapeResult.data);
 };

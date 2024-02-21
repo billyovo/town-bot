@@ -150,20 +150,20 @@ type WatsonsGroupShopDetails = {
 
 function getBaseURLAndCode(shop: PriceAlertShopOption) : WatsonsGroupShopDetails | null {
 	switch (shop) {
-	case PriceAlertShopOption.WATSONS:{
-		return {
-			baseURL: "https://api.watsons.com.hk",
-			shopCode: "wtchk",
-			shopOption: PriceAlertShopOption.WATSONS,
-		};
-	}
-	case PriceAlertShopOption.PNS:{
-		return {
-			baseURL: "http://api.pns.hk",
-			shopCode: "pnshk",
-			shopOption: PriceAlertShopOption.PNS,
-		};
-	}
+		case PriceAlertShopOption.WATSONS:{
+			return {
+				baseURL: "https://api.watsons.com.hk",
+				shopCode: "wtchk",
+				shopOption: PriceAlertShopOption.WATSONS,
+			};
+		}
+		case PriceAlertShopOption.PNS:{
+			return {
+				baseURL: "http://api.pns.hk",
+				shopCode: "pnshk",
+				shopOption: PriceAlertShopOption.PNS,
+			};
+		}
 	}
 
 	return null;
