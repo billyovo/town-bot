@@ -40,6 +40,9 @@ jobs:
           tags: |
             type=raw, value=latest
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Start Discord Notification
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -48,7 +51,7 @@ jobs:
           args: '{{ EVENT_PAYLOAD.repository.full_name }} build started'
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
