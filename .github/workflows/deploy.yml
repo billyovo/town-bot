@@ -1,13 +1,14 @@
-name: Build and Publish
+name: Deploy to Cloud
 
 on:
-  registry_package: 
-    types: [published, updated]
+  workflow_run:
+    workflows: ["Build and Publish"]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
     deploy:
-        if: ${{ github.event.registry_package.package_version.container_metadata.tag.name != '' }}
         runs-on: ubuntu-latest
         steps:
             - name: Deploy Start Notification
