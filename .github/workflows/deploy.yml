@@ -7,8 +7,8 @@ on:
 
 jobs:
     deploy:
+        if: ${{ github.event.registry_package.package_version.container_metadata.tag.name != '' }}
         runs-on: ubuntu-latest
-        if: github.event.registry_package.name == 'town-bot'
         steps:
             - name: Deploy Start Notification
               env:
