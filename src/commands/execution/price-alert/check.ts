@@ -4,9 +4,20 @@ import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scra
 import { PriceAlertModel } from "~/utils/scraper/db/schema";
 import { PriceAlertChecked } from "~/types/priceAlert";
 
-export async function execute(interaction: ChatInputCommandInteraction) {
-	await interaction.reply({ content: "Fetching..." });
+function generateProgressBar(checkedProduct: number, total: number) {
+	const filled = "█";
+	const unfilled = "░";
+	const maxLength = 40;
 
+	const progress = Math.ceil((checkedProduct / total) * maxLength);
+
+	return `[${filled.repeat(progress)}${unfilled.repeat(maxLength - progress)}] (${checkedProduct}/${total})`;
+
+}
+export async function execute(interaction: ChatInputCommandInteraction) {
+	const repliedMessage = await interaction.reply({ content: "Fetching..." });
+
+	const total = await PriceAlertModel.countDocuments();
 	const products = PriceAlertModel.find({}).cursor();
 
 	let count = 0;
@@ -28,7 +39,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 				await interaction.channel?.send(`Deleted [${product.productName}](${product.url}) from ${product.shop} due to too many failures.`);
 			},
 		});
+
+		console.log(generateProgressBar(count, total));
+
+		repliedMessage.edit({ content: `Fetching \r\n${generateProgressBar(count, total)}` });
 	}
-	interaction.channel!.send(`Success! Checked ${count} products.`);
+	repliedMessage.edit({ content: `Done! Checked ${count} products` });
 
 }
