@@ -7,7 +7,7 @@ import { PriceAlertChecked } from "~/types/priceAlert";
 function generateProgressBar(checkedProduct: number, total: number) {
 	const filled = "█";
 	const unfilled = "░";
-	const maxLength = 40;
+	const maxLength = 30;
 
 	const progress = Math.ceil((checkedProduct / total) * maxLength);
 
@@ -40,9 +40,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			},
 		});
 
-		console.log(generateProgressBar(count, total));
-
-		repliedMessage.edit({ content: `Fetching \r\n${generateProgressBar(count, total)}` });
+		repliedMessage.edit({ content: `Fetching [${product.productName}](${product.url}) \r\n${generateProgressBar(count, total)}` });
 	}
 	repliedMessage.edit({ content: `Done! Checked ${count} products` });
 
