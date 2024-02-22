@@ -7,7 +7,7 @@ import { parseSephoraPrice } from "~/utils/scraper/parse/websites/sephora";
 import { parseWatsonsGroupPrice } from "~/utils/scraper/parse/websites/watsonsGroup";
 import { parseWellcomePrice } from "~/utils/scraper/parse/websites/wellcome";
 
-export type ShopOption = {
+type ParseDetails = {
     image: string;
     parseFunction: ShopParseFunction;
 };
@@ -23,7 +23,7 @@ export enum PriceAlertShopOption {
     WELLCOME = "WELLCOME",
 }
 
-export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ShopOption> = {
+export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetails> = {
 	HKTVMALL: {
 		image: "https://i.imgur.com/wYnaMoS.png",
 		parseFunction: parseHktvmallPrice,
@@ -56,7 +56,7 @@ export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ShopOption
 		image: "https://i.imgur.com/A5ogcsY.png",
 		parseFunction: parseWellcomePrice,
 	},
-} satisfies Record<PriceAlertShopOption, ShopOption>;
+} satisfies Record<PriceAlertShopOption, ParseDetails>;
 
 export enum PriceAlertListMode {
     ALL = "all",
