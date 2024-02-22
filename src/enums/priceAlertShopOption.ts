@@ -1,6 +1,7 @@
 import { ShopParseFunction } from "~/types/priceAlert";
 import { parseAeonPrice } from "~/utils/scraper/parse/websites/aeon";
 import { parseHktvmallPrice } from "~/utils/scraper/parse/websites/hktvmall";
+import { parseLookfantasticPrice } from "~/utils/scraper/parse/websites/lookfantastic";
 import { parseManningsPrice } from "~/utils/scraper/parse/websites/mannings";
 import { parseMujiPrice } from "~/utils/scraper/parse/websites/muji";
 import { parseSephoraPrice } from "~/utils/scraper/parse/websites/sephora";
@@ -21,6 +22,7 @@ export enum PriceAlertShopOption {
     MANNINGS = "MANNINGS",
     MUJI = "MUJI",
     WELLCOME = "WELLCOME",
+	LOOKFANTASTIC = "LOOKFANTASTIC",
 }
 
 export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetails> = {
@@ -55,6 +57,10 @@ export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetai
 	WELLCOME: {
 		image: "https://i.imgur.com/A5ogcsY.png",
 		parseFunction: parseWellcomePrice,
+	},
+	LOOKFANTASTIC: {
+		image: "https://pbs.twimg.com/profile_images/1687076928635711488/G0CE0Q8-_400x400.jpg",
+		parseFunction: parseLookfantasticPrice,
 	},
 } satisfies Record<PriceAlertShopOption, ParseDetails>;
 
