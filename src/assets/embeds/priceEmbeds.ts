@@ -1,10 +1,10 @@
 import { EmbedBuilder } from "discord.js";
-import { PriceAlertShopOptionImage } from "~/enums/priceAlertShopOption";
 import { DateTime } from "luxon";
+import { PriceAlertShopParseDetails } from "~/enums/priceAlertShopOption";
 import { PriceAlertItem } from "~/utils/scraper/db/schema";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
-	const storeImage : string = PriceAlertShopOptionImage[product.shop];
+	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
 
 	const previousPrice = product.previous?.price ?? 1;
 	const discountPercentage : string = (((previousPrice - product.price) / previousPrice) * 100).toFixed(2);
@@ -27,7 +27,7 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 }
 
 export function getAddedToAlertEmbed(product: PriceAlertItem) {
-	const storeImage : string = PriceAlertShopOptionImage[product.shop];
+	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
 
 	const embed = new EmbedBuilder()
 		.setTitle(product.productName)
@@ -45,7 +45,8 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 }
 
 export function getPriceListEmbed(product: PriceAlertItem) {
-	const storeImage : string = PriceAlertShopOptionImage[product.shop];
+	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
+
 	const embed = new EmbedBuilder()
 		.setAuthor({ name: product.brand })
 		.setTitle(product.productName)

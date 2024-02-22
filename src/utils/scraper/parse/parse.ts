@@ -1,17 +1,7 @@
-import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
-import { parseHktvmallPrice } from "./websites/hktvmall";
-import { parseAeonPrice } from "./websites/aeon";
-import type { ShopParseFunction, ShopParseFunctionReturn, ShopParseOptions } from "~/types/priceAlert";
-import { parseWatsonsGroupPrice } from "./websites/watsonsGroup";
-import { parseSephoraPrice } from "./websites/sephora";
-import { parseManningsPrice } from "./websites/mannings";
+import { PriceAlertShopOption, PriceAlertShopParseDetails } from "~/enums/priceAlertShopOption";
+import type { ShopParseFunctionReturn, ShopParseOptions } from "~/types/priceAlert";
 import { getShopFromURL } from "../url/getShopFromURL";
-import { parseMujiPrice } from "./websites/muji";
-import { parseWellcomePrice } from "./websites/wellcome";
 
-type ParseFunctionsMap = {
-    [key in PriceAlertShopOption]?: ShopParseFunction
-};
 
 export async function parseShopWebsite(url: string, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
 	const shop = getShopFromURL(url);
@@ -38,18 +28,8 @@ export async function parseShopWebsite(url: string, options?: ShopParseOptions) 
 }
 
 export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
-	const parseFunctions: ParseFunctionsMap = {
-		[PriceAlertShopOption.HKTVMALL]: parseHktvmallPrice,
-		[PriceAlertShopOption.AEONCITY]: parseAeonPrice,
-		[PriceAlertShopOption.WATSONS]: parseWatsonsGroupPrice,
-		[PriceAlertShopOption.PNS]: parseWatsonsGroupPrice,
-		[PriceAlertShopOption.SEPHORA]: parseSephoraPrice,
-		[PriceAlertShopOption.MANNINGS]: parseManningsPrice,
-		[PriceAlertShopOption.MUJI]: parseMujiPrice,
-		[PriceAlertShopOption.WELLCOME]: parseWellcomePrice,
-	};
 
-	return parseFunctions[shop] ?? null;
+	return PriceAlertShopParseDetails[shop]?.parseFunction ?? null;
 }
 
 export function parsePriceToFloat(price: string) : number {
