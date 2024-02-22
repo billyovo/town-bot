@@ -6,10 +6,17 @@ import { getShopFromURL } from "../url/getShopFromURL";
 export async function parseShopWebsite(url: string, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
 	const shop = getShopFromURL(url);
 
-	if (!shop?.shop) {
+	if (!shop?.domain) {
 		return {
 			data: null,
 			error: "No Shop Found in URL",
+			success: false,
+		};
+	}
+	if (!shop.shop) {
+		return {
+			data: null,
+			error: `Shop not supported: ${shop.domain ?? "UNKNOWN DOMAIN"}`,
 			success: false,
 		};
 	}
