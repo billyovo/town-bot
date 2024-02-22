@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, AttachmentBuilder } from "discord.js";
-import { createCanvas, loadImage } from "canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import path from "path";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -17,7 +17,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const image = await loadImage(url);
 		ctx.drawImage(image, 0, 0, image.width, image.height, 313, 79, 339, 263);
 		ctx.drawImage(base, 0, 0);
-		const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "output.png" });
+		const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "output.png" });
 		interaction.editReply({ files: [attachment] });
 	}
 	catch (error) {
