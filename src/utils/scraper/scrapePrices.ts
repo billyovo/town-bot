@@ -29,7 +29,7 @@ export async function getPriceChange(product: HydratedDocument<PriceAlertItem>, 
 	}
 	logger(`Checked Product: ${updatedProduct.data.productName}`);
 
-	if (updatedProduct.data.price !== product.price) {
+	if (updatedProduct.data.price.toFixed(2) !== product.price.toFixed(2)) {
 		return {
 			data: {
 				...oldProductData,
