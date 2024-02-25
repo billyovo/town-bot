@@ -16,7 +16,7 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 		.addFields(
 			{ name: "Product", value: product.productName },
 			{ name: "Brand", value: `${product.brand}`, inline: true },
-			{ name: "Price", value: `~~$${previousPrice}~~  $${product.price.toString()}`, inline: true },
+			{ name: "Price", value: `~~$${previousPrice}~~  $${product.price.toFixed(1)}`, inline: true },
 			{ name: "Discount", value: `${discountPercentage}%`, inline: true },
 		)
 		.setColor(embedColor);
@@ -34,7 +34,7 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 		.setURL(product.url)
 		.addFields(
 			{ name: "Brand", value: product.brand, inline: true },
-			{ name: "Price", value: `$${product.price.toString()}`, inline: true },
+			{ name: "Price", value: `$${product.price.toFixed(1)}`, inline: true },
 		)
 		.setFooter({ text: "Added to price alert" })
 		.setColor("Green");
@@ -52,7 +52,7 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 		.setTitle(product.productName)
 		.setURL(product.url)
 		.addFields(
-			{ name: "Price", value: `$${product.price.toString()}`, inline: true },
+			{ name: "Price", value: `$${product.price.toFixed(1)}`, inline: true },
 			{ name: "Last Checked", value: DateTime.fromJSDate(product.lastChecked).toFormat("yyyy-MM-dd HH:mm"), inline: true },
 		)
 		.setColor("Green");
@@ -60,7 +60,7 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 	// is there a previous price?
 	// beware price = 0 here.
 	if (product.previous?.price !== undefined) {
-		embed.setFooter({ text: `Previous Price: $${product.previous.price}` });
+		embed.setFooter({ text: `Previous Price: $${product.previous.price.toFixed(1)}` });
 		embed.setTimestamp(product.previous.date);
 	}
 	if (product.productImage) embed.setImage(product.productImage);
