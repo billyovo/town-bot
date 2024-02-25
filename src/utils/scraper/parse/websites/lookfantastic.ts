@@ -3,6 +3,7 @@ import { HTMLClient } from "../../client";
 import parse from "node-html-parser";
 import { ShopParseFunction } from "~/types/priceAlert";
 import { PriceAlertShopOption } from "~/enums/priceAlertShopOption";
+import { parsePriceToFloat } from "../parse";
 
 export const parseLookfantasticPrice : ShopParseFunction = async (url, _) => {
 	const html = await HTMLClient.get(url).catch(() => {
@@ -27,7 +28,7 @@ export const parseLookfantasticPrice : ShopParseFunction = async (url, _) => {
 		error: null,
 		data: {
 			productName: productInformation.name,
-			price: productInformation.offers[0].price,
+			price: parsePriceToFloat(productInformation.offers[0].price),
 			productImage: productInformation.image,
 			brand: productInformation.brand.name,
 			shop: PriceAlertShopOption.LOOKFANTASTIC,
