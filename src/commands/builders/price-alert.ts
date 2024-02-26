@@ -50,4 +50,9 @@ export const command = new SlashCommandBuilder()
 						},
 					),
 			),
+	)
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName("supported")
+			.setDescription("check supported shops"),
 	);
