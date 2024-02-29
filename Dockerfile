@@ -8,11 +8,11 @@ COPY package.json pnpm-lock.yaml /app/
 COPY src /app/src
 COPY tsconfig.json /app/
 
+RUN corepack enable
 RUN apt-get update \
     && apt-get install -y bash curl\
     && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
     && apt-get install -y infisical \
-    && npm i -g pnpm \
     && pnpm fetch \ 
     && pnpm install --frozen-lockfile --offline 
 
