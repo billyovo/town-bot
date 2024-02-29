@@ -1,5 +1,5 @@
 # Build stage
-FROM node:21-slim AS base
+FROM node:21-alpine AS base
 WORKDIR /app
 
 FROM base AS build
@@ -9,10 +9,9 @@ COPY src /app/src
 COPY tsconfig.json /app/
 
 RUN corepack enable
-RUN apt-get update \
-    && apt-get install -y bash curl\
-    && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
-    && apt-get install -y infisical \
+RUN apk add --no-cache bash curl\
+    && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.alpine.sh' | bash \
+    && apk add --no-cache infisical \
     && pnpm fetch \ 
     && pnpm install --frozen-lockfile --offline 
 
