@@ -27,9 +27,11 @@ jobs:
                 port: ${{ secrets.SSH_PORT }}
                 script: |
                   cd ${{ vars.SERVER_DIRECTORY }}
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git fetch --depth=1 origin master:docker-compose.yaml && git checkout origin/master -- docker-compose.yaml
+                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git fetch --depth=1 origin master:docker-compose.yaml
+                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git checkout origin/master -- docker-compose.yaml
                   echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose pull
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down && sudo -S docker compose up -d
+                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
+                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d
             
             - name: Deploy Finish Notification
               env:
