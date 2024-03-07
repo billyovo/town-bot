@@ -8,6 +8,7 @@
     "start": "node dist/index.js",
     "build": "tsc -p . && tsc-alias && copyfiles -u 1 src/assets/* dist/",
     "register": "ts-node ./src/commands/register",
+    "unregister": "ts-node ./src/commands/unregister",
     "fix": "eslint src --fix",
     "test:lint": "eslint src",
     "test": "jest --silent"
