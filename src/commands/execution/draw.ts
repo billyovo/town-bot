@@ -30,7 +30,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	if (jobID.status >= 300) return await interaction.editReply({ content: `${jobID.data.message ?? jobID.data.error?.message}` });
 
 	// wait for the job to be finished before polling
-	await sleep(2000);
+	await sleep(5000);
 	const polling = setInterval(async () => {
 		try {
 			const url = await client.get(`${process.env.DRAW_LINK}/operations/${jobID.data.id}${process.env.DRAW_API_VERSION}`, { headers: headers });
