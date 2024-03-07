@@ -1,8 +1,9 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { createWorker } from "tesseract.js";
+import { splitMessage } from "~/utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	interaction.deferReply();
+	await interaction.deferReply();
 	const url : string = interaction.options.get("url")?.value as string;
 
 	if (!url) {
@@ -19,12 +20,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	try {
 		const ret = await worker.recognize(url);
-		interaction.editReply({
-			content: ret.data.text || "Nothing is recognized!",
+		const recognizedText = ret.data.text === "" ? ["Nothing is recognized!"] : splitMessage(ret.data.text.split("\n"));
+
+		await interaction.editReply({
+			content: ret.data.text[0],
 		});
+		for (let i = 1; i < recognizedText.length; i++) {
+			await interaction.followUp({
+				content: recognizedText[i],
+			});
+		}
 	}
 	catch (error) {
-		interaction.editReply({
+		await interaction.editReply({
 			content: "An error occurred!",
 		});
 	}
