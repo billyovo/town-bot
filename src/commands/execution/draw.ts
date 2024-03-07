@@ -1,7 +1,12 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import axios from "axios";
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const prompt = interaction.options.get("prompt")?.value ?? "A fish on a plate";
+	const prompt = interaction.options.get("prompt")!.value;
+	const size = interaction.options.get("size")?.value ?? "1024x1024";
+
 	const headers = {
 		"Cache-Control": "no-cache, must-revalidate",
 		"Content-Type": "application/json",
@@ -9,8 +14,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	};
 	const body = {
 		"caption": prompt,
-		"resolution": "1024x1024",
+		"resolution": size,
 	};
+
 	const client = axios.create({
 		validateStatus: function(status) {
 			return status < 500;
@@ -20,58 +26,43 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	await interaction.deferReply();
 
 	const jobID = await client.post(`${process.env.DRAW_LINK}${process.env.DRAW_API_VERSION}`, body, { headers: headers });
-	console.log(jobID.data);
-	if (jobID.status >= 300) {
-		return await interaction.editReply({ content: `${jobID.data.message}` });
-	}
+	// out of quota!
+	if (jobID.status >= 300) return await interaction.editReply({ content: `${jobID.data.message ?? jobID.data.error?.message}` });
 
+	// wait for the job to be finished before polling
+	await sleep(2000);
+	const polling = setInterval(async () => {
+		try {
+			const url = await client.get(`${process.env.DRAW_LINK}/operations/${jobID.data.id}${process.env.DRAW_API_VERSION}`, { headers: headers });
+			if (url.status === 429) throw new Error(url.data?.message ?? "Too many requests, please try again later");
+			if (url.status >= 300) throw new Error(url.data?.message ?? "Something went wrong, please try again later");
 
-	setTimeout(async () => {
-		const polling = setInterval(async () => {
-			try {
-				const url = await client.get(`${process.env.DRAW_LINK}/operations/${jobID.data.id}${process.env.DRAW_API_VERSION}`, { headers: headers });
-				if (url.status === 429) {
-					throw new Error(url.data?.message ?? "Too many requests, please try again later");
+			switch (url.data.status) {
+				case "Running":{
+					await interaction.editReply({ content: "Drawing your image..." });
+					break;
 				}
-				if (url.status >= 300) {
-					throw new Error(url.data?.message ?? "Something went wrong, please try again later");
+				case "NotStarted":{
+					await interaction.editReply({ content: "Starting to draw your image..." });
+					break;
 				}
-				switch (url.data.status) {
-					case "Running":{
-						await interaction.editReply({ content: "Drawing your image..." });
-						break;
-					}
-
-					case "NotStarted":{
-						await interaction.editReply({ content: "Starting to draw your image..." });
-						break;
-					}
-
-					case "Failed":{
-						throw new Error(url.data.error.message);
-
-					}
-
-					case "Succeeded":{
-						const image = await client.get(url.data.result.contentUrl, { responseType: "arraybuffer" });
-
-						if (image.status >= 300) {
-							throw new Error("Something is wrong when getting the image :(");
-						}
-						await interaction.editReply({ files: [image.data], content: `${prompt}` });
-						clearInterval(polling);
-						break;
-					}
+				case "Failed":{
+					throw new Error(url.data.error.message);
 				}
-
-			}
-			catch (error) {
-				if (error instanceof Error) {
-					console.log(error);
+				case "Succeeded":{
 					clearInterval(polling);
-					await interaction.editReply(error.message);
+					const image = await client.get(url.data.result.contentUrl, { responseType: "arraybuffer" });
+					if (image.status >= 300) throw new Error("Something is wrong when getting the image :(");
+					await interaction.editReply({ files: [image.data], content: `${prompt}` });
+					break;
 				}
 			}
-		}, 5000);
-	}, 5000);
+		}
+		catch (error) {
+			if (error instanceof Error) {
+				clearInterval(polling);
+				await interaction.editReply(error.message);
+			}
+		}
+	}, 1500);
 }
