@@ -1,5 +1,5 @@
 const messageLengthLimit = 2000;
-export const splitMessage = (messages: string[]): string[] => {
+export const splitMessage = (messages: string[], isNewLineRetained: boolean = false): string[] => {
 	const list : string[] = [""];
 	let current = 0;
 
@@ -8,7 +8,7 @@ export const splitMessage = (messages: string[]): string[] => {
 			current++;
 			list[current] = "";
 		}
-		list[current] += message;
+		list[current] += message + (isNewLineRetained ? "\n" : "");
 	}
 
 	return list;

@@ -20,14 +20,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	try {
 		const ret = await worker.recognize(url);
-		const recognizedText = ret.data.text === "" ? ["Nothing is recognized!"] : splitMessage(ret.data.text.split("\n"));
-
+		const recognizedText = ret.data.text === "" ? ["Nothing is recognized!"] : splitMessage(ret.data.text.split("\n"), true);
 		await interaction.editReply({
-			content: ret.data.text[0],
+			content: recognizedText[0],
 		});
 		for (let i = 1; i < recognizedText.length; i++) {
 			await interaction.followUp({
-				content: recognizedText[i],
+				content: recognizedText[i] + "\r\n",
 			});
 		}
 	}
