@@ -1,4 +1,4 @@
-import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction } from "discord.js";
+import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { PriceAlertListMode } from "~/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/assets/embeds/priceEmbeds";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
@@ -11,8 +11,10 @@ enum ButtonType {
 	NEXT = "next",
 	PREVIOUS = "previous",
 	REMOVE = "remove",
-	CHECK = "check"
+	CHECK = "check",
+	CURRENT = "currentPage",
 }
+
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const mode : PriceAlertListMode = interaction.options.get("mode")?.value as PriceAlertListMode;
 
@@ -94,6 +96,26 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 				},
 			});
 		});
+
+		eventEmitter.on(ButtonType.CURRENT, async (i : CollectedMessageInteraction) => {
+			await i.showModal(getInputModal());
+			const filter = (i: Interaction) => i.user.id === interaction.user.id;
+			const receivedPageNumberInteraction = await interaction.awaitModalSubmit({ filter, time: 30000 });
+
+			const receivedPageNumber = parseInt(receivedPageNumberInteraction.fields.getTextInputValue("pageNumberInput"));
+			if (!Number.isInteger(receivedPageNumber) || (receivedPageNumber < 1) || (receivedPageNumber > productsArray.length)) {
+				await receivedPageNumberInteraction.reply({ content: "Invalid page number", ephemeral: true });
+				return;
+			}
+			pointer = receivedPageNumber - 1;
+			const embed = getPriceListEmbed(productsArray[pointer]);
+
+			// we already replied to the interaction with i.showModal, so we can just edit the message, blame @discord
+			// and we need to reply to the modal interaction to prevent error as well, thanks @discord
+			await i.message.edit({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
+			await receivedPageNumberInteraction.reply({ content: `Jumped to page ${receivedPageNumber}`, ephemeral: true });
+
+		});
 	}
 }
 
@@ -111,13 +133,32 @@ async function createProductDetailButtonCollector(interaction: ChatInputCommandI
 	});
 }
 
+function getInputModal() : ModalBuilder {
+	const pageNumberModal = new ModalBuilder()
+		.setCustomId("pageNumberModal")
+		.setTitle("Enter page number");
+
+	const pageNumberInput = new TextInputBuilder()
+		.setCustomId("pageNumberInput")
+		.setPlaceholder("Enter page number...")
+		.setLabel("Page Number")
+		.setMaxLength(3)
+		.setMinLength(1)
+		.setRequired(true)
+		.setStyle(TextInputStyle.Short);
+
+	const row = new ActionRowBuilder<TextInputBuilder>().addComponents(pageNumberInput);
+	pageNumberModal.addComponents(row);
+
+	return pageNumberModal;
+}
 function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<ButtonBuilder>[] {
 	const previous = new ButtonBuilder()
 		.setCustomId(ButtonType.PREVIOUS)
 		.setLabel("⬅️")
 		.setStyle(ButtonStyle.Primary);
 	const currentPageButton = new ButtonBuilder()
-		.setCustomId("currentPage")
+		.setCustomId(ButtonType.CURRENT)
 		.setLabel(`Item ${currentPage + 1}/${maxPage}`)
 		.setStyle(ButtonStyle.Secondary);
 	const next = new ButtonBuilder()
