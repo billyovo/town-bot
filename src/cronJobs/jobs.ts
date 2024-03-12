@@ -6,6 +6,7 @@ import { ActivityType, Channel, ChannelType, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { scheduleJob } from "node-schedule";
 import { getCatFact } from "~/utils/catFact";
+import { logger } from "~/logger/logger";
 
 scheduleJob("1 0 * * *", () => {
 	const now = DateTime.now().setZone("Asia/Taipei").endOf("day");
@@ -16,7 +17,7 @@ scheduleJob("1 0 * * *", () => {
 
 			channel.send(`@everyone 小妹有錢人生活 ${returnDiff(now)} **POSITIVE**`);
 		})
-		.catch((error) => {console.error(error);});
+		.catch((error) => {logger(error.message);});
 
 });
 
@@ -29,16 +30,17 @@ scheduleJob("0 7 * * *", async () => {
 	try {
 		const respone = await callhko();
 		const rain = respone.data.weatherForecast[0].PSR;
-		console.log(respone.data.weatherForecast[0].PSR);
 		if (rain === HkoRainOption.HIGH || rain === HkoRainOption.MEDIUM_HIGH) {
 			client.channels.fetch((process.env.WEATHER_CHANNEL) as string, { force: true, cache: false })
 				.then((channel : Channel | null) => {
 					(channel as TextChannel).send("出門口記得帶遮!!!!!!!!!!");
 				})
-				.catch((error) => {console.error(error);});
+				.catch((error) => {logger(error.message);});
 		}
 	}
 	catch (error) {
-		console.log(error);
+		if (error instanceof Error) {
+			logger(error.message);
+		}
 	}
 });
