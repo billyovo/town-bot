@@ -16,7 +16,7 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 		.addFields(
 			{ name: "Product", value: product.productName },
 			{ name: "Brand", value: `${product.brand}`, inline: true },
-			{ name: "Price", value: `~~$${previousPrice}~~  $${product.price.toFixed(1)}`, inline: true },
+			{ name: "Price", value: `~~$${previousPrice.toFixed(1)}~~  $${product.price.toFixed(1)}`, inline: true },
 			{ name: "Discount", value: `${discountPercentage}%`, inline: true },
 		)
 		.setColor(embedColor);
