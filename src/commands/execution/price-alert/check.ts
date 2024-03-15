@@ -27,18 +27,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 		const scrapeResult : PriceAlertChecked = await getPriceChange(product, { skipImageFetch: true });
 
-		handleScrapeResult(scrapeResult, {
-			onPriceChange: async (product) => {
-				await interaction.channel!.send({ embeds: [getPriceChangeEmbed(product)] });
-			},
-			onFailure: async (product) => {
-				await interaction.channel!.send(`Failed to check [${product.productName}](${product.url}) from ${product.shop} ${product.failCount} times.\r\nReason: ${scrapeResult?.error ?? "Unknown Error"}`);
-			},
-			onTooManyFailures: async (product) => {
-				await PriceAlertModel.findOneAndDelete({ url: product.url });
-				await interaction.channel?.send(`Deleted [${product.productName}](${product.url}) from ${product.shop} due to too many failures.`);
-			},
-		});
+		await handleScrapeResult(scrapeResult);
 
 		repliedMessage.edit({ content: `Fetching [${product.productName}](${product.url}) \r\n${generateProgressBar(count, total)}` });
 	}

@@ -5,6 +5,8 @@ import { logger } from "~/logger/logger";
 import { maximumFailureCount, scrapeDelayTime } from "~/configs/scraper";
 import { PriceAlertItem, PriceAlertModel } from "./db/schema";
 import { HydratedDocument } from "mongoose";
+import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
+import axios from "axios";
 
 export async function delayNextFetch() {
 	const delay = Math.random() * scrapeDelayTime;
@@ -57,13 +59,32 @@ export async function getPriceChange(product: HydratedDocument<PriceAlertItem>, 
 }
 
 type ScrapeResultActions = {
-	onPriceChange: (product: PriceAlertItem) =>void,
-	onFailure: (product: PriceAlertItem) => void,
+	onPriceChange: (product: PriceAlertItem) => void,
+	onFailure: (product: PriceAlertItem, error?: string) => void,
 	onTooManyFailures?: (product: PriceAlertItem) => void,
 	onSuccess?: (product: PriceAlertItem) => void,
 }
 
-export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions : ScrapeResultActions) => {
+const defaultActions : ScrapeResultActions = {
+	onPriceChange: async (updatedProduct) => {
+		await axios.post(process.env.PRICE_WEBHOOK as string, {
+			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()]
+		});	
+	},
+	onFailure: async (updatedProduct, error) => {
+		await axios.post(process.env.PRICE_WEBHOOK as string, {
+			content: `Failed to check [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} ${updatedProduct.failCount} times.\r\nReason: ${error ?? "Unknown Error"}`,
+		});
+	},
+	onTooManyFailures: async (updatedProduct) => {
+		await PriceAlertModel.findOneAndDelete({ url: updatedProduct.url });
+		await axios.post(process.env.PRICE_WEBHOOK as string, {
+			content: `Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
+		});
+	},
+}
+
+export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions = defaultActions) => {
 	switch (scrapeResult.result) {
 		case PriceAlertResult.PRICE_CHANGE:
 			actions.onPriceChange(scrapeResult.data);
@@ -72,7 +93,7 @@ export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actio
 			actions.onSuccess?.(scrapeResult.data);
 			break;
 		case PriceAlertResult.FAIL:{
-			actions.onFailure(scrapeResult.data);
+			actions.onFailure(scrapeResult.data, scrapeResult.error);
 			if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
 				if (actions.onTooManyFailures) {
 					actions.onTooManyFailures(scrapeResult.data);
