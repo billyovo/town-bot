@@ -26,9 +26,12 @@ INFISICAL_TOKEN_DEV=<TOKEN>
 
 `docker-compose -f docker-compose.dev.yaml up -d --build`
 
-### PNPM
+### pnpm
 1. Acquire .env file in dev environment from infisical
 2. install dependencies
 `pnpm add`
 3. Start dev
-`npm run dev`
+`pnpm run dev`
+
+### infisical
+infisical run -- pnpm run dev
