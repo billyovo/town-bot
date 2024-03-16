@@ -3,7 +3,7 @@ import { logger } from "~/logger/logger";
 import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
 import { PriceAlertModel } from "~/utils/scraper/db/schema";
 
-scheduleJob("7 10 * * *", async () => {
+scheduleJob("15 9,18 * * *", async () => {
 	logger("Running price alert check");
 
 	const cursor = PriceAlertModel.find({}).cursor();
