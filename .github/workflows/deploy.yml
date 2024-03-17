@@ -27,7 +27,7 @@ jobs:
                 SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
               run: |
                 mkdir -p ~/.ssh/ |
-                echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/prod.key |
+                echo "$SSH_PRIVATE_KEY" > ~/.ssh/prod.key |
                 chmod 600 ~/.ssh/prod.key |
                 cat >>~/.ssh/config <<END
                 Host prod
