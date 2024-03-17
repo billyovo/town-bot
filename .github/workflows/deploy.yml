@@ -18,21 +18,37 @@ jobs:
               with:
                 args: '{{ EVENT_PAYLOAD.repository.full_name }} deploy started'
 
-            - name: executing remote ssh commands using ssh key
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USER }}
-                key: "${{ secrets.SSH_PRIVATE_KEY }}"
-                port: ${{ secrets.SSH_PORT }}
-                script: |
-                  cd ${{ vars.SERVER_DIRECTORY }}
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git fetch --depth=1 origin master:docker-compose.yaml
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git checkout origin/master -- docker-compose.yaml
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose pull
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d
-            
+            - name: create ssh settings
+              shell: bash
+              env:
+                SSH_HOST: ${{ secrets.SSH_HOST }}
+                SSH_USER: ${{ secrets.SSH_USER }}
+                SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+                SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+              run: |
+                mkdir -p ~/.ssh/ |
+                echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/prod.key |
+                chmod 600 ~/.ssh/prod.key |
+                cat >>~/.ssh/config <<END
+                Host prod
+                  HostName $SSH_HOST
+                  User $SSH_USER
+                  IdentityFile ~/.ssh/prod.key
+                  StrictHostKeyChecking no
+                END
+
+            - name: Run SSH deploy
+              shell: bash
+              env:
+                SERVER_DIRECTORY: ${{ vars.SERVER_DIRECTORY }}
+                SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+              run: |
+                ssh prod "cd $SERVER_DIRECTORY && echo $SSH_PASSWORD | sudo -S git fetch --depth=1 origin master:docker-compose.yaml |
+                && echo $SSH_PASSWORD | sudo -S git checkout origin/master -- docker-compose.yaml |
+                && echo $SSH_PASSWORD | sudo -S docker compose pull |
+                && echo $SSH_PASSWORD | sudo -S docker compose down |
+                && echo $SSH_PASSWORD | sudo -S docker compose up -d
+                
             - name: Deploy Finish Notification
               env:
                 DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
