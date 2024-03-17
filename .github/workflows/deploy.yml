@@ -26,9 +26,9 @@ jobs:
                 SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
                 SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
               run: |
-                mkdir -p ~/.ssh/ |
-                echo "$SSH_PRIVATE_KEY" > ~/.ssh/prod.key |
-                chmod 600 ~/.ssh/prod.key |
+                mkdir -p ~/.ssh/ &&
+                echo "$SSH_PRIVATE_KEY" > ~/.ssh/prod.key &&
+                chmod 600 ~/.ssh/prod.key &&
                 cat >>~/.ssh/config <<END
                 Host prod
                   HostName $SSH_HOST
@@ -43,10 +43,10 @@ jobs:
                 SERVER_DIRECTORY: ${{ vars.SERVER_DIRECTORY }}
                 SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
               run: |
-                ssh prod "cd $SERVER_DIRECTORY && echo $SSH_PASSWORD | sudo -S git fetch --depth=1 origin master:docker-compose.yaml |
-                && echo $SSH_PASSWORD | sudo -S git checkout origin/master -- docker-compose.yaml |
-                && echo $SSH_PASSWORD | sudo -S docker compose pull |
-                && echo $SSH_PASSWORD | sudo -S docker compose down |
+                ssh prod "cd $SERVER_DIRECTORY && echo $SSH_PASSWORD | sudo -S git fetch --depth=1 origin master:docker-compose.yaml 
+                && echo $SSH_PASSWORD | sudo -S git checkout origin/master -- docker-compose.yaml 
+                && echo $SSH_PASSWORD | sudo -S docker compose pull 
+                && echo $SSH_PASSWORD | sudo -S docker compose down 
                 && echo $SSH_PASSWORD | sudo -S docker compose up -d
                 
             - name: Deploy Finish Notification
