@@ -1,4 +1,4 @@
 export enum HkoRainOption {
-    HIGH = "HIGH",
-    MEDIUM_HIGH = "MEDIUM_HIGH"
+    HIGH = "High",
+    MEDIUM_HIGH = "Medium High"
 }
