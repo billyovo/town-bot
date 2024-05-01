@@ -3,7 +3,7 @@ import type { PriceAlertChecked, ShopParseOptions } from "~/types/priceAlert";
 import { PriceAlertResult } from "~/enums/priceAlertShopOption";
 import { logger } from "~/logger/logger";
 import { maximumFailureCount, scrapeDelayTime } from "~/configs/scraper";
-import { PriceAlertItem, PriceAlertModel } from "./db/schema";
+import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
 import { HydratedDocument } from "mongoose";
 import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
 import axios from "axios";
@@ -68,8 +68,8 @@ type ScrapeResultActions = {
 const defaultActions : ScrapeResultActions = {
 	onPriceChange: async (updatedProduct) => {
 		await axios.post(process.env.PRICE_WEBHOOK as string, {
-			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()]
-		});	
+			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()],
+		});
 	},
 	onFailure: async (updatedProduct, error) => {
 		await axios.post(process.env.PRICE_WEBHOOK as string, {
@@ -82,7 +82,7 @@ const defaultActions : ScrapeResultActions = {
 			content: `Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
 		});
 	},
-}
+};
 
 export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions = defaultActions) => {
 	switch (scrapeResult.result) {

@@ -4,7 +4,7 @@ import { getPriceListEmbed } from "~/assets/embeds/priceEmbeds";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { splitMessage } from "~/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
-import { PriceAlertItem, PriceAlertModel } from "~/utils/scraper/db/schema";
+import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
 
 enum ButtonType {
 	NEXT = "next",

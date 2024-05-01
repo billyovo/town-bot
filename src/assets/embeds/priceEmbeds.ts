@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { PriceAlertShopParseDetails } from "~/enums/priceAlertShopOption";
-import { PriceAlertItem } from "~/utils/scraper/db/schema";
+import { PriceAlertItem } from "~/database/schemas/product";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
 	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";

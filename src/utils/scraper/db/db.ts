@@ -1,4 +1,4 @@
-import { PriceAlertItem, PriceAlertModel } from "./schema";
+import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
 
 
 export async function addProductToAlert(product: PriceAlertItem) : Promise<{success: boolean, error: string | null}> {

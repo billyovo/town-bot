@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { PriceAlertItem, PriceAlertModel } from "~/utils/scraper/db/schema";
+import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url = interaction.options.get("url")?.value as string;

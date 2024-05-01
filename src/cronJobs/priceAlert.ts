@@ -1,7 +1,7 @@
 import { scheduleJob } from "node-schedule";
 import { logger } from "~/logger/logger";
 import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
-import { PriceAlertModel } from "~/utils/scraper/db/schema";
+import { PriceAlertModel } from "~/database/schemas/product";
 
 scheduleJob("15 9,18 * * *", async () => {
 	logger("Running price alert check");

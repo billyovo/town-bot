@@ -1,7 +1,6 @@
-import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
 import { ChatInputCommandInteraction } from "discord.js";
 import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
-import { PriceAlertModel } from "~/utils/scraper/db/schema";
+import { PriceAlertModel } from "~/database/schemas/product";
 import { PriceAlertChecked } from "~/types/priceAlert";
 
 function generateProgressBar(checkedProduct: number, total: number) {

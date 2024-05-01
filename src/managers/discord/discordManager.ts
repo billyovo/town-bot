@@ -1,10 +1,12 @@
-import { ActivityType, Events, GatewayIntentBits } from "discord.js";
+import { ActivityType, Events, GatewayIntentBits, TextChannel } from "discord.js";
 import { DiscordClient } from "~/types/discord";
 import { ExtendedDiscordClient } from "./client";
 import { loadSlashCommands } from "~/utils/discord/startup/loadCommands";
 import { handleInteraction } from "~/commands/handler/interactionHandler";
 import { logger } from "~/logger/logger";
 import { getCatFact } from "~/utils/catFact";
+import { ReminderModel } from "~/database/schemas/reminders";
+import { scheduleJob } from "node-schedule";
 // import { chatgpt } from "~/commands/handler/chatgpt";
 
 export const client : DiscordClient = new ExtendedDiscordClient({
@@ -29,5 +31,26 @@ client.on(Events.ClientReady, async () => {
 
 	const catFact = await getCatFact();
 	client.user!.setActivity({ name: catFact, type: ActivityType.Custom });
+
+	const reminders = ReminderModel.find().cursor();
+
+	for await (const reminder of reminders) {
+		if (reminder.sendTime.getTime() < Date.now()) {
+			ReminderModel.deleteOne({ _id: reminder._id }).exec();
+			continue;
+		}
+		scheduleJob(reminder.sendTime, () => {
+			logger(`Found reminder for ${reminder.owner} at ${reminder.sendTime}!`);
+			if (reminder.isDM) {
+				client.users.fetch(reminder.owner).then(user => user.send({ content: reminder.message }));
+			}
+			else {
+				client.channels.fetch(reminder.channel!).then(channel => (channel as TextChannel).send({ content: reminder.message }));
+			}
+			ReminderModel.deleteOne({ _id: reminder._id }).exec();
+		});
+	}
+
+
 });
 

@@ -2,7 +2,7 @@ import { getAddedToAlertEmbed } from "~/assets/embeds/priceEmbeds";
 import { addProductToAlert } from "~/utils/scraper/db/db";
 import { parseShopWebsite } from "~/utils/scraper/parse/parse";
 import { ChatInputCommandInteraction } from "discord.js";
-import { PriceAlertItem } from "~/utils/scraper/db/schema";
+import { PriceAlertItem } from "~/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.get("url")?.value as string;

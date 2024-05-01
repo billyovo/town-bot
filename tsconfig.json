@@ -18,6 +18,7 @@
       "~/types/*": ["./src/@types/*"],
       "~/managers/*": ["./src/managers/*"],
       "~/configs/*": ["./src/configs/*"],
+      "~/database/*": ["./src/database/*"],
       "~/logger/*": ["./src/logger/*"],
     },
     "outDir": "./dist",
