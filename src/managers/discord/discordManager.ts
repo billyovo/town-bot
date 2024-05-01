@@ -42,10 +42,12 @@ client.on(Events.ClientReady, async () => {
 		scheduleJob(reminder.sendTime, () => {
 			logger(`Found reminder for ${reminder.owner} at ${reminder.sendTime}!`);
 			if (reminder.isDM) {
-				client.users.fetch(reminder.owner).then(user => user.send({ content: reminder.message }));
+				client.users.fetch(reminder.owner).then(user => user.send({ content: reminder.message }))
+					.catch(err => logger(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			else {
-				client.channels.fetch(reminder.channel!).then(channel => (channel as TextChannel).send({ content: reminder.message }));
+				client.channels.fetch(reminder.channel!).then(channel => (channel as TextChannel).send({ content: reminder.message }))
+					.catch(err => logger(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			ReminderModel.deleteOne({ _id: reminder._id }).exec();
 		});
