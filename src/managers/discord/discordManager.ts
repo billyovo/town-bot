@@ -14,6 +14,7 @@ export const client : DiscordClient = new ExtendedDiscordClient({
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.DirectMessages,
 	],
 });
 
