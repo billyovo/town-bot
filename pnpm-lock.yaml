@@ -8,9 +8,6 @@ dependencies:
   '@napi-rs/canvas':
     specifier: ^0.1.48
     version: 0.1.48
-  '@types/luxon':
-    specifier: ^3.3.3
-    version: 3.3.3
   axios:
     specifier: ^1.6.8
     version: 1.6.8
@@ -58,6 +55,9 @@ devDependencies:
   '@types/jest':
     specifier: ^29.5.8
     version: 29.5.8
+  '@types/luxon':
+    specifier: ^3.3.3
+    version: 3.3.3
   '@types/node':
     specifier: ^20.8.5
     version: 20.8.5
@@ -1507,7 +1507,7 @@ packages:
 
   /@types/luxon@3.3.3:
     resolution: {integrity: sha512-/BJF3NT0pRMuxrenr42emRUF67sXwcZCd+S1ksG/Fcf9O7C3kKCY4uJSbKBE4KDUIYr3WMsvfmWD8hRjXExBJQ==}
-    dev: false
+    dev: true
 
   /@types/node-fetch@2.6.9:
     resolution: {integrity: sha512-bQVlnMLFJ2d35DkPNjEPmd9ueO/rh5EiaZt2bhqiSarPjZIuIV6bPQVqcrEyvNo+AfTrRGVazle1tl597w3gfA==}
