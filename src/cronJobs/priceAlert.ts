@@ -10,15 +10,14 @@ import { PriceAlertChecked, ShopParseFunctionReturn } from "~/types/priceAlert";
 scheduleJob("15 9,18 * * *", async () => {
 	logger("Running price alert check");
 
-	const cursor = PriceAlertModel.find({}).cursor();
+	const cursor : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({}).lean().cursor();
 
 	for await (const product of cursor) {
 		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
 		await delay(randomDelayTime);
 
-		const productObject : PriceAlertItem = product.toObject();
-		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(productObject.url, { skipImageFetch: true });
-		const scrapeResult : PriceAlertChecked = await getPriceChange(productObject, newProductInfo);
+		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true });
+		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);
 

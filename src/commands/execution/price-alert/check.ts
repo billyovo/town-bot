@@ -20,7 +20,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const repliedMessage = await interaction.reply({ content: "Fetching..." });
 
 	const total = await PriceAlertModel.countDocuments();
-	const products = PriceAlertModel.find({}).cursor();
+	const products : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({}).lean().cursor();
 
 	let count = 0;
 	for await (const product of products) {
@@ -29,9 +29,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
 		await delay(randomDelayTime);
 
-		const productObject : PriceAlertItem = product.toObject();
-		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(productObject.url, { skipImageFetch: true });
-		const scrapeResult : PriceAlertChecked = await getPriceChange(productObject, newProductInfo);
+		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true });
+		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);
 
