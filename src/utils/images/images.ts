@@ -13,7 +13,7 @@ export async function getImageBase64FromLink(url : string) : Promise<string | nu
 
 		let jpegData;
 
-		if (image.headers["content-type"] in ["image/jpeg", "image/png", "image/gif", "image/jpg"]) {
+		if (["image/jpeg", "image/png", "image/gif", "image/jpg"].includes(image.headers["content-type"])) {
 			jpegData = image.data;
 		}
 		else {

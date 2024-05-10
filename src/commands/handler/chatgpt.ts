@@ -30,10 +30,10 @@ const getGptMessage : GetGptMessage = async (chatMessages) => {
 const sendMessage = async (content : string, channel: TextChannel, replyID?: Snowflake) => {
 	const messageArray = splitMessage(content.split("\n"));
 	let updatedReplyID = replyID;
-	for (let i = 0; i < messageArray.length; i++) {
+	for (const message of messageArray) {
 		const sendOptions = updatedReplyID ? { reply: { messageReference: updatedReplyID } } : {};
 		const sent = await channel.send({
-			content: messageArray[i],
+			content: message,
 			...sendOptions,
 		});
 		updatedReplyID = sent.id;
@@ -56,7 +56,7 @@ const getChatMessageHistory : GetChatMessageHistory = async (message, botID, cha
 		});
 		if (message.reference) {
 			const refeMessageId = message.reference.messageId;
-			const refMessage = await message.channel.messages.fetch(refeMessageId!);
+			const refMessage = await message.channel.messages.fetch(refeMessageId);
 			return await getChatMessageHistory(refMessage, botID, chatMessages);
 		}
 
@@ -74,17 +74,18 @@ const getChatMessageHistory : GetChatMessageHistory = async (message, botID, cha
 export async function chatgpt(message : Message) {
 	try {
 		const botID = client.user?.id;
+		if (!botID) return;
 		if (message.author.bot) return;
-		if (!message.mentions.has(botID!) || message.mentions.everyone) return;
+		if (!message.mentions.has(botID) || message.mentions.everyone) return;
 
-		const messagesHistory = await getChatMessageHistory(message, botID!);
+		const messagesHistory = await getChatMessageHistory(message, botID);
 		if (!messagesHistory) return sendMessage("Hello! How can I assist you today?", message.channel as TextChannel, message.id);
 
-		const response = await getGptMessage(messagesHistory!);
+		const response = await getGptMessage(messagesHistory);
 		if (!response) throw new Error("Some Error Occured, Please try again later :(");
 
 		sendMessage(
-			response.choices[0].message.content!,
+			response.choices[0].message.content,
 			message.channel as TextChannel,
 			message.id,
 		);

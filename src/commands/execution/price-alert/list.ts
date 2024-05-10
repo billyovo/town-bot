@@ -50,7 +50,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			else {
 				pointer = 0;
 			}
-			const embed = getPriceListEmbed(productsArray[pointer] as PriceAlertItem);
+			const embed = getPriceListEmbed(productsArray[pointer]);
 			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 

@@ -1,4 +1,4 @@
-import type { PriceAlertChecked, ShopParseFunctionReturn, } from "~/types/priceAlert";
+import type { PriceAlertChecked, ShopParseFunctionReturn } from "~/types/priceAlert";
 import { PriceAlertResult } from "~/enums/priceAlertShopOption";
 import { logger } from "~/logger/logger";
 import { maximumFailureCount } from "~/configs/scraper";
@@ -56,20 +56,24 @@ type ScrapeResultActions = {
 }
 
 const defaultActions : ScrapeResultActions = {
-	onPriceChange: async (updatedProduct) => {
-		await axios.post(process.env.PRICE_WEBHOOK as string, {
+	onPriceChange: (updatedProduct) => {
+		axios.post(process.env.PRICE_WEBHOOK as string, {
 			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()],
+		}).catch((error) => {
+			logger(`Failed to send price change webhook: ${error}`);
 		});
 	},
-	onFailure: async (updatedProduct, error) => {
-		await axios.post(process.env.PRICE_WEBHOOK as string, {
+	onFailure: (updatedProduct, error) => {
+		axios.post(process.env.PRICE_WEBHOOK as string, {
 			content: `Failed to check [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} ${updatedProduct.failCount} times.\r\nReason: ${error ?? "Unknown Error"}`,
 		});
 	},
-	onTooManyFailures: async (updatedProduct) => {
-		await PriceAlertModel.findOneAndDelete({ url: updatedProduct.url });
-		await axios.post(process.env.PRICE_WEBHOOK as string, {
+	onTooManyFailures: (updatedProduct) => {
+		PriceAlertModel.findOneAndDelete({ url: updatedProduct.url });
+		axios.post(process.env.PRICE_WEBHOOK as string, {
 			content: `Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
+		}).catch((error) => {
+			logger(`Failed to send too many failures webhook: ${error}`);
 		});
 	},
 };

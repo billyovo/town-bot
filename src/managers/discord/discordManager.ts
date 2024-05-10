@@ -7,7 +7,6 @@ import { logger } from "~/logger/logger";
 import { getCatFact } from "~/utils/catFact";
 import { ReminderModel } from "~/database/schemas/reminders";
 import { scheduleJob } from "node-schedule";
-// import { chatgpt } from "~/commands/handler/chatgpt";
 
 export const client : DiscordClient = new ExtendedDiscordClient({
 	intents: [
@@ -23,8 +22,6 @@ export async function connectDiscord(token : string) {
 }
 
 client.on(Events.InteractionCreate, handleInteraction);
-
-// client.on(Events.MessageCreate, chatgpt);
 
 client.on(Events.ClientReady, async () => {
 	client.commands = await loadSlashCommands();
@@ -47,7 +44,7 @@ client.on(Events.ClientReady, async () => {
 					.catch(err => logger(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			else {
-				client.channels.fetch(reminder.channel!).then(channel => (channel as TextChannel).send({ content: reminder.message }))
+				client.channels.fetch(reminder.channel).then(channel => (channel as TextChannel).send({ content: reminder.message }))
 					.catch(err => logger(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			ReminderModel.deleteOne({ _id: reminder._id }).exec();

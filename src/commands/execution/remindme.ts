@@ -42,6 +42,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});
-	return interaction.reply({ content: reminderMessage, ephemeral: dm ? true : false });
+	return interaction.reply({ content: reminderMessage, ephemeral: !!dm });
 
 }

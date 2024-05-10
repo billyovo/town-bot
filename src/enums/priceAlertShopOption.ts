@@ -26,39 +26,39 @@ export enum PriceAlertShopOption {
 }
 
 export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetails> = {
-	HKTVMALL: {
+	[PriceAlertShopOption.HKTVMALL]: {
 		image: "https://i.imgur.com/wYnaMoS.png",
 		parseFunction: parseHktvmallPrice,
 	},
-	WATSONS: {
+	[PriceAlertShopOption.WATSONS]: {
 		image: "https://i.imgur.com/VJ2JDG9.png",
 		parseFunction: parseWatsonsGroupPrice,
 	},
-	AEONCITY: {
+	[PriceAlertShopOption.AEONCITY]: {
 		image: "https://i.imgur.com/nopW4EX.png",
 		parseFunction: parseAeonPrice,
 	},
-	PNS: {
+	[PriceAlertShopOption.PNS]: {
 		image: "https://i.imgur.com/cT0UG1S.png",
 		parseFunction: parseWatsonsGroupPrice,
 	},
-	SEPHORA: {
+	[PriceAlertShopOption.SEPHORA]: {
 		image: "https://pbs.twimg.com/profile_images/459373077822861312/nHUto8C6_400x400.jpeg",
 		parseFunction: parseSephoraPrice,
 	},
-	MANNINGS: {
+	[PriceAlertShopOption.MANNINGS]: {
 		image: "https://i.imgur.com/OnplWyK.jpg",
 		parseFunction: parseManningsPrice,
 	},
-	MUJI: {
+	[PriceAlertShopOption.MUJI]: {
 		image: "https://i.imgur.com/ykFhg6J.png",
 		parseFunction: parseMujiPrice,
 	},
-	WELLCOME: {
+	[PriceAlertShopOption.WELLCOME]: {
 		image: "https://i.imgur.com/A5ogcsY.png",
 		parseFunction: parseWellcomePrice,
 	},
-	LOOKFANTASTIC: {
+	[PriceAlertShopOption.LOOKFANTASTIC]: {
 		image: "https://pbs.twimg.com/profile_images/1687076928635711488/G0CE0Q8-_400x400.jpg",
 		parseFunction: parseLookfantasticPrice,
 	},
