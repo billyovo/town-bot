@@ -1,7 +1,10 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { delayNextFetch, getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
+import { getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
 import { PriceAlertModel } from "~/database/schemas/product";
-import { PriceAlertChecked } from "~/types/priceAlert";
+import { PriceAlertChecked, ShopParseFunctionReturn } from "~/types/priceAlert";
+import { parseShopWebsite } from "~/utils/scraper/parse/parse";
+import { scrapeDelayTime } from "~/configs/scraper";
+import { delay } from "~/utils/time/delay";
 
 function generateProgressBar(checkedProduct: number, total: number) {
 	const filled = "█";
@@ -22,9 +25,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	let count = 0;
 	for await (const product of products) {
 		count++;
-		await delayNextFetch();
+		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
+		await delay(randomDelayTime);
 
-		const scrapeResult : PriceAlertChecked = await getPriceChange(product, { skipImageFetch: true });
+		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true }); 
+		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);
 

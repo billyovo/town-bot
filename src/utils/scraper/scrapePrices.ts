@@ -1,45 +1,35 @@
-import { parseShopWebsite } from "./parse/parse";
-import type { PriceAlertChecked, ShopParseOptions } from "~/types/priceAlert";
+import type { PriceAlertChecked, ShopParseFunctionReturn, } from "~/types/priceAlert";
 import { PriceAlertResult } from "~/enums/priceAlertShopOption";
 import { logger } from "~/logger/logger";
-import { maximumFailureCount, scrapeDelayTime } from "~/configs/scraper";
+import { maximumFailureCount } from "~/configs/scraper";
 import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
-import { HydratedDocument } from "mongoose";
 import { getPriceChangeEmbed } from "~/assets/embeds/priceEmbeds";
 import axios from "axios";
 
-export async function delayNextFetch() {
-	const delay = Math.random() * scrapeDelayTime;
-	logger(`Delaying for ${Math.round(delay)}ms`);
-	return new Promise(resolve => setTimeout(resolve, delay));
-}
+export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductInfo: ShopParseFunctionReturn) : Promise<PriceAlertChecked> {
 
-export async function getPriceChange(product: HydratedDocument<PriceAlertItem>, options?: ShopParseOptions) : Promise<PriceAlertChecked> {
-	const updatedProduct = await parseShopWebsite(product.url, options);
-	const oldProductData = product.toObject();
-
-	if (!updatedProduct.success) {
+	if (!newProductInfo.success) {
 		return {
 			data: {
-				...oldProductData,
+				...oldProductInfo,
 				lastChecked: new Date(),
-				failCount: oldProductData.failCount + 1,
+				failCount: oldProductInfo.failCount + 1,
 			},
 			result: PriceAlertResult.FAIL,
-			error: updatedProduct.error,
+			error: newProductInfo.error,
 		};
 	}
-	logger(`Checked Product: ${updatedProduct.data.productName}`);
+	logger(`Checked Product: ${newProductInfo.data.productName}`);
 
-	if (updatedProduct.data.price.toFixed(1) !== product.price.toFixed(1)) {
+	if (newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) {
 		return {
 			data: {
-				...oldProductData,
+				...oldProductInfo,
 				lastChecked: new Date(),
-				price: updatedProduct.data.price,
+				price: newProductInfo.data.price,
 				previous: {
-					price: oldProductData.price,
-					date: oldProductData.lastChecked,
+					price: oldProductInfo.price,
+					date: oldProductInfo.lastChecked,
 				},
 				failCount: 0,
 			},
@@ -49,7 +39,7 @@ export async function getPriceChange(product: HydratedDocument<PriceAlertItem>, 
 	else {
 		return {
 			data:{
-				...oldProductData,
+				...oldProductInfo,
 				lastChecked: new Date(),
 				failCount: 0,
 			},

@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import axios from "axios";
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { delay } from "~/utils/time/delay";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const prompt = interaction.options.get("prompt")!.value;
@@ -30,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	if (jobID.status >= 300) return await interaction.editReply({ content: `${jobID.data.message ?? jobID.data.error?.message}` });
 
 	// wait for the job to be finished before polling
-	await sleep(5000);
+	await delay(5000);
 	const polling = setInterval(async () => {
 		try {
 			const url = await client.get(`${process.env.DRAW_LINK}/operations/${jobID.data.id}${process.env.DRAW_API_VERSION}`, { headers: headers });
