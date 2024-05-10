@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
-import { PriceAlertModel } from "~/database/schemas/product";
+import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
 import { PriceAlertChecked, ShopParseFunctionReturn } from "~/types/priceAlert";
 import { parseShopWebsite } from "~/utils/scraper/parse/parse";
 import { scrapeDelayTime } from "~/configs/scraper";
@@ -25,11 +25,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	let count = 0;
 	for await (const product of products) {
 		count++;
+
 		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
 		await delay(randomDelayTime);
 
-		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true });
-		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
+		const productObject : PriceAlertItem = product.toObject();
+		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(productObject.url, { skipImageFetch: true });
+		const scrapeResult : PriceAlertChecked = await getPriceChange(productObject, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);
 
