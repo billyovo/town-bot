@@ -1,7 +1,6 @@
-import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder } from "discord.js";
 import { PriceAlertListMode } from "~/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/assets/embeds/priceEmbeds";
-import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { splitMessage } from "~/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
 import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
