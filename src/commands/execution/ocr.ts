@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { createWorker } from "tesseract.js";
+import { logger } from "~/logger/logger";
 import { splitMessage } from "~/utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -14,29 +15,43 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return;
 	}
 
-	const worker = await createWorker("eng+chi_tra+jpn", 1, {
-		cachePath: "../assets/tesseract",
-	});
+
+	await using OCRworker = await createOCRWorker();
 
 	try {
-		const ret = await worker.recognize(url);
-		const recognizedText = ret.data.text === "" ? ["Nothing is recognized!"] : splitMessage(ret.data.text.split("\n"), true);
+		const ret = await OCRworker.worker.recognize(url);
+		const recognizedText = ret ? ret.data.text : "Nothing is recognized!";
+		const splitText = splitMessage(recognizedText.split("\n"), true);
 		await interaction.editReply({
-			content: recognizedText[0],
+			content: splitText[0],
 		});
-		for (let i = 1; i < recognizedText.length; i++) {
+		for (let i = 1; i < splitText.length; i++) {
 			await interaction.followUp({
-				content: recognizedText[i] + "\r\n",
+				content: splitText[i] + "\r\n",
 			});
 		}
 	}
 	catch (error) {
+		if (error instanceof Error) {
+			logger(error.message);
+		}
 		await interaction.editReply({
-			content: "An error occurred!",
+			content: "An error occurred while processing the image!",
 		});
 	}
-	finally {
-		await worker.terminate();
-	}
+
+}
+
+async function createOCRWorker() {
+	const worker = await createWorker("eng+chi_tra+jpn", 1, {
+		cachePath: "../assets/tesseract",
+	});
+
+	return {
+		worker: worker,
+		[Symbol.asyncDispose]: async () => {
+			await worker.terminate();
+		},
+	};
 
 }

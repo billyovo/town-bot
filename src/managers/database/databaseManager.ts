@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { logger } from "../../logger/logger";
+import { logger } from "~/logger/logger";
 
 export async function connectDatabase(connectionString: string) {
 	mongoose.connect(connectionString, {}).then(() => {

@@ -6,8 +6,9 @@
     }
   },
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2022",
     "module": "NodeNext",
+    "lib": ["ESNext", "ESNext.Disposable"],
     "rootDir": "./src",
     "paths":{
       "~/assets/*": ["./src/assets/*"],
@@ -25,8 +26,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": [
     "node_modules",
