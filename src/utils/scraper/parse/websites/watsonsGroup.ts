@@ -159,7 +159,7 @@ function getBaseURLAndCode(shop: PriceAlertShopOption) : WatsonsGroupShopDetails
 		}
 		case PriceAlertShopOption.PNS:{
 			return {
-				baseURL: "http://api.pns.hk",
+				baseURL: "https://api.pns.hk",
 				shopCode: "pnshk",
 				shopOption: PriceAlertShopOption.PNS,
 			};
