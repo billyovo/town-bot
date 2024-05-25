@@ -1,25 +1,14 @@
-import { parse } from "node-html-parser";
 import { ShopParseFunction } from "~/src/@types/price-alert";
-import { log } from "~/src/lib/logger/logger";
-import { HTMLClient } from "~/src/lib/utils/fetch/client";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
+import { getHTML } from "../../utils/scrapeGetters";
 
 
 export const parseManningsPrice : ShopParseFunction = async (url, _) => {
-	const html = await HTMLClient.get(url).catch(() => {
-		log(`Failed to fetch ${url}`);
-		return { data: null, success: false, error: "Failed to fetch url" };
-	});
+	const html = await getHTML(url);
+	if (!html.success) return { success: false, error: html.error, data: null };
 
-	let root;
-
-	try {
-		root = parse(html.data);
-	}
-	catch (e) {
-		return { success: false, error: "Failed to parse html", data: null };
-	}
+	const root = html.data;
 
 	// DO YOU HAVE YUU?
 	// const YUUofferpriceTxt = root.querySelector('.promotion_description_holder')?.rawText;

@@ -1,22 +1,13 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
-import { HTMLClient } from "~/src/lib/utils/fetch/client";
-import { parse } from "node-html-parser";
 import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
-import { log } from "~/src/lib/logger/logger";
+import { getHTML } from "../../utils/scrapeGetters";
 
 export const parseAeonPrice : ShopParseFunction = async (url, _) => {
-	const html = await HTMLClient.get(url).catch(() => {
-		log(`Failed to fetch ${url}`);
-		return { data: null, success: false, error: "Failed to fetch url" };
-	});
-	let root;
-	try {
-		root = parse(html.data);
-	}
-	catch (e) {
-		return { success: false, error: "Failed to parse html", data: null };
-	}
+	const html = await getHTML(url);
+	if (!html.success) return { success: false, error: html.error, data: null };
+
+	const root = html.data;
 
 	// try to get member price first, m_price
 	// if no, try to get normal price, price

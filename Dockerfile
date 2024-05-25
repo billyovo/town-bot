@@ -4,6 +4,9 @@ WORKDIR /app
 
 FROM base AS build
 
+RUN addgroup -S app && adduser -S app -G app
+RUN chown -R app:app /app
+
 COPY package.json pnpm-lock.yaml /app/
 COPY src /app/src
 COPY tsconfig.json /app/
@@ -13,11 +16,12 @@ RUN apk add --no-cache bash curl\
     && curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.alpine.sh' | bash \
     && apk add --no-cache infisical \
     && pnpm fetch \ 
-    && pnpm install --frozen-lockfile --offline 
+    && pnpm install --frozen-lockfile --offline
 
 RUN ["pnpm", "run", "build"]
 RUN ["pnpm", "prune", "--prod"]
 
+USER app
 # Runtime stage
 FROM base
 
