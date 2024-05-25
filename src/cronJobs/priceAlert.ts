@@ -1,14 +1,14 @@
 import { scheduleJob } from "node-schedule";
-import { logger } from "~/logger/logger";
-import { getPriceChange, handleScrapeResult } from "~/utils/scraper/scrapePrices";
-import { PriceAlertItem, PriceAlertModel } from "~/database/schemas/product";
-import { parseShopWebsite } from "~/utils/scraper/parse/parse";
-import { scrapeDelayTime } from "~/configs/scraper";
-import { delay } from "~/utils/time/delay";
-import { PriceAlertChecked, ShopParseFunctionReturn } from "~/types/priceAlert";
+import { log } from "~/src/lib/logger/logger";
+import { getPriceChange, handleScrapeResult } from "~/src/lib/price-alert/handlePriceAlert";
+import { PriceAlertItem, PriceAlertModel } from "../lib/database/schemas/product";
+import { parseShopWebsite } from "../lib/price-alert/scrape/parse";
+import { scrapeDelayTime } from "~/src/configs/price-alert";
+import { delay } from "../lib/utils/time/delay";
+import { PriceAlertChecked, ShopParseFunctionReturn } from "~/src/@types/price-alert";
 
 scheduleJob("15 9,18 * * *", async () => {
-	logger("Running price alert check");
+	log("Running price alert check");
 
 	const cursor : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({}).lean().cursor();
 

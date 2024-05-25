@@ -1,5 +1,5 @@
 import { describe } from "@jest/globals";
-import { parseDurationStringToMills, parseMillsToHuman } from "../utils/time/duration";
+import { parseDurationStringToMills, parseMillsToHuman } from "../lib/utils/time/duration";
 
 const year = 1000 * 60 * 60 * 24 * 365;
 const month = 1000 * 60 * 60 * 24 * 30;

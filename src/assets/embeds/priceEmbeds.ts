@@ -1,10 +1,10 @@
 import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
-import { PriceAlertShopParseDetails } from "~/enums/priceAlertShopOption";
-import { PriceAlertItem } from "~/database/schemas/product";
+import { PriceAlertShopParseDetails, PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
+import { PriceAlertItem } from "~/src/lib/database/schemas/product";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
-	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
+	const storeImage : string = PriceAlertShopParseDetails[product.shop as PriceAlertShopOption]?.image ?? "";
 
 	const previousPrice = product.previous?.price ?? 1;
 	const discountPercentage : string = (((previousPrice - product.price) / previousPrice) * 100).toFixed(2);

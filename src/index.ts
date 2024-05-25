@@ -1,7 +1,8 @@
 import "dotenv/config";
-import { connectDiscord } from "~/managers/discord/discordManager";
-import { connectDatabase } from "~/managers/database/databaseManager";
-import "./cronJobs/jobs";
+import { connectDiscord } from "./managers/discordManager";
+import { connectDatabase } from "./managers/databaseManager";
+import "./cronJobs/catFat";
+import "./cronJobs/hkoRain";
 import "./cronJobs/priceAlert";
 
 
