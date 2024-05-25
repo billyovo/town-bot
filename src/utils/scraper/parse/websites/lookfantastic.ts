@@ -20,8 +20,13 @@ export const parseLookfantasticPrice : ShopParseFunction = async (url, _) => {
 		return { success: false, error: "Failed to parse html", data: null };
 	}
 
-	const productInformation = JSON.parse(root.querySelector("script[type=\"application/ld+json\"]")?.rawText ?? "{}");
-	if (!productInformation) return { success: false, error: "Failed to parse product information", data: null };
+	const productInformationString = root.querySelector("script[type=\"application/ld+json\"]")?.text;
+	if (!productInformationString) return { success: false, error: "Failed to parse product information", data: null };
+
+	const productInformation = JSON.parse(productInformationString);
+	if (!productInformation?.offers?.[0]?.price) return { success: false, error: "Failed to parse product price", data: null };
+	if (!productInformation?.name) return { success: false, error: "Failed to parse product name", data: null };
+	if (!productInformation?.image) return { success: false, error: "Failed to parse product image", data: null };
 
 	return {
 		success: true,

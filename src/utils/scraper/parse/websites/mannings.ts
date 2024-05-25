@@ -34,7 +34,8 @@ export const parseManningsPrice : ShopParseFunction = async (url, _) => {
 
 	const brand = root.querySelector("input[name=\"brand\"]")?.getAttribute("value");
 
-	if (!price || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
+	if (!price) return { success: false, error: "Failed to parse price", data: null };
+	if (!productName) return { success: false, error: "Failed to parse product name", data: null };
 
 
 	return {
@@ -42,7 +43,7 @@ export const parseManningsPrice : ShopParseFunction = async (url, _) => {
 			price: parsePriceToFloat(price),
 			productName: productName,
 			productImage: productImage ?? "",
-			brand: brand ?? "",
+			brand: brand ?? "No Brand",
 			shop: PriceAlertShopOption.MANNINGS,
 		},
 		error: null,

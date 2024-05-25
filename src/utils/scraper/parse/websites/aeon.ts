@@ -24,7 +24,8 @@ export const parseAeonPrice : ShopParseFunction = async (url, _) => {
 
 	const productName = root.querySelector(".base")?.text;
 	const productImage = root.querySelector(".product")?.querySelector("img")?.getAttribute("src");
-	if (!price || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
+	if (!price) return { success: false, error: "Failed to parse price", data: null };
+	if (!productName) return { success: false, error: "Failed to parse product name", data: null };
 
 	return {
 		data: {
