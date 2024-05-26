@@ -6,16 +6,16 @@ import { PriceAlertItem } from "~/src/lib/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.get("url")!.value as string;
-	const encodedURL = encodeURI(link);
+	const decodedURL = decodeURI(link);
 
 	await interaction.deferReply();
 
-	const output = await parseShopWebsite(encodedURL);
+	const output = await parseShopWebsite(decodedURL);
 	if (!output.success) return await interaction.editReply({ content: output.error ?? "Unknown error" });
 
 	const itemToBeadded : PriceAlertItem = {
 		lastChecked: new Date(),
-		url: encodedURL,
+		url: decodedURL,
 		price: output.data.price,
 		brand: output.data.brand,
 		productName: output.data.productName,
