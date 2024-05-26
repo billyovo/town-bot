@@ -69,7 +69,9 @@ const defaultActions : ScrapeResultActions = {
 		});
 	},
 	onTooManyFailures: (updatedProduct) => {
-		PriceAlertModel.findOneAndDelete({ url: updatedProduct.url });
+		PriceAlertModel.findOneAndDelete({ url: updatedProduct.url }).catch((error) => {
+			log(`Failed to delete product: ${error}`);
+		});
 		axios.post(process.env.PRICE_WEBHOOK as string, {
 			content: `Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
 		}).catch((error) => {
