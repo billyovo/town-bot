@@ -5,16 +5,17 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { PriceAlertItem } from "~/src/lib/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const link = interaction.options.get("url")?.value as string;
+	const link = interaction.options.get("url")!.value as string;
+	const encodedURL = encodeURI(link);
 
 	await interaction.deferReply();
 
-	const output = await parseShopWebsite(link);
+	const output = await parseShopWebsite(encodedURL);
 	if (!output.success) return await interaction.editReply({ content: output.error ?? "Unknown error" });
 
 	const itemToBeadded : PriceAlertItem = {
 		lastChecked: new Date(),
-		url: link,
+		url: encodedURL,
 		price: output.data.price,
 		brand: output.data.brand,
 		productName: output.data.productName,
