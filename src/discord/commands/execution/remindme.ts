@@ -28,7 +28,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const reminder = await ReminderModel.create({
 		sendTime: reminderTime.toJSDate(),
 		message: message,
-		isDM: dm,
+		isDM: !!dm,
 		owner: interaction.user.id,
 		channel: dm ? null : interaction.channel!.id,
 	});
