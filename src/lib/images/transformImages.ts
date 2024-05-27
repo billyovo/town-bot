@@ -19,6 +19,7 @@ export async function getImageBase64FromLink(url : string) : Promise<string | nu
 		else {
 			jpegData = await sharp(image.data).toFormat("jpeg").toBuffer();
 		}
+
 		return jpegData.toString("base64");
 	}
 	catch (error) {
@@ -34,6 +35,7 @@ export async function createImgurURLFromBase64(data : Base64String): Promise<str
 				"Authorization":  `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
 			},
 		});
+
 		return imgurResponse.data?.data?.link || null;
 
 	}

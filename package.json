@@ -27,7 +27,7 @@
     "node-schedule": "^2.1.1",
     "openai": "^4.24.1",
     "rrule": "^2.7.2",
-    "sharp": "^0.33.2",
+    "sharp": "^0.33.4",
     "tesseract.js": "^5.0.5",
     "tldts": "^6.1.4"
   },

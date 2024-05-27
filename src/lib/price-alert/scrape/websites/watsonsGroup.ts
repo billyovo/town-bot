@@ -4,6 +4,7 @@ import { log } from "~/src/lib/logger/logger";
 import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/src/lib/images/transformImages";
 import { APIClient } from "~/src/lib/utils/fetch/client";
 import type { Failure, Success } from "~/src/@types/utils";
+import { Base64String } from "discord.js";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
 	if (!shopDetails.shop) {
@@ -39,18 +40,6 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 	const productDetails : Success<ProductDetail> | Failure = await fetchProductDetail(`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`);
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
 
-	const productCDNImage = `${baseURL}${productDetails.data?.productImage}`;
-
-	let productImageBase64 : string | null = null;
-	if (!options?.skipImageFetch) {
-		productImageBase64 = await getImageBase64FromLink(productCDNImage);
-	}
-
-	let imgurURL : string | null = null;
-	if (productImageBase64) {
-		imgurURL = await createImgurURLFromBase64(productImageBase64);
-	}
-
 	if (!productDetails.success) {
 		return {
 			data: null,
@@ -58,12 +47,12 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 			success: false,
 		};
 	}
-
+	const productImage : string | null = options?.skipImageFetch ? null : await processProductImage(productDetails.data.productImage, baseURL);
 	return {
 		data:{
 			brand: productDetails.data.brand,
 			productName: productDetails.data.productName,
-			productImage: imgurURL,
+			productImage: productImage,
 			price: Math.min(promotionPrice, productDetails.data.discountedPriceWithoutPromotion),
 			shop: shopOption,
 		},
@@ -167,4 +156,24 @@ function getBaseURLAndCode(shop: PriceAlertShopOption) : WatsonsGroupShopDetails
 	}
 
 	return null;
+}
+
+async function processProductImage(url : string | null, baseURL: string) {
+	if (!url) return null;
+
+	const productCDNImage : string = url.startsWith("/") ? `${baseURL}${url}` : url;
+
+	const productImageBase64 : Base64String | null = await getImageBase64FromLink(productCDNImage);
+	if (!productImageBase64) {
+		log(`Cannot get image from ${productCDNImage}`);
+		return null;
+	}
+
+	const imgurURL : string | null = await createImgurURLFromBase64(productImageBase64);
+	if (!imgurURL) {
+		log(`Cannot create imgur URL from ${productCDNImage}`);
+		return null;
+	}
+
+	return imgurURL;
 }
