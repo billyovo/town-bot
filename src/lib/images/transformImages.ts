@@ -3,9 +3,10 @@ import { log } from "../logger/logger";
 import { Base64String } from "discord.js";
 import { HTMLClient } from "~/src/lib/utils/fetch/client";
 import sharp from "sharp";
+import { ImgurUploadData } from "~/src/@types/imgur";
 
 
-export async function getImageBase64FromLink(url : string) : Promise<string | null> {
+export async function getImageBase64FromLink(url: string): Promise<string | null> {
 	try {
 		const image = await HTMLClient.get(url, {
 			responseType: "arraybuffer",
@@ -28,11 +29,15 @@ export async function getImageBase64FromLink(url : string) : Promise<string | nu
 	}
 }
 
-export async function createImgurURLFromBase64(data : Base64String): Promise<string | null> {
+export async function createImgurURLFromBase64(data: Base64String): Promise<string | null> {
 	try {
-		const imgurResponse = await axios.post("https://api.imgur.com/3/image", data, {
+		const imgurUploadData: ImgurUploadData = {
+			"image": data,
+			"type": "base64",
+		};
+		const imgurResponse = await axios.post("https://api.imgur.com/3/image", imgurUploadData, {
 			headers: {
-				"Authorization":  `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+				"Authorization": `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
 			},
 		});
 
