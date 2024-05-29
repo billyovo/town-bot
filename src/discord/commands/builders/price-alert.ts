@@ -22,14 +22,14 @@ export const command = new SlashCommandBuilder()
 			.addStringOption(option =>
 				option
 					.setName("brand")
-					.setDescription("brand")
+					.setDescription("product brand, overrides the brand in the url")
 					.setRequired(false)
 					.setAutocomplete(true),
 			)
 			.addStringOption(option =>
 				option
 					.setName("name")
-					.setDescription("product name")
+					.setDescription("product name, overrides the name in the url")
 					.setRequired(false)
 					.setAutocomplete(true),
 			),
@@ -37,7 +37,7 @@ export const command = new SlashCommandBuilder()
 	.addSubcommand(subcommand =>
 		subcommand
 			.setName("remove")
-			.setDescription("remove price alert")
+			.setDescription("remove price alert: either by url or by shop, brand, and name")
 			.addStringOption(option =>
 				option
 					.setName("shop")

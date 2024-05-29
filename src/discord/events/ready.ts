@@ -15,7 +15,7 @@ export async function readyHandler() {
 	const catFact = await getCatFact();
 	client.user!.setActivity({ name: catFact, type: ActivityType.Custom });
 
-	const reminders = ReminderModel.find().cursor();
+	const reminders = ReminderModel.find().lean().cursor();
 
 	for await (const reminder of reminders) {
 		if (reminder.sendTime.getTime() < Date.now()) {
