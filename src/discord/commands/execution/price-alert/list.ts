@@ -1,5 +1,5 @@
 import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder } from "discord.js";
-import { PriceAlertListMode } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
+import { PriceAlertListMode, PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/src/assets/embeds/priceEmbeds";
 import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	if (mode === PriceAlertListMode.ALL) {
 		const formattedProducts = productsArray.map((product : PriceAlertItem, index : number) => {
-			return `${index + 1}. ${product.shop} | ${product.brand} [${product.productName}](<${product.url}>) $${product.price}\n`;
+			return `${index + 1}. ${PriceAlertShopParseDetails[product.shop]} ${product.brand} [${product.productName}](<${product.url}>) $${product.price}\n`;
 		});
 
 		const list : string[] = splitMessage(formattedProducts);
