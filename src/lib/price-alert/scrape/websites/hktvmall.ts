@@ -39,7 +39,7 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 		const currentValue = parsePriceToFloat(curr.formattedValue);
 		if (acc < currentValue) return acc;
 		return currentValue;
-	}) ?? null;
+	}, Infinity) ?? null;
 
 	const productName = parsedProductData?.name;
 	const brand = parsedProductData?.brandName;
