@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - 'src/commands/builders/**/*.ts'
+      - 'src/discord/commands/builders/*.ts'
   workflow_dispatch:
     
 jobs:
