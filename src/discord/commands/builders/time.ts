@@ -1,19 +1,4 @@
 import { SlashCommandBuilder } from "discord.js";
-
-const TZ_choices = [
-	{
-		name: "PST",
-		value: "PST",
-	},
-	{
-		name: "HKT",
-		value: "UTC+8",
-	},
-	{
-		name: "AEST",
-		value: "Australia/Queensland",
-	},
-];
 export const command = new SlashCommandBuilder()
 	.setName("time")
 	.setDescription("time")
@@ -29,7 +14,7 @@ export const command = new SlashCommandBuilder()
 			.addStringOption(option =>
 				option
 					.setName("time")
-					.setDescription("time")
+					.setDescription("time with format HH:mm or dd/MM HH:mm, e.g. 30/05 10:00 for May 30th 10AM")
 					.setRequired(true),
 			)
 			.addStringOption(option =>
@@ -37,14 +22,13 @@ export const command = new SlashCommandBuilder()
 					.setName("from_timezone")
 					.setDescription("from timezone")
 					.setRequired(true)
-					.addChoices(...TZ_choices),
+					.setAutocomplete(true),
 			)
 			.addStringOption(option =>
 				option
 					.setName("to_timezone")
 					.setDescription("to timezone")
 					.setRequired(true)
-					.addChoices(...TZ_choices),
+					.setAutocomplete(true),
 			),
 	);
-
