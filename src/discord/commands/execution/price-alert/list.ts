@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	if (mode === PriceAlertListMode.ALL) {
 		const formattedProducts = productsArray.map((product : PriceAlertItem, index : number) => {
-			return `${index + 1}. ${PriceAlertShopParseDetails[product.shop]} ${product.brand} [${product.productName}](<${product.url}>) $${product.price}\n`;
+			return `${index + 1}. ${PriceAlertShopParseDetails[product.shop].emote} ${product.brand} [${product.productName}](<${product.url}>) $${product.price}\n`;
 		});
 
 		const list : string[] = splitMessage(formattedProducts);
