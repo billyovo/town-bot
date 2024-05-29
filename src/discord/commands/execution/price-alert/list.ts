@@ -13,9 +13,9 @@ enum ButtonType {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const mode : PriceAlertListMode = interaction.options.get("mode")?.value as PriceAlertListMode;
+	const mode : PriceAlertListMode = interaction.options.getString("mode") as PriceAlertListMode;
 
-	const productsArray : PriceAlertItem[] = await PriceAlertModel.find({}).exec();
+	const productsArray : PriceAlertItem[] = await PriceAlertModel.find({}).sort({ productName: 1 }).exec();
 
 	if (productsArray.length === 0) {
 		await interaction.reply({ content: "No products found" });

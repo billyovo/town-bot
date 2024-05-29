@@ -1,5 +1,5 @@
 import { ActivityType, TextChannel } from "discord.js";
-import { loadSlashCommands } from "~/src/lib/discord/loadCommands";
+import { loadAutoCompleteCommands, loadSlashCommands } from "~/src/lib/discord/loadCommands";
 import { log } from "~/src/lib/logger/logger";
 import { getCatFact } from "~/src/lib/utils/catFact";
 import { ReminderModel } from "~/src/lib/database/schemas/reminders";
@@ -8,6 +8,8 @@ import { client } from "~/src/managers/discordManager";
 
 export async function readyHandler() {
 	client.commands = await loadSlashCommands();
+	client.autoCompleteCommands = await loadAutoCompleteCommands();
+
 	log(`Logged in as ${client.user?.displayName}`);
 
 	const catFact = await getCatFact();

@@ -2,10 +2,24 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const url = interaction.options.get("url")!.value as string;
-	const decodedUrl = decodeURI(url);
+	const url = interaction.options.getString("url") ?? "";
+	const brand = interaction.options.getString("brand") ?? "";
+	const productName = interaction.options.getString("name") ?? "";
 
-	const product : PriceAlertItem | null = await PriceAlertModel.findOne({ url: decodedUrl });
+	if (!(url || (brand && productName))) {
+		return interaction.reply({ content: "Please provide a URL or both a brand and a product name" });
+	}
+
+	let query = {};
+
+	if (url) {
+		query = { url: decodeURI(url) };
+	}
+	else {
+		query = { productName: productName, brand: brand };
+	}
+
+	const product : PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
 	if (!product) return interaction.reply({ content: "Product not found" });
 
 	await PriceAlertModel.deleteOne({ url: product.url });

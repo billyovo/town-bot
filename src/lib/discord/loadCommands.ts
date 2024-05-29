@@ -2,10 +2,10 @@ import { join, resolve, relative } from "path";
 import { lstatSync, readdirSync } from "fs";
 import url from "node:url";
 import { Collection } from "discord.js";
-import { CommandsCollection } from "~/src/@types/discord";
+import { AutoCompleteCollection, CommandsCollection } from "~/src/@types/discord";
 import { log } from "~/src/lib/logger/logger";
 
-async function loadCommandsFromFolder(folderPath: string, rootPath: string, commandsCollection: CommandsCollection) {
+async function loadCommandsFromFolder(folderPath: string, rootPath: string, commandsCollection: CommandsCollection | AutoCompleteCollection) {
 	const commandFiles = readdirSync(folderPath);
 
 	const importPromises = commandFiles.map(async (file) => {
@@ -29,6 +29,15 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 export async function loadSlashCommands(): Promise<CommandsCollection> {
 	const rootPath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/discord/commands/execution" : "./src/discord/commands/execution");
 	const commandsCollection: CommandsCollection = new Collection();
+
+	await loadCommandsFromFolder(rootPath, rootPath, commandsCollection);
+
+	return commandsCollection;
+}
+
+export async function loadAutoCompleteCommands(): Promise<AutoCompleteCollection> {
+	const rootPath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/discord/commands/autoComplete" : "./src/discord/commands/autoComplete");
+	const commandsCollection : AutoCompleteCollection = new Collection();
 
 	await loadCommandsFromFolder(rootPath, rootPath, commandsCollection);
 

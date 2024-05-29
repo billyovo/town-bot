@@ -6,6 +6,9 @@ import { PriceAlertItem } from "~/src/lib/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.get("url")!.value as string;
+	const inputProductName = interaction.options.getString("name") ?? "";
+	const inputProductBrand = interaction.options.getString("brand") ?? "";
+
 	const decodedURL = decodeURI(link);
 
 	await interaction.deferReply();
@@ -17,8 +20,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		lastChecked: new Date(),
 		url: decodedURL,
 		price: output.data.price,
-		brand: output.data.brand,
-		productName: output.data.productName,
+		brand: inputProductBrand || output.data.brand,
+		productName: inputProductName || output.data.productName,
 		productImage: output.data.productImage,
 		shop: output.data.shop,
 		failCount: 0,

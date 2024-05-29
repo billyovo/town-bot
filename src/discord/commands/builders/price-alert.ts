@@ -18,6 +18,20 @@ export const command = new SlashCommandBuilder()
 					.setName("url")
 					.setDescription("url")
 					.setRequired(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("brand")
+					.setDescription("brand")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("name")
+					.setDescription("product name")
+					.setRequired(false)
+					.setAutocomplete(true),
 			),
 	)
 	.addSubcommand(subcommand =>
@@ -26,10 +40,25 @@ export const command = new SlashCommandBuilder()
 			.setDescription("remove price alert")
 			.addStringOption(option =>
 				option
+					.setName("brand")
+					.setDescription("brand")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("name")
+					.setDescription("product name")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
 					.setName("url")
-					.setDescription("url")
-					.setRequired(true),
+					.setDescription("product url")
+					.setRequired(false),
 			),
+
 	)
 	.addSubcommand(subcommand =>
 		subcommand
