@@ -42,7 +42,8 @@ export const command = new SlashCommandBuilder()
 				option
 					.setName("shop")
 					.setDescription("shop")
-					.setRequired(false),
+					.setRequired(false)
+					.setAutocomplete(true),
 			)
 			.addStringOption(option =>
 				option
