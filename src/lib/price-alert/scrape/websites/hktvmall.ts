@@ -36,8 +36,9 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 
 
 	const price = parsedProductData?.priceList?.reduce((acc : number, curr: HKTVMALLProductData) => {
-		if (acc < curr.value) return acc;
-		return curr.value;
+		const currentValue = parsePriceToFloat(curr.formattedValue);
+		if (acc < currentValue) return acc;
+		return currentValue;
 	}) ?? null;
 
 	const productName = parsedProductData?.name;
@@ -50,10 +51,9 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 	if (!productName) return { success: false, error: "Product name not found", data: null };
 	if (!brand) return { success: false, error: "Brand not found", data: null };
 
-	const parsedPrice = parsePriceToFloat(price.toFixed(2));
 	return {
 		data: {
-			price: parsedPrice,
+			price: price,
 			productName: productName,
 			brand: brand,
 			productImage: img_sanitized ?? "",
