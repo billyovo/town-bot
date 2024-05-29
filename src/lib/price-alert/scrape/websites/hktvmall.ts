@@ -50,10 +50,10 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 	if (!productName) return { success: false, error: "Product name not found", data: null };
 	if (!brand) return { success: false, error: "Brand not found", data: null };
 
-	const parsedPrice = parsePriceToFloat(price);
+	const parsedPrice = parsePriceToFloat(price.toFixed(2));
 	return {
 		data: {
-			price: parseFloat(parsedPrice.toFixed(2)),
+			price: parsedPrice,
 			productName: productName,
 			brand: brand,
 			productImage: img_sanitized ?? "",
