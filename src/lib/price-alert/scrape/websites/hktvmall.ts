@@ -2,6 +2,7 @@ import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getHTML } from "../../utils/scrapeGetters";
 import { parsePriceToFloat } from "../../utils/format";
+import { log } from "~/src/lib/logger/logger";
 
 type HKTVMALLProductData = {
 	currencyIso: string,
@@ -100,10 +101,13 @@ function getProductDataFromScript(script: string) {
 		start++;
 	}
 
+	// fix the wrong escaped backslashes
+	receivedData = receivedData.replace(/\\(?!\/|u)/g, "");
 	try {
 		return JSON.parse(receivedData);
 	}
-	catch (e) {
+	catch (error) {
+		log((error as Error).message);
 		return null;
 	}
 }
