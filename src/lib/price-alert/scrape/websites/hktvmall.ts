@@ -92,7 +92,7 @@ function getProductDataFromScript(script: string) {
 	let receivedData = "{";
 
 	// don't use falsey here, empty string is falsey
-	while ((stack > 0) || script[productDataIndex + start] === undefined) {
+	while ((stack > 0) && script[productDataIndex + start] !== undefined) {
 		const char = script[productDataIndex + start];
 		if (char === "{") stack++;
 		if (char === "}") stack--;
