@@ -3,10 +3,11 @@ import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/prod
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url = interaction.options.getString("url") ?? "";
+	const shop = interaction.options.getString("shop") ?? "";
 	const brand = interaction.options.getString("brand") ?? "";
 	const productName = interaction.options.getString("name") ?? "";
 
-	if (!(url || (brand && productName))) {
+	if (!(url || (brand && productName && shop))) {
 		return interaction.reply({ content: "Please provide a URL or both a brand and a product name" });
 	}
 
@@ -16,7 +17,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		query = { url: decodeURI(url) };
 	}
 	else {
-		query = { productName: productName, brand: brand };
+		query = { productName: productName, brand: brand, shop: shop };
 	}
 
 	const product : PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();

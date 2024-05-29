@@ -40,6 +40,12 @@ export const command = new SlashCommandBuilder()
 			.setDescription("remove price alert")
 			.addStringOption(option =>
 				option
+					.setName("shop")
+					.setDescription("shop")
+					.setRequired(false),
+			)
+			.addStringOption(option =>
+				option
 					.setName("brand")
 					.setDescription("brand")
 					.setRequired(false)
