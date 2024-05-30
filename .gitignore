@@ -8,3 +8,5 @@ Tesseract_Data/
 docker.ps1
 *.bat
 assets/tesseract/*.traineddata
+src/assets/timezone.json
+dist/assets/timezone.json

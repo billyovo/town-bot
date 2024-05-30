@@ -4,13 +4,13 @@ import { promises as fs } from "fs";
 import { join } from "path";
 import axios from "axios";
 
-const filePath = join(process.cwd(), "TimeZoneData.json");
+const filePath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/assets/timeZone.json" : "./src/assets/timeZone.json");
 
 export async function getTimeZone(): Promise<Array<string> | null> {
 
 	const timeZoneData = await getTimeZoneFile();
 	if (timeZoneData) {
-		const lastFetch = new Date(timeZoneData.LastFetch);
+		const lastFetch = new Date(timeZoneData.lastFetch);
 		const oneMonthAgo = new Date();
 		oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 		if (lastFetch > oneMonthAgo) {
@@ -28,7 +28,7 @@ export async function getTimeZone(): Promise<Array<string> | null> {
 	}
 
 	const newTimeZoneData: TimeZoneData = {
-		"LastFetch": new Date().toISOString(),
+		"lastFetch": new Date().toISOString(),
 		"data": response.data,
 	};
 

@@ -1,4 +1,4 @@
 export type TimeZoneData = {
-  LastFetch: string;
+  lastFetch: string;
   data: Array<string>;
 }
