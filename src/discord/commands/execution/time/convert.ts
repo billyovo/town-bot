@@ -11,12 +11,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return interaction.reply({ content: "Invalid time received", ephemeral: true });
 	}
 
-	const timeParts = time.split(" ");
-	const timeString = timeParts.length > 1 ? timeParts[1] : timeParts[0];
-	const dateString = timeParts.length > 1 ? timeParts[0] : DateTime.now().toFormat("dd/MM");
-	const formattedDateString = formatDate(dateString);
-
-	const completeTimeString = `${formattedDateString} ${timeString}`;
+	const completeTimeString = generateCorrectTimeFormat(time, from_timezone);
 
 	const dt = DateTime.fromFormat(completeTimeString, "dd/MM HH:mm", {
 		zone: from_timezone,
@@ -57,4 +52,15 @@ function formatDate(dateString: string) {
 	const paddedMonth = month.padStart(2, "0");
 	const paddedDay = day.padStart(2, "0");
 	return `${paddedDay}/${paddedMonth}`;
+}
+
+function generateCorrectTimeFormat(time: string, from_timezone: string) {
+	const timeParts = time.split(" ");
+	const timeString = timeParts.length > 1 ? timeParts[1] : timeParts[0];
+	const dateString = timeParts.length > 1 ? timeParts[0] : DateTime.now().setZone(from_timezone).toFormat("dd/MM");
+	const formattedDateString = formatDate(dateString);
+
+	const completeTimeString = `${formattedDateString} ${timeString}`;
+
+	return completeTimeString;
 }
