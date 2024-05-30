@@ -3,9 +3,9 @@ import { DateTime } from "luxon";
 import { timeConvert } from "~/src/lib/utils/fetch/timeConvert";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const time : string | null = interaction.options.getString("time") ?? null;
-	const from_timezone : string | null = interaction.options.getString("from_timezone") ?? null;
-	const to_timezone : string | null = interaction.options.getString("to_timezone") ?? null;
+	const time: string | null = interaction.options.getString("time") ?? null;
+	const from_timezone: string | null = interaction.options.getString("from_timezone") ?? null;
+	const to_timezone: string | null = interaction.options.getString("to_timezone") ?? null;
 
 	if (!time || !from_timezone || !to_timezone) {
 		return interaction.reply({ content: "Invalid time received", ephemeral: true });
@@ -18,7 +18,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const completeTimeString = `${formattedDateString} ${timeString}`;
 
-	const dt = DateTime.fromFormat(completeTimeString, timeParts.length === 1 ? "HH:mm" : "dd/MM HH:mm", {
+	const dt = DateTime.fromFormat(completeTimeString, "dd/MM HH:mm", {
 		zone: from_timezone,
 	});
 
@@ -52,7 +52,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	interaction.reply({ embeds: [embed] });
 }
 
-function formatDate(dateString : string) {
+function formatDate(dateString: string) {
 	const [day, month] = dateString.split("/");
 	const paddedMonth = month.padStart(2, "0");
 	const paddedDay = day.padStart(2, "0");
