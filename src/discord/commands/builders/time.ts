@@ -10,7 +10,7 @@ export const command = new SlashCommandBuilder()
 				option
 					.setName("timezone")
 					.setDescription("timezone")
-					.setRequired(true)
+					.setRequired(false)
 					.setAutocomplete(true),
 			),
 	)

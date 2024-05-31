@@ -10,7 +10,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const inputZone = interaction.options.getString("timezone") ?? "";
 	const fromTimeZoneValid = DateTime.now().setZone(inputZone).isValid;
-	if (!fromTimeZoneValid) return interaction.reply({ content: "Invalid timezone", ephemeral: true });
+	if (inputZone && !fromTimeZoneValid) return interaction.reply({ content: "Invalid timezone", ephemeral: true });
 
 	await interaction.deferReply();
 
@@ -25,14 +25,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		zones.push("Australia/Queensland");
 	}
 
-	for (const zone of zones) {
-		const data : TimeAPICurrentTimeData | null = await timeNow(zone);
-		const isDST = data?.dstActive ? "☀" : "";
+	const zoneData : ({data: TimeAPICurrentTimeData|null, zone: string})[] = await Promise.all(zones.map(async (zone) => {
+		return {
+			zone: zone,
+			data: await timeNow(zone),
+		};
+	}));
+
+	for (const timeData of zoneData) {
+		const isDST = timeData.data?.dstActive ? ":sunny:" : "";
 		embed.addFields({
-			name: zone,
-			value: data ? `${data.time} | ${data.time} ${isDST}` : "Failed to get time",
-			inline: true,
+			name: timeData.data?.timeZone ?? timeData.zone,
+			value: timeData.data ? `${timeData.data.day}/${timeData.data.month} | ${timeData.data.time} ${isDST}` : "Failed to get time",
 		});
 	}
-	interaction.reply({ embeds: [embed] });
+
+	await interaction.editReply({ embeds: [embed] });
 }
