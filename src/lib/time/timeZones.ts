@@ -1,5 +1,5 @@
 import { TimeZoneData } from "~/src/@types/timeZone";
-import { log } from "../../logger/logger";
+import { log } from "~/src/lib/logger/logger";
 import { promises as fs } from "fs";
 import { join } from "path";
 import axios from "axios";

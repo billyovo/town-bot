@@ -5,7 +5,14 @@ export const command = new SlashCommandBuilder()
 	.addSubcommand(subcommand =>
 		subcommand
 			.setName("now")
-			.setDescription("get time now"),
+			.setDescription("get time now")
+			.addStringOption(option =>
+				option
+					.setName("timezone")
+					.setDescription("timezone")
+					.setRequired(true)
+					.setAutocomplete(true),
+			),
 	)
 	.addSubcommand(subcommand =>
 		subcommand

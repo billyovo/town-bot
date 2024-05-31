@@ -1,15 +1,21 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
-import { timeConvert } from "~/src/lib/utils/fetch/timeConvert";
+import { timeConvert } from "~/src/lib/time/timeConvert";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const time: string | null = interaction.options.getString("time") ?? null;
 	const from_timezone: string | null = interaction.options.getString("from_timezone") ?? null;
 	const to_timezone: string | null = interaction.options.getString("to_timezone") ?? null;
 
-	if (!time || !from_timezone || !to_timezone) {
-		return interaction.reply({ content: "Invalid time received", ephemeral: true });
-	}
+	if (!time) return interaction.reply({ content: "Please provide a time", ephemeral: true });
+	if (!from_timezone) return interaction.reply({ content: "Please provide a from timezone", ephemeral: true });
+	if (!to_timezone) return interaction.reply({ content: "Please provide a to timezone", ephemeral: true });
+
+	const fromTimeZoneValid = DateTime.now().setZone(from_timezone).isValid;
+	const toTimeZoneValid = DateTime.now().setZone(to_timezone).isValid;
+
+	if (!fromTimeZoneValid) return interaction.reply({ content: "Invalid from timezone", ephemeral: true });
+	if (!toTimeZoneValid) return interaction.reply({ content: "Invalid to timezone", ephemeral: true });
 
 	const completeTimeString = generateCorrectTimeFormat(time, from_timezone);
 

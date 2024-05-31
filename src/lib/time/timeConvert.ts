@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 import { TimeAPIConversionData } from "~/src/@types/timeapi";
-import { log } from "../../logger/logger";
+import { log } from "~/src/lib/logger/logger";
 
 export async function timeConvert(time: DateTime, from_timeZone: string, to_timeZone: string): Promise<TimeAPIConversionData | null> {
 	const data = {
