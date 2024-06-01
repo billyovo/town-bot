@@ -10,3 +10,6 @@ docker.ps1
 assets/tesseract/*.traineddata
 src/assets/timezone.json
 dist/assets/timezone.json
+
+client-id
+client-secret
