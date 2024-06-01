@@ -27,7 +27,7 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 }
 
 export async function loadSlashCommands(): Promise<CommandsCollection> {
-	const rootPath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/discord/commands/execution" : "./src/discord/commands/execution");
+	const rootPath = join(__dirname, "../../discord/commands/execution");
 	const commandsCollection: CommandsCollection = new Collection();
 
 	await loadCommandsFromFolder(rootPath, rootPath, commandsCollection);
@@ -36,7 +36,7 @@ export async function loadSlashCommands(): Promise<CommandsCollection> {
 }
 
 export async function loadAutoCompleteCommands(): Promise<AutoCompleteCollection> {
-	const rootPath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/discord/commands/autoComplete" : "./src/discord/commands/autoComplete");
+	const rootPath = join(__dirname, "../../discord/commands/autoComplete");
 	const commandsCollection : AutoCompleteCollection = new Collection();
 
 	await loadCommandsFromFolder(rootPath, rootPath, commandsCollection);

@@ -4,7 +4,7 @@ import { promises as fs } from "fs";
 import { join } from "path";
 import axios from "axios";
 
-const filePath = join(process.cwd(), process.env.NODE_ENV === "production" ? "./dist/assets/timeZone.json" : "./src/assets/timeZone.json");
+const filePath = join(__dirname, "../../assets/timeZone.json");
 
 export async function getTimeZone(): Promise<Array<string> | null> {
 
