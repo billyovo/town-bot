@@ -4,7 +4,7 @@ import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 import { getHTML } from "../../utils/scrapeGetters";
 
 
-export const parseManningsPrice : ShopParseFunction = async (url, _) => {
+export const parseManningsPrice: ShopParseFunction = async (url, _) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -15,9 +15,12 @@ export const parseManningsPrice : ShopParseFunction = async (url, _) => {
 	// const YUUofferpriceMatch = YUUofferpriceTxt?.match(/\$(\d+(\.\d+)?)/);
 	// const YUUofferprice = YUUofferpriceMatch ? YUUofferpriceMatch[1] : null;
 
-	const price = root.querySelector("input[name=\"discPrice\"]")?.getAttribute("value") || root.querySelector("input[name=\"productPostPrice\"]")?.getAttribute("value");
+	const availability = root.querySelector("meta[property=\"product:availability\"]");
 
-	const productName = root.querySelector("input[name=\"productNamePost\"]")?.getAttribute("value");
+	const price = availability ? root.querySelector("input[name=\"discPrice\"]")?.getAttribute("value") || root.querySelector("input[name=\"productPostPrice\"]")?.getAttribute("value")
+		: "999999";
+
+	const productName = root.querySelector("input[name=\"productNamePost\"]")?.getAttribute("content") ? "in stock" : "out of stock";
 
 	const productImage = root.querySelector("input[name=\"productImg\"]")?.getAttribute("value");
 
