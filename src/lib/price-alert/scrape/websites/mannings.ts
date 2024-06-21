@@ -2,7 +2,8 @@ import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 import { getHTML } from "../../utils/scrapeGetters";
-
+import { log } from "node:console";
+import { HTMLElement } from "node-html-parser";
 
 export const parseManningsPrice: ShopParseFunction = async (url, _) => {
 	const html = await getHTML(url);
@@ -10,28 +11,27 @@ export const parseManningsPrice: ShopParseFunction = async (url, _) => {
 
 	const root = html.data;
 
-	// DO YOU HAVE YUU?
-	// const YUUofferpriceTxt = root.querySelector('.promotion_description_holder')?.rawText;
-	// const YUUofferpriceMatch = YUUofferpriceTxt?.match(/\$(\d+(\.\d+)?)/);
-	// const YUUofferprice = YUUofferpriceMatch ? YUUofferpriceMatch[1] : null;
+	const allScripts : HTMLElement[] | null = root.querySelectorAll(`script[type="text/javascript"]`);
+	if (!allScripts) return { success: false, error: "Scripts not found", data: null };
 
-	const price = root.querySelector("input[name=\"discPrice\"]")?.getAttribute("value")
-		|| root.querySelector("input[name=\"productPostPrice\"]")?.getAttribute("value")
-		|| root.querySelector("meta[property=\"product:price:amount\"]")?.getAttribute("content");
+	const productDataScript = getProductScriptFromScripts(allScripts);
+	if (!productDataScript) return { success: false, error: "Product data not found", data: null };
+	
+	const parsedProductData = getProductDataFromScript(productDataScript);
 
-	const productName = root.querySelector("meta[property=\"og:title\"]")?.getAttribute("content");
+	if (!parsedProductData) return { success: false, error: "Product data parsing failed", data: null };
 
+	const productName = parsedProductData?.name;
+	const price = (parsedProductData?.price && parsedProductData?.metric1) ? (parsePriceToFloat(parsedProductData.price) - parsePriceToFloat(parsedProductData.metric1)) : null;
+	const brand = parsedProductData?.brand;
 	const productImage = root.querySelector("meta[property=\"og:image\"]")?.getAttribute("content");
 
-	const brand = root.querySelector("input[name=\"brand\"]")?.getAttribute("value");
-
-	if (!price) return { success: false, error: "Failed to parse price", data: null };
-	if (!productName) return { success: false, error: "Failed to parse product name", data: null };
-
+	if (!price) return { success: false, error: "Price not found", data: null };
+	if (!productName) return { success: false, error: "Product name not found", data: null };
 
 	return {
 		data: {
-			price: parsePriceToFloat(price),
+			price: price,
 			productName: productName,
 			productImage: productImage ?? "",
 			brand: brand ?? "No Brand",
@@ -42,3 +42,76 @@ export const parseManningsPrice: ShopParseFunction = async (url, _) => {
 	};
 
 };
+
+function getProductScriptFromScripts(allScripts: HTMLElement[]) {
+	for (let i = 0; i < allScripts.length; i++) {
+		const script = allScripts[i];
+		if (script.textContent.includes("function trackProductDetail()")) {
+			return script.text;
+		}
+	}
+
+	return null
+}
+
+function getProductDataFromScript(script: string) {
+	/*
+	   say we have a <script> tag with variables like
+	   function trackProductDetail() {
+	    //console.log('trackProductDetail');
+        dataLayer.push({
+          'event': 'productDetail',
+          'ecommerce': {
+            'detail': {
+              'products': [
+                
+                {
+                'name': 'Mannings Apple Cider Vinegar Gummies 60pcs',
+                'id': '752642',
+                'price': '178.0',
+                'metric1': '40.0',
+                'brand':  'Mannings',
+                'variant': '60pcs',
+                'category':'INTAKE'
+                }
+               ]
+             }
+           }
+        });
+
+	   we only know which line the productDetailPageProductData is in, and the data could have nested objects and spam multiple lines
+	   we need to find the start and end of the object, and extract it
+
+		assume it's always an valid json object
+		use the classic stack method to find the start and end of the object, meet "{" stack++, meet "}" stack--, loop until stack = 0
+	*/
+	const productDataIndex = script.indexOf(`'products'`) + `'products'`.length;
+
+	let start : number = 0;
+	let stack : number = 1;
+
+	while (script[productDataIndex + start - 1] !== "{") {
+		start++;
+	}
+
+	let receivedData = "{";
+
+	// don't use falsey here, empty string is falsey
+	while ((stack > 0) && script[productDataIndex + start] !== undefined) {
+		const char = script[productDataIndex + start];
+		if (char === "{") stack++;
+		if (char === "}") stack--;
+		receivedData += char;
+		start++;
+	}
+
+	const sanitizedData = receivedData.replaceAll("'", `"`);
+
+	try {
+		return JSON.parse(sanitizedData);
+	}
+	catch (error) {
+		log((error as Error).message);
+		return null;
+	}
+}

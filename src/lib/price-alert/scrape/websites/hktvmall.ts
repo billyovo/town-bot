@@ -3,6 +3,7 @@ import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAle
 import { getHTML } from "../../utils/scrapeGetters";
 import { parsePriceToFloat } from "../../utils/format";
 import { log } from "~/src/lib/logger/logger";
+import { HTMLElement } from "node-html-parser";
 
 type HKTVMALLProductData = {
 	currencyIso: string,
@@ -19,16 +20,7 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 	const root = html.data;
 
 	const allScripts = root.querySelectorAll("script");
-
-
-	let productDataScript = "";
-	for (let i = 0; i < allScripts.length; i++) {
-		const script = allScripts[i];
-		if (script.textContent.includes("var productDetailPageProductData =")) {
-			productDataScript = script.text;
-			break;
-		}
-	}
+	const productDataScript = getProductScriptFromScripts(allScripts);
 	if (!productDataScript) return { success: false, error: "Product data not found", data: null };
 
 	const parsedProductData = getProductDataFromScript(productDataScript);
@@ -65,6 +57,16 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 	};
 };
 
+function getProductScriptFromScripts(allScripts: HTMLElement[]) {
+	for (let i = 0; i < allScripts.length; i++) {
+		const script = allScripts[i];
+		if (script.textContent.includes("var productDetailPageProductData =")) {
+			return script.text;
+		}
+	}
+
+	return null
+}
 function getProductDataFromScript(script: string) {
 	/*
 	   say we have a <script> tag with variables like
