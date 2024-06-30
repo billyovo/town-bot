@@ -9,7 +9,7 @@ on:
   workflow_run:
     workflows: ["Deploy to Cloud"]
     types:
-      - requested
+      - created
     
 jobs:
   register:
