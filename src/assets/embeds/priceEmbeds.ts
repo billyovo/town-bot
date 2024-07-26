@@ -24,9 +24,13 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 		.setColor(embedColor);
 
 	if (product.promotions) {
-		embed.addFields({
-			name: "Promotion", value: product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)?.map((promotion) => promotion.description).join("\n\n") ?? "No Promotion",
-		});
+		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
+			.map((promotion, index) => `**${index + 1}.** ${promotion.description}`);
+		if (discountPromotions.length > 0) {
+			embed.addFields({
+				name: "Promotion", value: discountPromotions.join("\n\n")?.trim()?.substring(0, 1024) ?? "No Promotion",
+			});
+		}
 	}
 
 	if (product.productImage) embed.setImage(product.productImage);
@@ -50,9 +54,13 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
 	if (product.promotions) {
-		embed.addFields({
-			name: "Promotion", value: product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)?.map((promotion) => promotion.description).join("\n\n") ?? "No Promotion",
-		});
+		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
+			.map((promotion, index) => `**${index + 1}.** ${promotion.description}`);
+		if (discountPromotions.length > 0) {
+			embed.addFields({
+				name: "Promotion", value: discountPromotions.join("\n\n")?.trim()?.substring(0, 1024) ?? "No Promotion",
+			});
+		}
 	}
 	return embed;
 }
@@ -79,9 +87,13 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
 	if (product.promotions) {
-		embed.addFields({
-			name: "Promotion", value: product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)?.map((promotion) => promotion.description).join("\n\n") ?? "No Promotion",
-		});
+		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
+			.map((promotion, index) => `**${index + 1}.** ${promotion.description}`);
+		if (discountPromotions.length > 0) {
+			embed.addFields({
+				name: "Promotion", value: discountPromotions.join("\n\n")?.trim()?.substring(0, 1024) ?? "No Promotion",
+			});
+		}
 	}
 	return embed;
 }
