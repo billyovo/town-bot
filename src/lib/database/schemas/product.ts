@@ -1,5 +1,6 @@
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { Schema, model } from "mongoose";
+import { PromotionClassified } from "~/src/@types/price-alert";
 
 export interface PriceAlertItem {
     lastChecked: Date,
@@ -8,6 +9,7 @@ export interface PriceAlertItem {
     brand: string,
     productName: string,
     productImage: string | null,
+    promotions?: PromotionClassified[] | null,
     shop: PriceAlertShopOption,
     failCount: number,
     previous?: {
@@ -15,6 +17,10 @@ export interface PriceAlertItem {
         date: Date,
     },
 }
+const promotionSchema = new Schema({
+	type: String,
+	description: String,
+}, { _id: false });
 
 const priceAlertSchema = new Schema<PriceAlertItem>({
 	lastChecked: Date,
@@ -23,6 +29,10 @@ const priceAlertSchema = new Schema<PriceAlertItem>({
 	brand: String,
 	productName: String,
 	productImage: String,
+	promotions: {
+		type: [promotionSchema],
+		default: null,
+	},
 	shop: String,
 	failCount: Number,
 	previous: {

@@ -3,7 +3,7 @@ import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/t
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
 import { ReminderModel } from "~/src/lib/database/schemas/reminders";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const duration = interaction.options.getString("time", true).replace(/\s/g, "");
@@ -35,10 +35,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	scheduleJob(reminderTime.toJSDate(), () => {
 		if (dm) {
-			interaction.user.send({ content: message }).catch(err => log(err.message));
+			interaction.user.send({ content: message }).catch(err => logger.error(err.message));
 		}
 		else {
-            interaction.channel!.send({ content: message }).catch(err => log(err.message));
+            interaction.channel!.send({ content: message }).catch(err => logger.error(err.message));
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});

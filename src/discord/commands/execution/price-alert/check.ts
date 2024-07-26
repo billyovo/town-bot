@@ -5,6 +5,7 @@ import { PriceAlertChecked, ShopParseFunctionReturn } from "~/src/@types/price-a
 import { parseShopWebsite } from "~/src/lib/price-alert/scrape/parse";
 import { scrapeDelayTime } from "~/src/configs/price-alert";
 import { delay } from "~/src/lib/utils/time/delay";
+import { getPromotionClassifier } from "~/src/lib/price-alert/classifier/getClassifier";
 
 function generateProgressBar(checkedProduct: number, total: number) {
 	const filled = "█";
@@ -21,6 +22,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const total = await PriceAlertModel.countDocuments();
 	const products : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({}).lean().cursor();
+	const classifier = await getPromotionClassifier();
 
 	let count = 0;
 	for await (const product of products) {
@@ -29,7 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
 		await delay(randomDelayTime);
 
-		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true });
+		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true, classifier: classifier });
 		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);

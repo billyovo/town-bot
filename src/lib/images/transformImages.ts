@@ -1,5 +1,5 @@
 import axios from "axios";
-import { log } from "../logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { Base64String } from "discord.js";
 import { HTMLClient } from "~/src/lib/utils/fetch/client";
 import sharp from "sharp";
@@ -24,7 +24,7 @@ export async function getImageBase64FromLink(url: string): Promise<string | null
 		return jpegData.toString("base64");
 	}
 	catch (error) {
-		log(`Failed to create attachment from image URL: ${error}`);
+		logger.error(`Failed to create attachment from image URL: ${error}`);
 		return null;
 	}
 }
@@ -47,10 +47,10 @@ export async function createImgurURLFromBase64(data: Base64String): Promise<stri
 	catch (error) {
 		if (axios.isAxiosError(error) && error.response) {
 			const imgurError = error.response.data;
-			log(`Failed to create Imgur URL from image URL: ${imgurError.data.error}`);
+			logger.error(`Failed to create Imgur URL from image URL: ${imgurError.data.error}`);
 		}
 		else {
-			log(`Failed to create Imgur URL from image URL: ${error}`);
+			logger.error(`Failed to create Imgur URL from image URL: ${error}`);
 		}
 		return null;
 	}

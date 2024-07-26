@@ -3,6 +3,7 @@ import { addProductToAlert } from "~/src/lib/price-alert/utils/db";
 import { parseShopWebsite } from "~/src/lib/price-alert/scrape/parse";
 import { ChatInputCommandInteraction } from "discord.js";
 import { PriceAlertItem } from "~/src/lib/database/schemas/product";
+import { getPromotionClassifier } from "~/src/lib/price-alert/classifier/getClassifier";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.get("url")!.value as string;
@@ -12,8 +13,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const decodedURL = decodeURI(link);
 
 	await interaction.deferReply();
+	const classifier = await getPromotionClassifier();
 
-	const output = await parseShopWebsite(decodedURL);
+	const output = await parseShopWebsite(decodedURL, { classifier: classifier });
+
 	if (!output.success) return await interaction.editReply({ content: output.error ?? "Unknown error" });
 
 	const itemToBeadded : PriceAlertItem = {
@@ -24,6 +27,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		productName: inputProductName || output.data.productName,
 		productImage: output.data.productImage,
 		shop: output.data.shop,
+		promotions: output.data.promotions,
 		failCount: 0,
 	};
 

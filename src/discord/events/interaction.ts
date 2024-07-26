@@ -1,6 +1,6 @@
 import { AutocompleteInteraction, BaseInteraction, ChatInputCommandInteraction } from "discord.js";
 import { client } from "~/src/managers/discordManager";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 function getFullCommandName(interaction: ChatInputCommandInteraction | AutocompleteInteraction) {
 	const subCommand = interaction.options.getSubcommand(false);
@@ -11,7 +11,7 @@ export function interactionHandler(interaction: BaseInteraction) {
 	if (!interaction.isChatInputCommand()) return;
 
 	const fullCommand = getFullCommandName(interaction);
-	log(`${interaction.user.username} used ${fullCommand}`);
+	logger.info(`${interaction.user.username} used ${fullCommand}`);
 	client.commands.get(fullCommand)?.execute(interaction);
 }
 
@@ -19,6 +19,6 @@ export function autoCompleteHandler(interaction: BaseInteraction) {
 	if (!interaction.isAutocomplete()) return;
 
 	const fullCommand = getFullCommandName(interaction);
-	log(`${interaction.user.username} autocompletion ${fullCommand}`);
+	logger.info(`${interaction.user.username} autocompletion ${fullCommand}`);
 	client.autoCompleteCommands.get(fullCommand)?.autoComplete(interaction);
 }

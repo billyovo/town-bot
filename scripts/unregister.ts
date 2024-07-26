@@ -1,7 +1,7 @@
 import { Routes, REST } from "discord.js";
 import path from "path";
 import dotenv from "dotenv";
-import { log } from "../src/lib/logger/logger";
+import { logger } from "../src/lib/logger/logger";
 
 dotenv.config({ path: path.resolve(__dirname, "../src/secrets/deposit/.env") });
 
@@ -17,6 +17,6 @@ const rest = new REST().setToken(`${process.env.DISCORD_TOKEN}`);
 		Routes.applicationCommands(`${process.env.CLIENT_ID}`),
 		{ body: [] },
 	);
-	log(JSON.stringify(data));
+	logger.info(JSON.stringify(data));
 })();
 

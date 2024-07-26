@@ -1,6 +1,6 @@
 import { ActivityType, TextChannel } from "discord.js";
 import { loadAutoCompleteCommands, loadSlashCommands } from "~/src/lib/discord/loadCommands";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { getCatFact } from "~/src/lib/utils/catFact";
 import { ReminderModel } from "~/src/lib/database/schemas/reminders";
 import { scheduleJob } from "node-schedule";
@@ -10,7 +10,7 @@ export async function readyHandler() {
 	client.commands = await loadSlashCommands();
 	client.autoCompleteCommands = await loadAutoCompleteCommands();
 
-	log(`Logged in as ${client.user?.displayName}`);
+	logger.info(`Logged in as ${client.user?.displayName}`);
 
 	const catFact = await getCatFact();
 	client.user!.setActivity({ name: catFact, type: ActivityType.Custom });
@@ -23,14 +23,14 @@ export async function readyHandler() {
 			continue;
 		}
 		scheduleJob(reminder.sendTime, () => {
-			log(`Found reminder for ${reminder.owner} at ${reminder.sendTime}!`);
+			logger.info(`Found reminder for ${reminder.owner} at ${reminder.sendTime}!`);
 			if (reminder.isDM) {
 				client.users.fetch(reminder.owner).then(user => user.send({ content: reminder.message }))
-					.catch(err => log(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+					.catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			else {
 				client.channels.fetch(reminder.channel).then(channel => (channel as TextChannel).send({ content: reminder.message }))
-					.catch(err => log(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+					.catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			ReminderModel.deleteOne({ _id: reminder._id }).exec();
 		});

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 import { TimeAPIConversionData } from "~/src/@types/timeapi";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 export async function timeConvert(time: DateTime, from_timeZone: string, to_timeZone: string): Promise<TimeAPIConversionData | null> {
 	const data = {
@@ -16,7 +16,7 @@ export async function timeConvert(time: DateTime, from_timeZone: string, to_time
 		return response.data;
 	}
 	catch (error) {
-		log(`failed to get data from time api ${error}`);
+		logger.error(`failed to get data from time api ${error}`);
 		return null;
 	}
 }

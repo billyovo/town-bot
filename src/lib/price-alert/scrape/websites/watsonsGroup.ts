@@ -1,6 +1,6 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "../../utils/enums/priceAlertShopOption";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/src/lib/images/transformImages";
 import { APIClient } from "~/src/lib/utils/fetch/client";
 import type { Failure, Success } from "~/src/@types/utils";
@@ -74,7 +74,7 @@ async function fetchProductDetail(url : string) : Promise<Success<ProductDetail>
 		productDetailsRes = await APIClient.get(url, {});
 	}
 	catch (error) {
-		log(`Cannot Get ${url}: ${error}`);
+		logger.error(`Cannot Get ${url}: ${error}`);
 		return {
 			data: null,
 			error: "Product not found",
@@ -93,7 +93,7 @@ async function fetchProductDetail(url : string) : Promise<Success<ProductDetail>
 	const brand : string = productDetail.masterBrand.name;
 	const productName :string = productDetail.elabProductName;
 	const productImage : string = productDetail.images[0].url;
-	const discountedPriceWithoutPromotion : number = productDetail.elabMarkDownPrice?.value || productDetail.price?.value;
+	const discountedPriceWithoutPromotion : number = productDetail.elabMarkDownMemPrice?.value || productDetail.elabMarkDownPrice?.value || productDetail.price?.value;
 
 	return {
 		data:{
@@ -119,16 +119,17 @@ async function fetchPromotionPrice(url : string) : Promise<number> {
 		promotionPriceRes = await APIClient.get(url);
 	}
 	catch (error) {
-		log(`Cannot Get ${url}: ${error}`);
+		logger.error(`Cannot Get ${url}: ${error}`);
 		return Infinity;
 	}
-	if (!promotionPriceRes.data.elabMultiBuyPromotionList?.length) return Infinity;
+	const memberPrice = promotionPriceRes.data.elabmarkdownMemPrice?.value ?? Infinity;
+	if (!promotionPriceRes.data.elabMultiBuyPromotionList?.length && (memberPrice === Infinity)) return Infinity;
 
 	const promotionPrice : number = promotionPriceRes.data.elabMultiBuyPromotionList.reduce((minPrice : number, item : PromotionPriceResponse) => {
 		return (Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice);
 	}, Infinity);
 
-	return promotionPrice;
+	return Math.min(promotionPrice, memberPrice);
 }
 
 type WatsonsGroupShopDetails = {
@@ -165,13 +166,13 @@ async function processProductImage(url : string | null, baseURL: string) {
 
 	const productImageBase64 : Base64String | null = await getImageBase64FromLink(productCDNImage);
 	if (!productImageBase64) {
-		log(`Cannot get image from ${productCDNImage}`);
+		logger.error(`Cannot get image from ${productCDNImage}`);
 		return null;
 	}
 
 	const imgurURL : string | null = await createImgurURLFromBase64(productImageBase64);
 	if (!imgurURL) {
-		log(`Cannot create imgur URL from ${productCDNImage}`);
+		logger.error(`Cannot create imgur URL from ${productCDNImage}`);
 		return null;
 	}
 

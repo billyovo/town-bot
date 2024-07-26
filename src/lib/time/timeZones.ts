@@ -1,5 +1,5 @@
 import { TimeZoneData } from "~/src/@types/timeZone";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { promises as fs } from "fs";
 import { join } from "path";
 import axios from "axios";
@@ -23,7 +23,7 @@ export async function getTimeZone(): Promise<Array<string> | null> {
 		response = await axios.get("https://timeapi.io/api/TimeZone/AvailableTimeZones");
 	}
 	catch (error) {
-		log("failed to get timezones from time api");
+		logger.error("failed to get timezones from time api");
 		return null;
 	}
 
@@ -52,6 +52,6 @@ async function saveTimeZoneFile(data: TimeZoneData) {
 		await fs.writeFile(filePath, JSON.stringify(data), "utf-8");
 	}
 	catch (error) {
-		log("failed to save TimeZoneFile");
+		logger.error("failed to save TimeZoneFile");
 	}
 }

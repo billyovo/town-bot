@@ -1,11 +1,11 @@
-import { log } from "console";
 import { HTMLClient } from "../../utils/fetch/client";
 import parse, { HTMLElement } from "node-html-parser";
 import { Failure, Success } from "~/src/@types/utils";
+import { logger } from "../../logger/logger";
 
 export async function getHTML(url : string) : Promise<Success<HTMLElement> | Failure> {
 	const html = await HTMLClient.get(url).catch(() => {
-		log(`Failed to fetch ${url}`);
+		logger.error(`Failed to fetch ${url}`);
 		return { data: null, success: false, error: "Failed to fetch url" };
 	});
 
@@ -14,6 +14,7 @@ export async function getHTML(url : string) : Promise<Success<HTMLElement> | Fai
 		return { success: true, data: root };
 	}
 	catch (e) {
+		logger.error(e);
 		return { success: false, error: "Failed to parse html", data: null };
 	}
 }

@@ -2,6 +2,8 @@ import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { PriceAlertItem } from "~/src/lib/database/schemas/product";
+import { logger } from "~/src/lib/logger/logger";
+import { PromotionType } from "~/src/@types/enum/price-alert";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
 	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
@@ -9,7 +11,7 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 	const previousPrice = product.previous?.price ?? 1;
 	const discountPercentage : string = (((previousPrice - product.price) / previousPrice) * 100).toFixed(2);
 	const embedColor = (product.price > (previousPrice) ? "Red" : "Green");
-
+	logger.info(product);
 	const embed = new EmbedBuilder()
 		.setTitle("Price Changed!")
 		.setURL(product.url)
@@ -20,6 +22,13 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 			{ name: "Discount", value: `${discountPercentage}%`, inline: true },
 		)
 		.setColor(embedColor);
+
+	if (product.promotions) {
+		embed.addFields({
+			name: "Promotion", value: product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)?.map((promotion) => promotion.description).join("\n\n") ?? "No Promotion",
+		});
+	}
+
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
 
@@ -40,7 +49,11 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 		.setColor("Green");
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
-
+	if (product.promotions) {
+		embed.addFields({
+			name: "Promotion", value: product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)?.map((promotion) => promotion.description).join("\n\n") ?? "No Promotion",
+		});
+	}
 	return embed;
 }
 
@@ -65,5 +78,10 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 	}
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
+	if (product.promotions) {
+		embed.addFields({
+			name: "Promotion", value: product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)?.map((promotion) => promotion.description).join("\n\n") ?? "No Promotion",
+		});
+	}
 	return embed;
 }

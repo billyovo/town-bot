@@ -2,7 +2,7 @@ import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getHTML } from "../../utils/scrapeGetters";
 import { parsePriceToFloat } from "../../utils/format";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { HTMLElement } from "node-html-parser";
 
 type HKTVMALLProductData = {
@@ -65,7 +65,7 @@ function getProductScriptFromScripts(allScripts: HTMLElement[]) {
 		}
 	}
 
-	return null
+	return null;
 }
 function getProductDataFromScript(script: string) {
 	/*
@@ -109,7 +109,7 @@ function getProductDataFromScript(script: string) {
 		return JSON.parse(receivedData);
 	}
 	catch (error) {
-		log((error as Error).message);
+		logger.error((error as Error).message);
 		return null;
 	}
 }

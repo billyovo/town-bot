@@ -1,5 +1,5 @@
 import axios from "axios";
-import { log } from "../logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 export async function getCatFact() : Promise<string> {
 	try {
@@ -8,7 +8,7 @@ export async function getCatFact() : Promise<string> {
 	}
 	catch (err) {
 		if (err instanceof Error) {
-			log(err.message);
+			logger.error(err.message);
 		}
 		return "";
 	}

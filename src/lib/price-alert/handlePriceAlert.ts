@@ -1,6 +1,7 @@
-import type { PriceAlertChecked, ShopParseFunctionReturn } from "~/src/@types/price-alert";
+import { PromotionType } from "~/src/@types/enum/price-alert";
+import type { ShopParseFunctionReturn, PriceAlertChecked } from "~/src/@types/price-alert";
 import { PriceAlertResult } from "./utils/enums/priceAlertShopOption";
-import { log } from "../logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { maximumFailureCount } from "~/src/configs/price-alert";
 import { PriceAlertItem, PriceAlertModel } from "../database/schemas/product";
 import { getPriceChangeEmbed } from "~/src/assets/embeds/priceEmbeds";
@@ -19,14 +20,17 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 			error: newProductInfo.error,
 		};
 	}
-	log(`Checked Product: ${newProductInfo.data.productName}`);
+	logger.info(`Checked Product: ${newProductInfo.data.productName}`);
+	const oldPromotions = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
+	const newPromotions = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
 
-	if (newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) {
+	if ((newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) || (newPromotions && (oldPromotions?.length !== newPromotions?.length))) {
 		return {
 			data: {
 				...oldProductInfo,
 				lastChecked: new Date(),
 				price: newProductInfo.data.price,
+				promotions: newProductInfo.data.promotions,
 				previous: {
 					price: oldProductInfo.price,
 					date: oldProductInfo.lastChecked,
@@ -60,7 +64,7 @@ const defaultActions : ScrapeResultActions = {
 		axios.post(process.env.PRICE_WEBHOOK as string, {
 			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()],
 		}).catch((error) => {
-			log(`Failed to send price change webhook: ${error}`);
+			logger.error(`Failed to send price change webhook: ${error}`);
 		});
 	},
 	onFailure: (updatedProduct, error) => {
@@ -70,12 +74,12 @@ const defaultActions : ScrapeResultActions = {
 	},
 	onTooManyFailures: (updatedProduct) => {
 		PriceAlertModel.findOneAndDelete({ url: updatedProduct.url }).catch((error) => {
-			log(`Failed to delete product: ${error}`);
+			logger.error(`Failed to delete product: ${error}`);
 		});
 		axios.post(process.env.PRICE_WEBHOOK as string, {
 			content: `Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
 		}).catch((error) => {
-			log(`Failed to send too many failures webhook: ${error}`);
+			logger.error(`Failed to send too many failures webhook: ${error}`);
 		});
 	},
 };

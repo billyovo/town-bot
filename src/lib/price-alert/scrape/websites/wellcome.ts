@@ -1,8 +1,10 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getHTML, getLDScript } from "../../utils/scrapeGetters";
+import { LogisticRegressionClassifier } from "natural";
+import { PromotionType } from "~/src/@types/enum/price-alert";
 
-export const parseWellcomePrice : ShopParseFunction = async (url, _) => {
+export const parseWellcomePrice : ShopParseFunction = async (url, _, options) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -16,6 +18,12 @@ export const parseWellcomePrice : ShopParseFunction = async (url, _) => {
 	if (!productInformation?.image) return { success: false, error: "Failed to parse product image", data: null };
 	if (!productInformation?.brand?.name) return { success: false, error: "Failed to parse product brand", data: null };
 
+	const promotions = root.querySelectorAll(".info-content > .info").map((promotion) => {
+		return promotion.text.trim();
+	});
+	const classifier = options?.classifier;
+	const classifiedPromotions = classifyPromotions(promotions, classifier);
+
 	return {
 		success: true,
 		error: null,
@@ -25,6 +33,17 @@ export const parseWellcomePrice : ShopParseFunction = async (url, _) => {
 			productImage: productInformation.image,
 			brand: productInformation.brand.name,
 			shop: PriceAlertShopOption.WELLCOME,
+			promotions: classifiedPromotions,
 		},
 	};
 };
+
+function classifyPromotions(promotions: string[], classifier: LogisticRegressionClassifier | null | undefined) {
+	if (!classifier) return null;
+	const classified = promotions.map((promotion) => {
+		const type = classifier.classify(promotion) as PromotionType;
+		return { type, description: promotion };
+	});
+
+	return classified;
+}

@@ -4,7 +4,7 @@ import { client } from "~/src/managers/discordManager";
 import { delMessageTime, config } from "~/src/configs/chatgpt";
 import { splitMessage } from "../utils/discord/splitMessage";
 import type { GetChatMessageHistory, GetGptMessage } from "~/src/@types/chatgpt";
-import { log } from "../logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
@@ -21,7 +21,7 @@ const getGptMessage : GetGptMessage = async (chatMessages) => {
 	}
 	catch (error) {
 		if (error instanceof Error) {
-			log(error.message);
+			logger.error(error.message);
 		}
 		return null;
 	}
@@ -64,7 +64,7 @@ const getChatMessageHistory : GetChatMessageHistory = async (message, botID, cha
 	}
 	catch (error) {
 		if (error instanceof Error) {
-			log(error.message);
+			logger.error(error.message);
 		}
 		return null;
 	}
@@ -92,7 +92,7 @@ export async function chatgpt(message : Message) {
 	}
 	catch (error) {
 		if (error instanceof Error) {
-			log(error.message);
+			logger.error(error.message);
 		}
 		sendMessage("Some Error Occured, Please try again later :(", message.channel as TextChannel, message.id);
 	}

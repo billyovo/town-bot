@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { scheduleJob } from "node-schedule";
 import { client } from "~/src/managers/discordManager";
 import { returnDiff } from "../lib/cron/richDay";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "../lib/logger/logger";
 
 scheduleJob("1 0 * * *", () => {
 	const now = DateTime.now().setZone("Asia/Taipei").endOf("day");
@@ -14,6 +14,6 @@ scheduleJob("1 0 * * *", () => {
 
 			channel.send(`@everyone 小妹有錢人生活 ${returnDiff(now)} **POSITIVE**`);
 		})
-		.catch((error : Error) => {log(error.message);});
+		.catch((error : Error) => {logger.error(error.message);});
 
 });

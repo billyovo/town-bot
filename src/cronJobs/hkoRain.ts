@@ -2,7 +2,7 @@ import { client } from "~/src/managers/discordManager";
 import { callhko } from "~/src/lib/cron/hko";
 import { Channel, TextChannel } from "discord.js";
 import { scheduleJob } from "node-schedule";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "../lib/logger/logger";
 
 enum HkoRainOption {
     HIGH = "High",
@@ -19,13 +19,13 @@ scheduleJob("0 7 * * *", async () => {
 					(channel as TextChannel).send("出門口記得帶遮!!!!!!!!!!");
 				})
 				.catch((error : Error) => {
-					log(error.message);
+					logger.error(error.message);
 				});
 		}
 	}
 	catch (error) {
 		if (error instanceof Error) {
-			log(error.message);
+			logger.error(error.message);
 		}
 	}
 });

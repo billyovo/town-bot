@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { createWorker } from "tesseract.js";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -33,7 +33,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 	catch (error) {
 		if (error instanceof Error) {
-			log(error.message);
+			logger.error(error.message);
 		}
 		await interaction.editReply({
 			content: "An error occurred while processing the image!",

@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, AttachmentBuilder } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import path from "path";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url : string = (interaction.options.get("image")?.attachment?.url || interaction.options.get("link")?.value) as string;
@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			interaction.reply({ content: "an error occured!", ephemeral: true });
 		}
 		if (error instanceof Error) {
-			log(error.message);
+			logger.error(error.message);
 		}
 	}
 }

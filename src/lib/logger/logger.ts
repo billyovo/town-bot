@@ -1,5 +1,12 @@
-export function log(message : string) {
-	const timestamp = new Date().toISOString();
-	console.log(`[${timestamp}] ${message}`);
-}
+import pino from "pino";
 
+const pretty = {
+	transport: {
+		target: "pino-pretty",
+		options: {
+			colorize: true,
+		},
+	},
+};
+
+export const logger = pino(process.env.NODE_ENV === "production" ? {} : pretty);

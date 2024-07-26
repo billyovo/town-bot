@@ -1,66 +1,98 @@
 [
     {
         "text": "Sel Mannings brand Vitamin products buy 1 get 1 free: Please put 2 items into cart to enjoy the offer (Discount applies on the lower-priced item)",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "買1送1(輸入數量為 2)",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "買任何屈臣氏產品送抗醣燃脂素試食裝2包",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "買2件第2件半價",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "買任何產品+$109換購Hair Corner白茶水漾頭髮身體護理套裝 4支套裝",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "買精選健康產品滿$888，輸入優惠碼[HEALTH888]即送善存三效益生菌配方60粒裝",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "Skin GWP",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "買任何個人護理產品可以$12 換購舒適ShaveGuard 迷你剃鬚膏60毫升一件",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "Sel Body Wash Products buy 1 get 1 free: Please put 2 items into cart to enjoy the offer (Discount applies on the lower-priced item)",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "Buy Hair Care/Hair Coloring Products at $128 get free Calci Plus Soya Calcium 1L. (It is valid while stock lasts.)",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "Sel Products, 50% for 2nd: Please put 2 items into cart to enjoy the offer (Discount applies on the lower-priced item)",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "Buy Mannings brand (exclude face mask) $60 or abv get $15 eCpn x1 (eCpn only apply to buy Mannings brand(exclude face mask)at $40)(eCpn Promo Code will be sent to \"My eCpn\" section/by email within 3 working days after delivery) (valid while stock last) Some offer cannot be stacked or used together. Please check the discount summary in My Cart page. ",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "Sel Mannings brand Beauty Accessories buy 1 get 1 free: Please put 2 items into cart to enjoy the offer (Discount applies on the lower-priced item)",
-        "label": "discount"
+        "label": "DISCOUNT"
     },
     {
         "text": "Buy Any Bath/ Hand Wash Product get free Dove Grapefruit & Lime Body Wash 45g.(Only ONE Free gift can be given per order)(It is valid while stock lasts.)",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "購買任何沐浴/潔手產品即送多芬西柚&青檸沐浴乳45克(每張訂單只限獲贈一件贈品)(數量有限，送完即止)",
-        "label": "freebie"
+        "label": "FREEBIE"
     },
     {
         "text": "精選產品買第2件半價: 請添加\"2\"件到購物車以享此優惠 (折扣優惠將以價格較低的產品去計算)",
-        "label": "discount"
+        "label": "DISCOUNT"
+    },
+    {
+        "text": "Buy 3 Personal Care items at $99 free Clorox Disinfecting Wipes 35pcs. (It is valid while stock lasts.)",
+        "label": "FREEBIE"
+    },
+    {
+        "text": "$65任揀2件；數量有限，售完即止",
+        "label": "DISCOUNT"
+    },
+    {
+        "text": "$60任揀2件；數量有限，售完即止",
+        "label": "DISCOUNT"
+    },
+    {
+        "text": "買任何屈臣氏產品送抗醣燃脂素試食裝2包",
+        "label": "FREEBIE"
+    },
+    {
+        "text": "買精選BB產品滿$799送試用套裝. 數量有限, 送完即止。優惠不包括商户直送，訂購計劃和初生嬰兒奶粉。不適用於任何特快模式。[網店限定]",
+        "label": "FREEBIE"
+    },
+    {
+        "text": "買11罐精選嬰兒奶粉送禮物套裝. 數量有限, 送完即止。優惠不包括初生嬰兒奶粉和產品訂購計劃。不適用於任何特快模式。[網店限定]",
+        "label": "FREEBIE"
+    },
+    {
+        "text": "購買惠氏 ILLUMA LUXA, Organic, Atwo及 HA 2-4號 24罐送Dyson HD16 風筒(換領信);數量有限, 送完即止。不適用於任何特快模式。(網店限定)",
+        "label": "FREEBIE"
+    },
+    {
+        "text": "買Pantogar倍髮加產品或任何頭髮護理產品， 送Pantogar 倍髮加洗髮露試用裝一套 ",
+        "label": "FREEBIE"
     }
 ]

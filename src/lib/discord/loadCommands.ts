@@ -3,7 +3,7 @@ import { lstatSync, readdirSync } from "fs";
 import url from "node:url";
 import { Collection } from "discord.js";
 import { AutoCompleteCollection, CommandsCollection } from "~/src/@types/discord";
-import { log } from "~/src/lib/logger/logger";
+import { logger } from "~/src/lib/logger/logger";
 
 async function loadCommandsFromFolder(folderPath: string, rootPath: string, commandsCollection: CommandsCollection | AutoCompleteCollection) {
 	const commandFiles = readdirSync(folderPath);
@@ -19,7 +19,7 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 			const module = await import(command);
 			const commandName = relative(rootPath, filePath).replace(".ts", "").replace(".js", "").replace("/", "\\");
 			commandsCollection.set(commandName, module);
-			log(`Loaded command: ${commandName}`);
+			logger.info(`Loaded command: ${commandName}`);
 		}
 	});
 
