@@ -28,5 +28,5 @@
   "include": [
     "src/**/*",
     "jest.config.js"
-, "scripts/promotionClassifier"  ]
+   ]
 }

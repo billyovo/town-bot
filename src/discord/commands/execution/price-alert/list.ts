@@ -1,4 +1,4 @@
-import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder } from "discord.js";
+import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, TextChannel } from "discord.js";
 import { PriceAlertListMode, PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/src/assets/embeds/priceEmbeds";
 import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
@@ -30,7 +30,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const list : string[] = splitMessage(formattedProducts);
 		await interaction.reply({ content: list[0] });
 		for (let i = 1; i < list.length; i++) {
-			await interaction?.channel?.send({ content: list[i] });
+			if (interaction?.channel instanceof TextChannel) {
+				await interaction.channel.send(list[i]);
+			}
 		}
 	}
 
@@ -99,7 +101,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, eventEmitter: EventEmitter) {
 	const filter = (i: Interaction) => i.user.id === interaction.user.id;
-	const collector = interaction.channel?.createMessageComponentCollector({ filter, time: 300000 });
+	const collector = interaction?.channel instanceof TextChannel ? interaction.channel.createMessageComponentCollector({ filter, time: 300000 }) : null;
+
+	if (!collector) return;
 
 	collector?.on("collect", async (i) => {
 		eventEmitter.emit(i.customId, i);

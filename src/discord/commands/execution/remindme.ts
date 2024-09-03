@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/time/duration";
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
@@ -37,8 +37,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		if (dm) {
 			interaction.user.send({ content: message }).catch(err => logger.error(err.message));
 		}
-		else {
-            interaction.channel!.send({ content: message }).catch(err => logger.error(err.message));
+		else if (interaction.channel instanceof TextChannel) {
+				interaction.channel!.send({ content: message }).catch(err => logger.error(err.message));
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});

@@ -29,8 +29,11 @@ export async function readyHandler() {
 					.catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 			}
 			else {
-				client.channels.fetch(reminder.channel).then(channel => (channel as TextChannel).send({ content: reminder.message }))
-					.catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+				client.channels.fetch(reminder.channel).then(channel => {
+					if (channel instanceof TextChannel) {
+						channel.send({ content: reminder.message }).catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+					}
+				});
 			}
 			ReminderModel.deleteOne({ _id: reminder._id }).exec();
 		});
