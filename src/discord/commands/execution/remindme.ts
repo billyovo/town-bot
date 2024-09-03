@@ -10,6 +10,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const message = interaction.options.getString("message", true);
 	const dm = interaction.options.getBoolean("dm", false);
 
+	if (!dm && !interaction?.channel?.id) {
+		return interaction.reply({ content: "No Permission to send message in this channel!", ephemeral: true });
+	}
 	const parseDurationStringResult = parseDurationStringToMills(duration);
 
 	if (!parseDurationStringResult.success) {
