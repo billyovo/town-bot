@@ -1,8 +1,9 @@
-import { ApplicationIntegrationType, SlashCommandBuilder } from "discord.js";
+import { ApplicationIntegrationType, InteractionContextType, SlashCommandBuilder } from "discord.js";
 export const command = new SlashCommandBuilder()
 	.setName("time")
 	.setDescription("time")
 	.setIntegrationTypes(ApplicationIntegrationType.UserInstall)
+	.setContexts([InteractionContextType.Guild, InteractionContextType.PrivateChannel])
 	.addSubcommand(subcommand =>
 		subcommand
 			.setName("now")
