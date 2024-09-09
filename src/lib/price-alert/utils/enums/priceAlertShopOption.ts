@@ -1,7 +1,6 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { parseAeonPrice } from "~/src/lib/price-alert/scrape/websites/aeon";
 import { parseHktvmallPrice } from "~/src/lib/price-alert/scrape/websites/hktvmall";
-import { parseLookfantasticPrice } from "~/src/lib/price-alert/scrape/websites/lookfantastic";
 import { parseManningsPrice } from "~/src/lib/price-alert/scrape/websites/mannings";
 import { parseMujiPrice } from "~/src/lib/price-alert/scrape/websites/muji";
 import { parseSephoraPrice } from "~/src/lib/price-alert/scrape/websites/sephora";
@@ -23,7 +22,6 @@ export enum PriceAlertShopOption {
     MANNINGS = "MANNINGS",
     MUJI = "MUJI",
     WELLCOME = "WELLCOME",
-	LOOKFANTASTIC = "LOOKFANTASTIC",
 }
 
 export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetails> = {
@@ -66,11 +64,6 @@ export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetai
 		image: "https://i.imgur.com/A5ogcsY.png",
 		parseFunction: parseWellcomePrice,
 		emote: "<:wellcome:1263718551424991243>",
-	},
-	[PriceAlertShopOption.LOOKFANTASTIC]: {
-		image: "https://pbs.twimg.com/profile_images/1687076928635711488/G0CE0Q8-_400x400.jpg",
-		parseFunction: parseLookfantasticPrice,
-		emote: "<:lookfantastic:1263718561529069578>",
 	},
 } satisfies Record<PriceAlertShopOption, ParseDetails>;
 
