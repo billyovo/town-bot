@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/time/duration";
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
@@ -10,7 +10,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const message = interaction.options.getString("message", true);
 	const dm = interaction.options.getBoolean("dm", false);
 
-	if (!dm && !interaction?.channel?.id) {
+	if (!dm && !interaction.channel?.isSendable()) {
 		return interaction.reply({ content: "No Permission to send message in this channel!", ephemeral: true });
 	}
 	const parseDurationStringResult = parseDurationStringToMills(duration);
@@ -40,7 +40,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		if (dm) {
 			interaction.user.send({ content: message }).catch(err => logger.error(err.message));
 		}
-		else if (interaction.channel instanceof TextChannel) {
+		else if (interaction.channel?.isSendable()) {
 				interaction.channel!.send({ content: message }).catch(err => logger.error(err.message));
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();

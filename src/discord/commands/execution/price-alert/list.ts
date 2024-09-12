@@ -30,7 +30,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const list : string[] = splitMessage(formattedProducts);
 		await interaction.reply({ content: list[0] });
 		for (let i = 1; i < list.length; i++) {
-			if (interaction?.channel instanceof TextChannel) {
+			if (interaction.channel?.isSendable()) {
 				await interaction.channel.send(list[i]);
 			}
 		}

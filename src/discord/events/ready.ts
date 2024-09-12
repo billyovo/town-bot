@@ -1,4 +1,4 @@
-import { ActivityType, TextChannel } from "discord.js";
+import { ActivityType } from "discord.js";
 import { loadAutoCompleteCommands, loadSlashCommands } from "~/src/lib/discord/loadCommands";
 import { logger } from "~/src/lib/logger/logger";
 import { getCatFact } from "~/src/lib/utils/catFact";
@@ -30,7 +30,7 @@ export async function readyHandler() {
 			}
 			else {
 				client.channels.fetch(reminder.channel).then(channel => {
-					if (channel instanceof TextChannel) {
+					if (channel?.isSendable()) {
 						channel.send({ content: reminder.message }).catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 					}
 				});
