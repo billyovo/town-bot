@@ -24,7 +24,7 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 
 	if (product.promotions) {
 		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
-			.map((promotion, index) => `**${index + 1}.** ${promotion.description}`);
+			.map((promotion) => ` ${promotion.description}`);
 		if (discountPromotions.length > 0) {
 			embed.addFields({
 				name: "Promotion", value: discountPromotions.join("\n\n")?.trim()?.substring(0, 1024) ?? "No Promotion",
@@ -54,11 +54,11 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 	if (storeImage) embed.setThumbnail(storeImage);
 	if (product.promotions) {
 		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
-			.map((promotion, index) => `**${index + 1}.** ${promotion.description}`);
+			.map((promotion) => `${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`);
 		if (discountPromotions.length > 0) {
-			embed.addFields({
-				name: "Promotion", value: discountPromotions.join("\n\n")?.trim()?.substring(0, 1024) ?? "No Promotion",
-			});
+			embed.addFields(discountPromotions.map((promotion, index) => (
+				{ name: `Promotion ${index + 1}`, value: promotion.substring(0, 1024) }
+			)));
 		}
 	}
 	return embed;
@@ -87,11 +87,11 @@ export function getPriceListEmbed(product: PriceAlertItem) {
 	if (storeImage) embed.setThumbnail(storeImage);
 	if (product.promotions) {
 		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
-			.map((promotion, index) => `**${index + 1}.** ${promotion.description}`);
+			.map((promotion, index) => `**${index + 1}.** ${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`);
 		if (discountPromotions.length > 0) {
-			embed.addFields({
-				name: "Promotion", value: discountPromotions.join("\n\n")?.trim()?.substring(0, 1024) ?? "No Promotion",
-			});
+			embed.addFields(discountPromotions.map((promotion, index) => (
+				{ name: `Promotion ${index + 1}`, value: promotion.substring(0, 1024) }
+			)));
 		}
 	}
 	return embed;

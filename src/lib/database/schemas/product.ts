@@ -20,6 +20,8 @@ export interface PriceAlertItem {
 const promotionSchema = new Schema({
 	type: String,
 	description: String,
+	startTime: Date,
+	endTime: Date,
 }, { _id: false });
 
 const priceAlertSchema = new Schema<PriceAlertItem>({
@@ -31,7 +33,7 @@ const priceAlertSchema = new Schema<PriceAlertItem>({
 	productImage: String,
 	promotions: {
 		type: [promotionSchema],
-		default: null,
+		default: [],
 	},
 	shop: String,
 	failCount: Number,

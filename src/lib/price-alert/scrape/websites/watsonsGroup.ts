@@ -5,6 +5,8 @@ import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/src/lib/imag
 import { APIClient } from "~/src/lib/utils/fetch/client";
 import type { Failure, Success } from "~/src/@types/utils";
 import { Base64String } from "discord.js";
+import { LogisticRegressionClassifier } from "natural";
+import { PromotionType } from "~/src/@types/enum/price-alert";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
 	if (!shopDetails.shop) {
@@ -39,6 +41,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 
 	const productDetails : Success<ProductDetail> | Failure = await fetchProductDetail(`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`);
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
+	const productPromotions = await fetchProductPromotions(`${baseURL}/api/v2/${shopCode}/products/${productID}/promotions?fields=FULL&lang=zh_HK&curr=HKD`, options?.classifier);
 
 	if (!productDetails.success) {
 		return {
@@ -55,6 +58,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 			productImage: productImage,
 			price: Math.min(promotionPrice, productDetails.data.discountedPriceWithoutPromotion),
 			shop: shopOption,
+			promotions: productPromotions,
 		},
 		success: true,
 	};
@@ -130,6 +134,30 @@ async function fetchPromotionPrice(url : string) : Promise<number> {
 	}, Infinity);
 
 	return Math.min(promotionPrice, memberPrice);
+}
+
+async function fetchProductPromotions(url: string, classifier: LogisticRegressionClassifier | null | undefined) {
+	let productPromotionsRes;
+	try {
+		productPromotionsRes = await APIClient.get(url);
+	}
+	catch (error) {
+		logger.error(`Cannot Get Promotions for WatsonsGroup: ${url}: ${error}`);
+		return [];
+	}
+	const parsedPromotions = productPromotionsRes.data?.elabPromotions?.map((promotion: { longDescription: string; description: string; title: string; startDate: string | null; endDate: string | null; }) => {
+		const description : string = promotion.longDescription ?? promotion.description ?? promotion.title;
+		const promotionType : PromotionType = classifier?.classify(description) as PromotionType;
+
+		return {
+			type: promotionType,
+			description: description,
+			startTime: promotion.startDate ? new Date(promotion.startDate) : null,
+			endTime: promotion.endDate ? new Date(promotion.endDate) : null,
+		};
+	}) ?? [];
+
+	return parsedPromotions;
 }
 
 type WatsonsGroupShopDetails = {

@@ -4,6 +4,8 @@ import { getHTML } from "../../utils/scrapeGetters";
 import { parsePriceToFloat } from "../../utils/format";
 import { logger } from "~/src/lib/logger/logger";
 import { HTMLElement } from "node-html-parser";
+import { LogisticRegressionClassifier } from "natural";
+import { PromotionType } from "~/src/@types/enum/price-alert";
 
 type HKTVMALLProductData = {
 	currencyIso: string,
@@ -13,7 +15,7 @@ type HKTVMALLProductData = {
 	membershipLevel: string
 }
 
-export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) => {
+export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, options) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -34,6 +36,23 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 		return currentValue;
 	}, Infinity) ?? null;
 
+	const availablePromotion = parsedProductData?.thresholdPromotionList ?? [parsedProductData?.thresholdPromotion] ?? null;
+
+	const classifier : LogisticRegressionClassifier | null | undefined = options?.classifier;
+	const parsedPromotions = availablePromotion ? availablePromotion.map((promotion: { description: string; startTime: string; endTime: string; name: string; }) => {
+		const promotionDescription : string = promotion?.description ?? promotion?.name;
+		const promotionType : PromotionType = classifier?.classify(promotionDescription) as PromotionType;
+		const startTime : Date | null = promotion?.startTime ? new Date(parseInt(promotion.startTime)) : null;
+		const endTime : Date | null = promotion?.endTime ? new Date(parseInt(promotion.endTime)) : null;
+
+		return {
+			type: promotionType,
+			description: promotionDescription,
+			startTime: startTime,
+			endTime: endTime,
+		};
+	}) : [];
+
 	const productName = parsedProductData?.name;
 	const brand = parsedProductData?.brandName;
 
@@ -51,6 +70,7 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _) =>
 			brand: brand,
 			productImage: img_sanitized ?? "",
 			shop: PriceAlertShopOption.HKTVMALL,
+			promotions: parsedPromotions,
 		},
 		error: null,
 		success: true,
@@ -83,7 +103,7 @@ function getProductDataFromScript(script: string) {
 		assume it's always an valid json object
 		use the classic stack method to find the start and end of the object, meet "{" stack++, meet "}" stack--, loop until stack = 0
 	*/
-	const productDataIndex = script.indexOf("var productDetailPageProductData =") + "var productDetailPageProductData =".length;
+	const productDataIndex = script.indexOf("var productData =") + "var productData =".length;
 
 	let start : number = 0;
 	let stack : number = 1;

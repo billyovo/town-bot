@@ -31,7 +31,9 @@ export type ShopParseOptions = {
 
 export type PromotionClassified = {
     type: PromotionType,
-    description: string
+    description: string,
+    startTime?: Date,
+    endTime?: Date
 }
 export type ParsePriceOutput = {
     price: number,
