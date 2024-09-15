@@ -1,11 +1,27 @@
 import { PromotionType } from "~/src/@types/enum/price-alert";
-import type { ShopParseFunctionReturn, PriceAlertChecked } from "~/src/@types/price-alert";
+import type { ShopParseFunctionReturn, PriceAlertChecked, PromotionClassified } from "~/src/@types/price-alert";
 import { PriceAlertResult } from "./utils/enums/priceAlertShopOption";
 import { logger } from "~/src/lib/logger/logger";
 import { maximumFailureCount } from "~/src/configs/price-alert";
 import { PriceAlertItem, PriceAlertModel } from "../database/schemas/product";
 import { getPriceChangeEmbed } from "~/src/assets/embeds/priceEmbeds";
 import axios from "axios";
+
+function hasPromotionsChanged(oldPromotions: PromotionClassified[] | undefined, newPromotions: PromotionClassified[] | undefined) : boolean {
+	if (!!oldPromotions !== !!newPromotions) return true;
+	if (!oldPromotions && !newPromotions) return false;
+
+	if (oldPromotions!.length !== newPromotions!.length) {
+		return true;
+	}
+	for (const promotion of newPromotions ?? []) {
+		const oldPromotion = (oldPromotions ?? []).find((oldPromotion) => oldPromotion.description === promotion.description);
+		if (!oldPromotion) {
+			return true;
+		}
+	}
+	return false;
+}
 
 export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductInfo: ShopParseFunctionReturn) : Promise<PriceAlertChecked> {
 
@@ -21,10 +37,11 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 		};
 	}
 	logger.info(`Checked Product: ${newProductInfo.data.productName}`);
-	const oldPromotions = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
-	const newPromotions = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
+	const oldPromotions : PromotionClassified[] | undefined = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
+	const newPromotions : PromotionClassified[] | undefined = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
+	const isPromotionChanged = (oldPromotions && newPromotions) ? hasPromotionsChanged(oldPromotions, newPromotions) : false;
 
-	if ((newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) || (newPromotions && (oldPromotions?.length !== newPromotions?.length))) {
+	if ((newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) || isPromotionChanged) {
 		return {
 			data: {
 				...oldProductInfo,
