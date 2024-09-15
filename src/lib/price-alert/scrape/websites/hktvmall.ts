@@ -36,7 +36,7 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, op
 		return currentValue;
 	}, Infinity) ?? null;
 
-	const availablePromotion = parsedProductData?.thresholdPromotionList ?? [parsedProductData?.thresholdPromotion] ?? null;
+	const availablePromotion = parsedProductData?.thresholdPromotionList ?? (parsedProductData?.thresholdPromotion ? [parsedProductData.thresholdPromotion] : null);
 
 	const classifier : LogisticRegressionClassifier | null | undefined = options?.classifier;
 	const parsedPromotions = availablePromotion ? availablePromotion.map((promotion: { description: string; startTime: string; endTime: string; name: string; }) => {
