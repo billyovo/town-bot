@@ -37,7 +37,7 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 	logger.info(`Checked Product: ${newProductInfo.data.productName}`);
 	const oldPromotions : PromotionClassified[] | undefined = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
 	const newPromotions : PromotionClassified[] | undefined = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
-	const isPromotionChanged = (oldPromotions && newPromotions) ? hasPromotionsChanged(oldPromotions, newPromotions) : false;
+	const isPromotionChanged = hasPromotionsChanged(oldPromotions, newPromotions);
 
 	if ((newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) || isPromotionChanged) {
 		return {

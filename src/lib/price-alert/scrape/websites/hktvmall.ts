@@ -39,8 +39,8 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, op
 	const availablePromotion = parsedProductData?.thresholdPromotionList ?? (parsedProductData?.thresholdPromotion ? [parsedProductData.thresholdPromotion] : null);
 
 	const classifier : LogisticRegressionClassifier | null | undefined = options?.classifier;
-	const parsedPromotions = availablePromotion ? availablePromotion.map((promotion: { description: string; startTime: string; endTime: string; name: string; }) => {
-		const promotionDescription : string = promotion?.description ?? promotion?.name;
+	const parsedPromotions = availablePromotion ? availablePromotion.map((promotion: { label: string; description: string; startTime: string; endTime: string; name: string; }) => {
+		const promotionDescription : string = promotion?.description ?? promotion?.label ?? promotion?.name;
 		const promotionType : PromotionType = classifier?.classify(promotionDescription) as PromotionType;
 		const startTime : Date | null = promotion?.startTime ? new Date(parseInt(promotion.startTime)) : null;
 		const endTime : Date | null = promotion?.endTime ? new Date(parseInt(promotion.endTime)) : null;
