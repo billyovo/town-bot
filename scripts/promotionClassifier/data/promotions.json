@@ -154,5 +154,13 @@
     {
         "text": "買A獲贈B",
         "label": "FREEBIE"
+    },
+    {
+        "text": "精選彩妝產品9折",
+        "label": "DISCOUNT"
+    },
+    {
+        "text": "精選產品8折",
+        "label": "DISCOUNT"
     }
 ]
