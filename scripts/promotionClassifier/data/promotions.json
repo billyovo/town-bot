@@ -146,5 +146,13 @@
     {
         "text": "送贈品",
         "label": "FREEBIE"
+    },
+    {
+        "text": "購買護膚產品1件即送Hada Labo肌研極潤保濕冰感霜 2克 (每張訂單只限獲贈一件贈品)(數量有限，送完即止)",
+        "label": "FREEBIE"
+    },
+    {
+        "text": "買A獲贈B",
+        "label": "FREEBIE"
     }
 ]
