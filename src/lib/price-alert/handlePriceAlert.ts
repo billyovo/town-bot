@@ -8,12 +8,10 @@ import { getPriceChangeEmbed } from "~/src/assets/embeds/priceEmbeds";
 import axios from "axios";
 
 function hasPromotionsChanged(oldPromotions: PromotionClassified[] | undefined, newPromotions: PromotionClassified[] | undefined) : boolean {
-	if (!!oldPromotions !== !!newPromotions) return true;
 	if (!oldPromotions && !newPromotions) return false;
+	if (!oldPromotions || !newPromotions) return true;
+	if (oldPromotions.length !== newPromotions.length) return true;
 
-	if (oldPromotions!.length !== newPromotions!.length) {
-		return true;
-	}
 	for (const promotion of newPromotions ?? []) {
 		const oldPromotion = (oldPromotions ?? []).find((oldPromotion) => oldPromotion.description === promotion.description);
 		if (!oldPromotion) {
