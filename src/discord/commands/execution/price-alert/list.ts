@@ -4,6 +4,7 @@ import { getPriceListEmbed } from "~/src/assets/embeds/priceEmbeds";
 import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
 import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
+import { PromotionType } from "~/src/@types/enum/price-alert";
 
 enum ButtonType {
 	NEXT = "next",
@@ -24,7 +25,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	if (mode === PriceAlertListMode.ALL) {
 		const formattedProducts = productsArray.map((product : PriceAlertItem, index : number) => {
-			return `${index + 1}. ${PriceAlertShopParseDetails[product.shop].emote} ${product.brand} [${product.productName}](<${product.url}>) $${product.price} (${product.promotions?.length ?? 0} Promotions)\n`;
+			const pricePromotions = (product.promotions ?? []).filter(promotion => promotion.type === PromotionType.DISCOUNT);
+			return `${index + 1}. ${PriceAlertShopParseDetails[product.shop].emote} ${product.brand} [${product.productName}](<${product.url}>) $${product.price} (${pricePromotions.length} Promotions)\n`;
 		});
 
 		const list : string[] = splitMessage(formattedProducts);
