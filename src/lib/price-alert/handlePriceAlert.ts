@@ -38,8 +38,9 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 	const oldPromotions : PromotionClassified[] | undefined = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
 	const newPromotions : PromotionClassified[] | undefined = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
 	const isPromotionChanged = hasPromotionsChanged(oldPromotions, newPromotions);
+	const isPriceChanged = (newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1));
 
-	if ((newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1)) || isPromotionChanged) {
+	if (isPriceChanged || isPromotionChanged) {
 		return {
 			data: {
 				...oldProductInfo,
@@ -47,8 +48,8 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 				price: newProductInfo.data.price,
 				promotions: newProductInfo.data.promotions,
 				previous: {
-					price: oldProductInfo.price,
-					date: oldProductInfo.lastChecked,
+					price: isPriceChanged ? oldProductInfo.price : oldProductInfo?.previous?.price,
+					date: isPriceChanged ? oldProductInfo.lastChecked : oldProductInfo?.previous?.date
 				},
 				failCount: 0,
 			},
