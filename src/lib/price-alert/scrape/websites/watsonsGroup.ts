@@ -7,6 +7,7 @@ import type { Failure, Success } from "~/src/@types/utils";
 import { Base64String } from "discord.js";
 import { LogisticRegressionClassifier } from "natural";
 import { PromotionType } from "~/src/@types/enum/price-alert";
+import { formatBrandName } from "../../utils/format";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
 	if (!shopDetails.shop) {
@@ -53,7 +54,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 	const productImage : string | null = options?.skipImageFetch ? null : await processProductImage(productDetails.data.productImage, baseURL);
 	return {
 		data:{
-			brand: productDetails.data.brand,
+			brand: formatBrandName(productDetails.data.brand),
 			productName: productDetails.data.productName,
 			productImage: productImage,
 			price: Math.min(promotionPrice, productDetails.data.discountedPriceWithoutPromotion),

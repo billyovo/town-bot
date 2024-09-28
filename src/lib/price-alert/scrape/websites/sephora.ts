@@ -1,7 +1,7 @@
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { APIClient } from "~/src/lib/utils/fetch/client";
-import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
+import { formatBrandName, parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 
 export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) => {
 	if (shopDetails.domainLong !== "sephora.hk") {
@@ -53,7 +53,7 @@ export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) =>
 			productName: productName,
 			price: parsePriceToFloat(productPrice),
 			productImage: productImage,
-			brand: brand,
+			brand: formatBrandName(brand),
 			shop: PriceAlertShopOption.SEPHORA,
 		},
 		error: null,

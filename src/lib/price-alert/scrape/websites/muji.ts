@@ -1,6 +1,7 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "../../utils/enums/priceAlertShopOption";
 import { getHTML, getLDScript } from "../../utils/scrapeGetters";
+import { formatBrandName } from "../../utils/format";
 
 export const parseMujiPrice : ShopParseFunction = async (url, _) => {
 	const html = await getHTML(url);
@@ -23,7 +24,7 @@ export const parseMujiPrice : ShopParseFunction = async (url, _) => {
 			productName: productInformation.name,
 			price: productInformation.offers.price,
 			productImage: productInformation.image[0],
-			brand: PriceAlertShopOption.MUJI,
+			brand: formatBrandName(PriceAlertShopOption.MUJI),
 			shop: PriceAlertShopOption.MUJI,
 		},
 	};

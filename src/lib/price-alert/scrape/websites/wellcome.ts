@@ -3,6 +3,7 @@ import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAle
 import { getHTML, getLDScript } from "../../utils/scrapeGetters";
 import { LogisticRegressionClassifier } from "natural";
 import { PromotionType } from "~/src/@types/enum/price-alert";
+import { formatBrandName } from "../../utils/format";
 
 export const parseWellcomePrice : ShopParseFunction = async (url, _, options) => {
 	const html = await getHTML(url);
@@ -31,7 +32,7 @@ export const parseWellcomePrice : ShopParseFunction = async (url, _, options) =>
 			productName: productInformation.name,
 			price: productInformation.offers.price,
 			productImage: productInformation.image,
-			brand: productInformation.brand.name,
+			brand: formatBrandName(productInformation.brand.name),
 			shop: PriceAlertShopOption.WELLCOME,
 			promotions: classifiedPromotions,
 		},

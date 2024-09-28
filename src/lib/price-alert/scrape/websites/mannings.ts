@@ -1,7 +1,7 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PromotionType } from "~/src/@types/enum/price-alert";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
-import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
+import { formatBrandName, parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 import { getHTML } from "../../utils/scrapeGetters";
 import { logger } from "~/src/lib/logger/logger";
 import { HTMLElement } from "node-html-parser";
@@ -44,7 +44,7 @@ export const parseManningsPrice: ShopParseFunction = async (url, _, options) => 
 			price: price,
 			productName: productName,
 			productImage: productImage ?? "",
-			brand: brand ?? "No Brand",
+			brand: formatBrandName(brand) || "No Brand",
 			shop: PriceAlertShopOption.MANNINGS,
 			promotions: classifiedPromotions,
 		},

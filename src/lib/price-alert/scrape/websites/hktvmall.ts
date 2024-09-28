@@ -1,7 +1,7 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getHTML } from "../../utils/scrapeGetters";
-import { parsePriceToFloat } from "../../utils/format";
+import { formatBrandName, parsePriceToFloat } from "../../utils/format";
 import { logger } from "~/src/lib/logger/logger";
 import { HTMLElement } from "node-html-parser";
 import { LogisticRegressionClassifier } from "natural";
@@ -67,7 +67,7 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, op
 		data: {
 			price: price,
 			productName: productName,
-			brand: brand,
+			brand: formatBrandName(brand),
 			productImage: img_sanitized ?? "",
 			shop: PriceAlertShopOption.HKTVMALL,
 			promotions: parsedPromotions,

@@ -1,5 +1,5 @@
 import { ShopParseFunction } from "~/src/@types/price-alert";
-import { parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
+import { formatBrandName, parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getHTML } from "../../utils/scrapeGetters";
 
@@ -23,7 +23,7 @@ export const parseAeonPrice : ShopParseFunction = async (url, _) => {
 			price: parsePriceToFloat(price),
 			productName: productName,
 			productImage: productImage ?? "",
-			brand: PriceAlertShopOption.AEONCITY,
+			brand: formatBrandName(PriceAlertShopOption.AEONCITY),
 			shop: PriceAlertShopOption.AEONCITY,
 		},
 		error: null,
