@@ -91,4 +91,36 @@ export const command = new SlashCommandBuilder()
 		subcommand
 			.setName("supported")
 			.setDescription("check supported shops"),
+	)
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName("edit")
+			.setDescription("edit price alert")
+			.addStringOption(option =>
+				option
+					.setName("shop")
+					.setDescription("shop")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("brand")
+					.setDescription("brand")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("name")
+					.setDescription("product name")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("url")
+					.setDescription("product url")
+					.setRequired(false),
+			),
 	);
