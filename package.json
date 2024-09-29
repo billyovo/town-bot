@@ -21,7 +21,7 @@
     "@napi-rs/canvas": "^0.1.48",
     "@types/natural": "^5.1.5",
     "axios": "^1.6.8",
-    "discord.js": "^14.16.2",
+    "discord.js": "^14.16.3",
     "dotenv": "^16.3.1",
     "luxon": "^3.4.3",
     "mongoose": "^8.1.3",
