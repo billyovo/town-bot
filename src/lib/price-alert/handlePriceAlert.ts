@@ -48,8 +48,8 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 				price: newProductInfo.data.price,
 				promotions: newProductInfo.data.promotions,
 				previous: {
-					price: isPriceChanged ? oldProductInfo.price : oldProductInfo?.previous?.price,
-					date: isPriceChanged ? oldProductInfo.lastChecked : oldProductInfo?.previous?.date
+					price: isPriceChanged ? oldProductInfo.price : (oldProductInfo?.previous?.price ?? oldProductInfo.price),
+					date: isPriceChanged ? oldProductInfo.lastChecked : (oldProductInfo?.previous?.date ?? oldProductInfo.lastChecked),
 				},
 				failCount: 0,
 			},
