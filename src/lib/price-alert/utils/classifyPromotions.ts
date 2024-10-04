@@ -5,7 +5,7 @@ const keywords : RegExp[] = [
 	/買([一二三四五六七八九十]{1,2}|\d+)送([一二三四五六七八九十]{1,2}|\d+)/,
 	/半價/,
 	// 減$10, 減10%, 減10 etc
-	/減\$*\d+.?\d*%?/,
+	/減(?:\$+\d+\.?\d*%?|\d+\.?\d*%)/,
 	// 第一件免費, 第1件免費 etc
 	/第([一二三四五六七八九十]{1,2}|\d+)件免費/,
 	// 九折, 九五折, 9折 etc
@@ -20,8 +20,13 @@ const keywords : RegExp[] = [
 	/half price/i,
 ];
 
+const freebieKeywords : RegExp[] = [
+	/換購/,
+	/加購/,
+];
+
 export function classifyPromotionByKeywords(promotions: string) {
-	if (keywords.some(keyword => keyword.test(promotions))) {
+	if (keywords.some(keyword => keyword.test(promotions)) && !freebieKeywords.some(keyword => keyword.test(promotions))) {
 		return PromotionType.DISCOUNT;
 	}
 	else {
