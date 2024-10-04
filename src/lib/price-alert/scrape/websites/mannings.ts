@@ -5,9 +5,9 @@ import { formatBrandName, parsePriceToFloat } from "~/src/lib/price-alert/utils/
 import { getHTML } from "../../utils/scrapeGetters";
 import { logger } from "~/src/lib/logger/logger";
 import { HTMLElement } from "node-html-parser";
-import { LogisticRegressionClassifier } from "natural";
+import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
-export const parseManningsPrice: ShopParseFunction = async (url, _, options) => {
+export const parseManningsPrice: ShopParseFunction = async (url, _, __) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -31,13 +31,12 @@ export const parseManningsPrice: ShopParseFunction = async (url, _, options) => 
 	if (!price) return { success: false, error: "Price not found", data: null };
 	if (!productName) return { success: false, error: "Product name not found", data: null };
 
-	const classifier : LogisticRegressionClassifier | null | undefined = options?.classifier;
 
 	const promotions = root.querySelectorAll(".promotion-text.promotion_description_holder").map((promotion) => {
 		return promotion.text.trim();
 	});
 
-	const classifiedPromotions = classifyPromotions(promotions, classifier);
+	const classifiedPromotions = classifyPromotions(promotions);
 
 	return {
 		data: {
@@ -127,10 +126,9 @@ function getProductDataFromScript(script: string) {
 	}
 }
 
-function classifyPromotions(promotions: string[], classifier: LogisticRegressionClassifier | null | undefined) {
-	if (!classifier) return null;
+function classifyPromotions(promotions: string[]) {
 	const classified = promotions.map((promotion) => {
-		const type = classifier.classify(promotion) as PromotionType;
+		const type : PromotionType = classifyPromotionByKeywords(promotion);
 		return { type, description: promotion };
 	});
 

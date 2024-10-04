@@ -5,9 +5,9 @@ import { getImageBase64FromLink, createImgurURLFromBase64 } from "~/src/lib/imag
 import { APIClient } from "~/src/lib/utils/fetch/client";
 import type { Failure, Success } from "~/src/@types/utils";
 import { Base64String } from "discord.js";
-import { LogisticRegressionClassifier } from "natural";
 import { PromotionType } from "~/src/@types/enum/price-alert";
 import { formatBrandName } from "../../utils/format";
+import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
 export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
 	if (!shopDetails.shop) {
@@ -42,7 +42,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 
 	const productDetails : Success<ProductDetail> | Failure = await fetchProductDetail(`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`);
 	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
-	const productPromotions = await fetchProductPromotions(`${baseURL}/api/v2/${shopCode}/products/${productID}/promotions?fields=FULL&lang=zh_HK&curr=HKD`, options?.classifier);
+	const productPromotions = await fetchProductPromotions(`${baseURL}/api/v2/${shopCode}/products/${productID}/promotions?fields=FULL&lang=zh_HK&curr=HKD`);
 
 	if (!productDetails.success) {
 		return {
@@ -137,7 +137,7 @@ async function fetchPromotionPrice(url : string) : Promise<number> {
 	return Math.min(promotionPrice, memberPrice);
 }
 
-async function fetchProductPromotions(url: string, classifier: LogisticRegressionClassifier | null | undefined) {
+async function fetchProductPromotions(url: string) {
 	let productPromotionsRes;
 	try {
 		productPromotionsRes = await APIClient.get(url);
@@ -148,7 +148,7 @@ async function fetchProductPromotions(url: string, classifier: LogisticRegressio
 	}
 	const parsedPromotions = productPromotionsRes.data?.elabPromotions?.map((promotion: { longDescription: string; description: string; title: string; startDate: string | null; endDate: string | null; }) => {
 		const description : string = promotion.longDescription ?? promotion.description ?? promotion.title;
-		const promotionType : PromotionType = classifier?.classify(description) as PromotionType;
+		const promotionType : PromotionType = classifyPromotionByKeywords(description);
 
 		return {
 			type: promotionType,
@@ -169,20 +169,20 @@ type WatsonsGroupShopDetails = {
 
 function getBaseURLAndCode(shop: PriceAlertShopOption) : WatsonsGroupShopDetails | null {
 	switch (shop) {
-		case PriceAlertShopOption.WATSONS:{
-			return {
-				baseURL: "https://api.watsons.com.hk",
-				shopCode: "wtchk",
-				shopOption: PriceAlertShopOption.WATSONS,
-			};
-		}
-		case PriceAlertShopOption.PNS:{
-			return {
-				baseURL: "https://api.pns.hk",
-				shopCode: "pnshk",
-				shopOption: PriceAlertShopOption.PNS,
-			};
-		}
+	case PriceAlertShopOption.WATSONS:{
+		return {
+			baseURL: "https://api.watsons.com.hk",
+			shopCode: "wtchk",
+			shopOption: PriceAlertShopOption.WATSONS,
+		};
+	}
+	case PriceAlertShopOption.PNS:{
+		return {
+			baseURL: "https://api.pns.hk",
+			shopCode: "pnshk",
+			shopOption: PriceAlertShopOption.PNS,
+		};
+	}
 	}
 
 	return null;

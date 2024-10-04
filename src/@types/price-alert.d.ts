@@ -1,7 +1,6 @@
 import { PriceAlertResult } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { Failure, Success } from "./utils";
 import { PromotionType } from "./enum/price-alert";
-import { LogisticRegressionClassifier } from "natural";
 
 export type ShopDetails = {
     shop: PriceAlertShopOption | null,
@@ -21,7 +20,6 @@ export type PriceAlertChecked = {
 
 export type ShopParseOptions = {
     skipImageFetch?: boolean,
-    classifier?: LogisticRegressionClassifier | null
 }
 
 // output of the parseShopWebsite function

@@ -37,24 +37,24 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			if (url.status >= 300) throw new Error(url.data?.message ?? "Something went wrong, please try again later");
 
 			switch (url.data.status) {
-				case "Running":{
-					await interaction.editReply({ content: "Drawing your image..." });
-					break;
-				}
-				case "NotStarted":{
-					await interaction.editReply({ content: "Starting to draw your image..." });
-					break;
-				}
-				case "Failed":{
-					throw new Error(url.data.error.message);
-				}
-				case "Succeeded":{
-					clearInterval(polling);
-					const image = await client.get(url.data.result.contentUrl, { responseType: "arraybuffer" });
-					if (image.status >= 300) throw new Error("Something is wrong when getting the image :(");
-					await interaction.editReply({ files: [image.data], content: `${prompt}` });
-					break;
-				}
+			case "Running":{
+				await interaction.editReply({ content: "Drawing your image..." });
+				break;
+			}
+			case "NotStarted":{
+				await interaction.editReply({ content: "Starting to draw your image..." });
+				break;
+			}
+			case "Failed":{
+				throw new Error(url.data.error.message);
+			}
+			case "Succeeded":{
+				clearInterval(polling);
+				const image = await client.get(url.data.result.contentUrl, { responseType: "arraybuffer" });
+				if (image.status >= 300) throw new Error("Something is wrong when getting the image :(");
+				await interaction.editReply({ files: [image.data], content: `${prompt}` });
+				break;
+			}
 			}
 		}
 		catch (error) {

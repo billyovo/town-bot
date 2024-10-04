@@ -4,8 +4,8 @@ import { getHTML } from "../../utils/scrapeGetters";
 import { formatBrandName, parsePriceToFloat } from "../../utils/format";
 import { logger } from "~/src/lib/logger/logger";
 import { HTMLElement } from "node-html-parser";
-import { LogisticRegressionClassifier } from "natural";
 import { PromotionType } from "~/src/@types/enum/price-alert";
+import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
 type HKTVMALLProductData = {
 	currencyIso: string,
@@ -15,7 +15,7 @@ type HKTVMALLProductData = {
 	membershipLevel: string
 }
 
-export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, options) => {
+export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, __) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -38,10 +38,9 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, op
 
 	const availablePromotion = parsedProductData?.thresholdPromotionList ?? (parsedProductData?.thresholdPromotion ? [parsedProductData.thresholdPromotion] : null);
 
-	const classifier : LogisticRegressionClassifier | null | undefined = options?.classifier;
 	const parsedPromotions = availablePromotion ? availablePromotion.map((promotion: { label: string; description: string; startTime: string; endTime: string; name: string; }) => {
 		const promotionDescription : string = promotion?.description ?? (`${promotion?.label ?? ""} | ${promotion?.name ?? ""}`);
-		const promotionType : PromotionType = classifier?.classify(promotionDescription) as PromotionType;
+		const promotionType : PromotionType = classifyPromotionByKeywords(promotionDescription);
 		const startTime : Date | null = promotion?.startTime ? new Date(parseInt(promotion.startTime)) : null;
 		const endTime : Date | null = promotion?.endTime ? new Date(parseInt(promotion.endTime)) : null;
 

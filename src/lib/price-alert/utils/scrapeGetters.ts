@@ -15,7 +15,7 @@ export async function getHTML(url : string) : Promise<Success<HTMLElement> | Fai
 	}
 	catch (e) {
 		logger.error(e);
-		return { success: false, error: "Failed to parse html", data: null };
+		return { success: false, error: `Failed to parse html: ${(e as Error).message}`, data: null };
 	}
 }
 

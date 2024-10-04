@@ -6,6 +6,7 @@ export const HTMLClient = axios.create({
 		"Accept-Language": "en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7,ja;q=0.6,hi;q=0.5,zh-CN;q=0.4",
 		"Cache-Control": "max-age=0",
 		"Connection": "keep-alive",
+		"Cookie": "language=zh_TW",
 		"Sec-Ch-Ua": "Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
 		"Sec-Ch-Ua-Mobile": "?0",
 		"Sec-Ch-Ua-Platform": "Windows",
