@@ -12,6 +12,7 @@ const keywords : RegExp[] = [
 	/([一二三四五六七八九]{1,2}|\d+(\.\d+)?)折/,
 	// 只需$10, 只需10 etc
 	/只需\${0,1}\d+.?\d*/,
+	/會員優惠/,
 	// $5 off, 5% off etc
 	/(?=\S)(\s*\$?\s*\d+\s*%\s*off|\s*\$\s*\d+\s*off\s*|\s*\d+\s*%\s*off)/i,
 	// get 1 free, get 1 for free etc
