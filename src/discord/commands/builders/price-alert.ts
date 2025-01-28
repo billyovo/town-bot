@@ -1,9 +1,11 @@
 import { PriceAlertListMode } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
-import { SlashCommandBuilder } from "discord.js";
+import { ApplicationIntegrationType, InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 export const command = new SlashCommandBuilder()
 	.setName("price-alert")
 	.setDescription("price alert")
+	.setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
+	.setContexts([InteractionContextType.Guild])
 	.addSubcommand(subcommand =>
 		subcommand
 			.setName("check")

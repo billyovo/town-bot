@@ -1,8 +1,11 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ApplicationIntegrationType, InteractionContextType, SlashCommandBuilder } from "discord.js";
+
 
 export const command = new SlashCommandBuilder()
 	.setName("draw")
 	.setDescription("draw something")
+	.setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
+	.setContexts([InteractionContextType.Guild])
 	.addStringOption(option => option.setName("prompt").setDescription("prompt").setRequired(true))
 	.addStringOption(option =>
 		option.setName("size")
@@ -14,12 +17,42 @@ export const command = new SlashCommandBuilder()
 					"value": "1024x1024",
 				},
 				{
-					"name": "512x512",
-					"value": "512x512",
+					"name": "1792x1024",
+					"value": "1792x1024",
 				},
 				{
-					"name": "256x256",
-					"value": "256x256",
+					"name": "1024x1792",
+					"value": "1024x1792",
+				},
+			),
+	)
+	.addStringOption(option =>
+		option.setName("style")
+			.setDescription("style")
+			.setRequired(false)
+			.addChoices(
+				{
+					"name": "vivid",
+					"value": "vivid",
+				},
+				{
+					"name": "natural",
+					"value": "natural",
+				},
+			),
+	)
+	.addStringOption(option =>
+		option.setName("quality")
+			.setDescription("quality")
+			.setRequired(false)
+			.addChoices(
+				{
+					"name": "hd",
+					"value": "hd",
+				},
+				{
+					"name": "standard",
+					"value": "standard",
 				},
 			),
 	);

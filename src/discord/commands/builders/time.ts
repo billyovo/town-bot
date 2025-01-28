@@ -2,7 +2,7 @@ import { ApplicationIntegrationType, InteractionContextType, SlashCommandBuilder
 export const command = new SlashCommandBuilder()
 	.setName("time")
 	.setDescription("time")
-	.setIntegrationTypes(ApplicationIntegrationType.UserInstall)
+	.setIntegrationTypes([ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall])
 	.setContexts([InteractionContextType.Guild, InteractionContextType.PrivateChannel])
 	.addSubcommand(subcommand =>
 		subcommand
