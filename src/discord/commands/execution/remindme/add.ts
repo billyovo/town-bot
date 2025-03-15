@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, time, TimestampStyles } from "discord.js";
 import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/time/duration";
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
@@ -61,7 +61,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 
 	const reminderTime : DateTime = DateTime.now().plus(reminderDuration.data);
-	const reminderMessage = `I will ${dm ? "DM" : "remind"} you at <t:${Math.round(reminderTime.toSeconds())}:R> after ${parseMillsToHuman(reminderDuration.data.toMillis())}!`;
+	const reminderMessage = `I will ${dm ? "DM" : "remind"} you at ${time(Math.round(reminderTime.toSeconds()), TimestampStyles.RelativeTime)} after ${parseMillsToHuman(reminderDuration.data.toMillis())}!`;
 
 	const reminder = await ReminderModel.create({
 		sendTime: reminderTime.toJSDate(),
