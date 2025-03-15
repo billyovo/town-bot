@@ -20,10 +20,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const list : string[] = splitMessage(formattedMessage);
 
-	await interaction.reply({ content: list[0] });
+	await interaction.reply({ content: list[0], allowedMentions: { parse: [] } });
 	for (let i = 1; i < list.length; i++) {
 		if (interaction.channel?.isSendable()) {
-			await interaction.channel.send(list[i]);
+			await interaction.channel.send({ content: list[0], allowedMentions: { parse: [] } });
 		}
 	}
 }
