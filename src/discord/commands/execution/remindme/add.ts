@@ -71,7 +71,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		channel: dm ? null : interaction.channel!.id,
 	});
 
-	scheduleJob(reminderTime.toJSDate(), () => {
+	scheduleJob(reminder._id.toString(), reminderTime.toJSDate(), () => {
 		if (dm) {
 			interaction.user.send({ content: message }).catch(err => logger.error(err.message));
 		}
@@ -80,6 +80,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});
+
 	return interaction.reply({ content: reminderMessage, ephemeral: !!dm });
 
 }

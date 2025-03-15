@@ -22,7 +22,7 @@ export async function readyHandler() {
 			ReminderModel.deleteOne({ _id: reminder._id }).exec();
 			continue;
 		}
-		scheduleJob(reminder.sendTime, () => {
+		scheduleJob(reminder._id.toString(), reminder.sendTime, () => {
 			logger.info(`Found reminder for ${reminder.owner} at ${reminder.sendTime}!`);
 			if (reminder.isDM) {
 				client.users.fetch(reminder.owner).then(user => user.send({ content: reminder.message }))
