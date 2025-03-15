@@ -14,7 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const formattedMessage : string[] = allUserReminder.map((reminder : HydratedDocument<Reminder>, index : number) => {
 		const ellipsedMessage = reminder.message.length > 50 ? `${reminder.message.substring(0, 50)}...` : reminder.message;
-		return `${index + 1 }: ${time(reminder.sendTime, TimestampStyles.RelativeTime)} ${ellipsedMessage}`;
+		return `${index + 1 }: ${time(reminder.sendTime, TimestampStyles.RelativeTime)} ${ellipsedMessage}\r\n`;
 	});
 
 

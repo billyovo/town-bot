@@ -9,7 +9,6 @@
     "build": "tsc -p . && tsc-alias && copyfiles -u 1 src/assets/* dist/",
     "register": "ts-node ./scripts/register",
     "unregister": "ts-node ./scripts/unregister",
-    "train": "ts-node ./scripts/promotionClassifier/classifier",
     "fix": "eslint src --fix",
     "test:lint": "eslint src",
     "test": "jest --silent"
