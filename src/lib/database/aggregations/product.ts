@@ -9,7 +9,7 @@ export const groupProductByNameAndBrand : PipelineStage[] = [
 			},
 			"shops": {
 				"$push": {
-					"price": { "$divide": ["$price", "$quantity"] },
+					"price": "$price",
 					"productImage": "$productImage",
 					"shop": "$shop",
 					"lastChecked": "$lastChecked",

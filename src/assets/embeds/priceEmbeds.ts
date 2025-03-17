@@ -86,12 +86,12 @@ export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
 	productGroup.shops.forEach((shopItem : ShopPriceItem) => {
 		fields.push({
 			name: "Shop",
-			value: hyperlink(PriceAlertShopParseDetails[shopItem.shop].emote, shopItem.url),
+			value: hyperlink(`${PriceAlertShopParseDetails[shopItem.shop].emote} link`, shopItem.url),
 			inline: true,
 		});
 		fields.push({
 			name: "Price",
-			value: `${PriceAlertShopParseDetails[shopItem.shop].emote} $${shopItem.price}`,
+			value: (shopItem.quantity !== 1) ? `$${(shopItem.price / shopItem.quantity).toFixed(1)} (${shopItem.price}/${shopItem.quantity}pcs)` : `$${shopItem.price}`,
 			inline: true,
 		});
 		const promotionsList : string[] = shopItem.promotions?.map((promotion : PromotionClassified) => {
