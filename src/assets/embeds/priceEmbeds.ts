@@ -83,14 +83,14 @@ export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
 
 	const fields : EmbedField[] = [];
 
-	productGroup.shops.forEach((shopItem : ShopPriceItem) => {
+	productGroup.shops.forEach((shopItem : ShopPriceItem, index : number) => {
 		fields.push({
-			name: "Shop",
-			value: hyperlink(`${PriceAlertShopParseDetails[shopItem.shop].emote} link`, shopItem.url),
+			name: index === 0 ? "Shop" : "\u200b",
+			value: hyperlink(`${PriceAlertShopParseDetails[shopItem.shop].emote} 🔗`, shopItem.url),
 			inline: true,
 		});
 		fields.push({
-			name: "Price",
+			name: index === 0 ? "Price" : "\u200b",
 			value: (shopItem.quantity !== 1) ? `$${(shopItem.price / shopItem.quantity).toFixed(1)} (${shopItem.price}/${shopItem.quantity}pcs)` : `$${shopItem.price}`,
 			inline: true,
 		});
@@ -104,7 +104,7 @@ export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
 		}) ?? [];
 
 		fields.push({
-			name: "Promotions",
+			name: index === 0 ? "Promotions" : "\u200b",
 			value: promotionsList.length ? unorderedList(promotionsList) : "-",
 			inline: true,
 		});
