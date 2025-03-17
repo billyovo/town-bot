@@ -1,9 +1,10 @@
-import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, TextChannel, unorderedList } from "discord.js";
+import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, TextChannel, unorderedList, hyperlink, MessageFlags, hideLinkEmbed } from "discord.js";
 import { PriceAlertListMode, PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/src/assets/embeds/priceEmbeds";
 import { EventEmitter } from "node:events";
 import { PriceAlertGrouped, PriceAlertModel, ShopPriceItem } from "~/src/lib/database/schemas/product";
 import { groupProductByNameAndBrand } from "~/src/lib/database/aggregations/product";
+import { sendSplitMessage, splitMessage } from "~/src/lib/utils/discord/splitMessage";
 
 enum ButtonType {
 	NEXT = "next",
@@ -27,13 +28,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			formatted.push(`${productGroup.brand} ${productGroup.productName}`);
 			formatted.push(productGroup.shops.map((item : ShopPriceItem) => {
 				const numberOfPromotion = item.promotions?.length ?? 0;
-				return `${PriceAlertShopParseDetails[item.shop].emote} ${(item.quantity !== 1) ? `$${(item.price / item.quantity).toFixed(1)} (${item.price}/${item.quantity}pcs)` : `$${item.price}`} (${`${numberOfPromotion} promotion${numberOfPromotion ? "s" : ""}`})`;
+				const priceDisplay = `${(item.quantity !== 1) ? `$${(item.price / item.quantity).toFixed(1)} (${item.price}/${item.quantity}pcs)` : `$${item.price}`}`;
+				const promotionDisplay = numberOfPromotion ? `(${numberOfPromotion} promotion${numberOfPromotion === 1 ? "" : "s"})` : "";
+				const hyperlinkDisplay = `${hyperlink("🔗", hideLinkEmbed(item.url))}`;
+				return `${PriceAlertShopParseDetails[item.shop].emote} ${priceDisplay} ${promotionDisplay} ${hyperlinkDisplay}`;
 			}));
 		});
 
-		const formattedList = unorderedList(formatted);
+		const formattedList : string = unorderedList(formatted);
+		const messages = splitMessage(formattedList);
 
-		await interaction.reply({ content: formattedList });
+		await interaction.reply({
+			content: messages[0],
+		});
+		await sendSplitMessage(interaction, messages);
 	}
 
 	if (mode === PriceAlertListMode.DETAILED) {
@@ -74,7 +82,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 			const receivedPageNumber = parseInt(receivedPageNumberInteraction.fields.getTextInputValue("pageNumberInput"));
 			if (!Number.isInteger(receivedPageNumber) || (receivedPageNumber < 1) || (receivedPageNumber > productsArray.length)) {
-				await receivedPageNumberInteraction.reply({ content: "Invalid page number", ephemeral: true });
+				await receivedPageNumberInteraction.reply({ content: "Invalid page number", flags: MessageFlags.Ephemeral });
 				return;
 			}
 			pointer = receivedPageNumber - 1;
@@ -83,7 +91,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			// we already replied to the interaction with i.showModal, so we can just edit the message, blame @discord
 			// and we need to reply to the modal interaction to prevent error as well, thanks @discord
 			await i.message.edit({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
-			await receivedPageNumberInteraction.reply({ content: `Jumped to page ${receivedPageNumber}`, ephemeral: true });
+			await receivedPageNumberInteraction.reply({ content: `Jumped to page ${receivedPageNumber}`, flags: MessageFlags.Ephemeral });
 
 		});
 	}

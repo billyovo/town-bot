@@ -1,7 +1,7 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags } from "discord.js";
 import { createWorker } from "tesseract.js";
 import { logger } from "~/src/lib/logger/logger";
-import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
+import { sendSplitMessage, splitMessage } from "~/src/lib/utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	await interaction.deferReply();
@@ -10,7 +10,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	if (!url) {
 		interaction.reply({
 			content: "Nothing is received!",
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -21,15 +21,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	try {
 		const ret = await OCRworker.worker.recognize(url);
 		const recognizedText = ret ? ret.data.text : "Nothing is recognized!";
-		const splitText = splitMessage(recognizedText.split("\n"), true);
-		await interaction.editReply({
-			content: splitText[0],
-		});
-		for (let i = 1; i < splitText.length; i++) {
-			await interaction.followUp({
-				content: splitText[i] + "\r\n",
-			});
-		}
+		const splitText : string[] = splitMessage(recognizedText);
+		await interaction.editReply({ content: splitText[0] });
+		await sendSplitMessage(interaction, splitText);
 	}
 	catch (error) {
 		if (error instanceof Error) {

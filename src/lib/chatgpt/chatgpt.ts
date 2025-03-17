@@ -28,7 +28,7 @@ const getGptMessage : GetGptMessage = async (chatMessages) => {
 };
 
 const sendMessage = async (content : string, channel: TextChannel, replyID?: Snowflake) => {
-	const messageArray = splitMessage(content.split("\n"));
+	const messageArray = splitMessage(content);
 	let updatedReplyID = replyID;
 	for (const message of messageArray) {
 		const sendOptions = updatedReplyID ? { reply: { messageReference: updatedReplyID } } : {};

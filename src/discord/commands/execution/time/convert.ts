@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from "discord.js";
 import { DateTime } from "luxon";
 import { timeConvert } from "~/src/lib/time/timeConvert";
 
@@ -7,15 +7,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const from_timezone: string | null = interaction.options.getString("from_timezone") ?? null;
 	const to_timezone: string | null = interaction.options.getString("to_timezone") ?? null;
 
-	if (!time) return interaction.reply({ content: "Please provide a time", ephemeral: true });
-	if (!from_timezone) return interaction.reply({ content: "Please provide a from timezone", ephemeral: true });
-	if (!to_timezone) return interaction.reply({ content: "Please provide a to timezone", ephemeral: true });
+	if (!time) return interaction.reply({ content: "Please provide a time", flags: MessageFlags.Ephemeral });
+	if (!from_timezone) return interaction.reply({ content: "Please provide a from timezone", flags: MessageFlags.Ephemeral });
+	if (!to_timezone) return interaction.reply({ content: "Please provide a to timezone", flags: MessageFlags.Ephemeral });
 
 	const fromTimeZoneValid = DateTime.now().setZone(from_timezone).isValid;
 	const toTimeZoneValid = DateTime.now().setZone(to_timezone).isValid;
 
-	if (!fromTimeZoneValid) return interaction.reply({ content: "Invalid from timezone", ephemeral: true });
-	if (!toTimeZoneValid) return interaction.reply({ content: "Invalid to timezone", ephemeral: true });
+	if (!fromTimeZoneValid) return interaction.reply({ content: "Invalid from timezone", flags: MessageFlags.Ephemeral });
+	if (!toTimeZoneValid) return interaction.reply({ content: "Invalid to timezone", flags: MessageFlags.Ephemeral });
 
 	const completeTimeString = generateCorrectTimeFormat(time, from_timezone);
 
@@ -26,7 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const response = await timeConvert(dt, from_timezone, to_timezone);
 	const convertedTime = DateTime.fromISO(response?.conversionResult.dateTime ?? "");
 	if (response === null) {
-		return interaction.reply({ content: "Failed to convert the time", ephemeral: true });
+		return interaction.reply({ content: "Failed to convert the time", flags: MessageFlags.Ephemeral });
 	}
 
 	const embed = new EmbedBuilder()

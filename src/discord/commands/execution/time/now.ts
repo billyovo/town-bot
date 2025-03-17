@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from "discord.js";
 import { DateTime } from "luxon";
 import { TimeAPICurrentTimeData } from "~/src/@types/timeapi";
 import { timeNow } from "~/src/lib/time/timeNow";
@@ -10,7 +10,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const inputZone = interaction.options.getString("timezone") ?? "";
 	const fromTimeZoneValid = DateTime.now().setZone(inputZone).isValid;
-	if (inputZone && !fromTimeZoneValid) return interaction.reply({ content: "Invalid timezone", ephemeral: true });
+	if (inputZone && !fromTimeZoneValid) return interaction.reply({ content: "Invalid timezone", flags: MessageFlags.Ephemeral });
 
 	await interaction.deferReply();
 

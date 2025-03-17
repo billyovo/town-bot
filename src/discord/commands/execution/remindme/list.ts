@@ -1,7 +1,7 @@
-import { ChatInputCommandInteraction, time, TimestampStyles } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags, time, TimestampStyles } from "discord.js";
 import { HydratedDocument } from "mongoose";
 import { Reminder, ReminderModel } from "~/src/lib/database/schemas/reminders";
-import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
+import { sendSplitMessage, splitMessage } from "~/src/lib/utils/discord/splitMessage";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const userID = interaction.user.id;
@@ -9,7 +9,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const allUserReminder : HydratedDocument<Reminder>[] = await ReminderModel.find({ owner: userID }).sort({ sendTime: 1 }).exec();
 
 	if (allUserReminder.length === 0) {
-		await interaction.reply("You do not have any reminder set");
+		await interaction.reply({
+			content: "You do not have any reminder set",
+			flags: MessageFlags.Ephemeral,
+		});
+		return;
 	}
 
 	const formattedMessage : string[] = allUserReminder.map((reminder : HydratedDocument<Reminder>, index : number) => {
@@ -18,12 +22,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	});
 
 
-	const list : string[] = splitMessage(formattedMessage);
+	const messages : string[] = splitMessage(formattedMessage.join("\r\n"));
 
-	await interaction.reply({ content: list[0], allowedMentions: { parse: [] } });
-	for (let i = 1; i < list.length; i++) {
-		if (interaction.channel?.isSendable()) {
-			await interaction.channel.send({ content: list[0], allowedMentions: { parse: [] } });
-		}
-	}
+	await interaction.reply({
+		content: messages[0],
+	});
+	await sendSplitMessage(interaction, messages);
 }

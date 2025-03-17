@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, AttachmentBuilder } from "discord.js";
+import { ChatInputCommandInteraction, AttachmentBuilder, MessageFlags } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import path from "path";
 import { logger } from "~/src/lib/logger/logger";
@@ -6,7 +6,7 @@ import { logger } from "~/src/lib/logger/logger";
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url : string = (interaction.options.get("image")?.attachment?.url || interaction.options.get("link")?.value) as string;
 	if (!url) {
-		interaction.reply({ content: "Nothing is received!", ephemeral: true });
+		interaction.reply({ content: "Nothing is received!", flags: MessageFlags.Ephemeral });
 		return;
 	}
 	const canvas = createCanvas(1000, 560);
@@ -26,7 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			interaction.editReply({ content: "an error occured!" });
 		}
 		else {
-			interaction.reply({ content: "an error occured!", ephemeral: true });
+			interaction.reply({ content: "an error occured!", flags: MessageFlags.Ephemeral });
 		}
 		if (error instanceof Error) {
 			logger.error(error.message);

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, time, TimestampStyles } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags, time, TimestampStyles } from "discord.js";
 import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/time/duration";
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
@@ -48,16 +48,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const dm = interaction.options.getBoolean("dm", false);
 
 	if (!dm && !interaction.channel?.isSendable()) {
-		return interaction.reply({ content: "No Permission to send message in this channel!", ephemeral: true });
+		return interaction.reply({ content: "No Permission to send message in this channel!", flags: MessageFlags.Ephemeral });
 	}
 
 	const reminderDuration = getCorrectDuration(timeInput);
 	if (!reminderDuration.success) {
-		return interaction.reply({ content: reminderDuration.error, ephemeral: true });
+		return interaction.reply({ content: reminderDuration.error, flags: MessageFlags.Ephemeral });
 	}
 
 	if (reminderDuration.data.as("milliseconds") < 0) {
-		return interaction.reply({ content: "You can't set a reminder in the past!", ephemeral: true });
+		return interaction.reply({ content: "You can't set a reminder in the past!", flags: MessageFlags.Ephemeral });
 	}
 
 	const reminderTime : DateTime = DateTime.now().plus(reminderDuration.data);
@@ -81,6 +81,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});
 
-	return interaction.reply({ content: reminderMessage, ephemeral: !!dm });
+	if (dm) {
+		return await interaction.reply({ content: reminderMessage, flags: MessageFlags.Ephemeral });
+	}
+	else {
+		return await interaction.reply({ content: reminderMessage });
+	}
 
 }
