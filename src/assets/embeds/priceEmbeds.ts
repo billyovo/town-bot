@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedBuilder, EmbedField, unorderedList } from "discord.js";
+import { ColorResolvable, EmbedBuilder, EmbedField, hyperlink, unorderedList } from "discord.js";
 import { DateTime } from "luxon";
 import { PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { PriceAlertGrouped, PriceAlertItem, ShopPriceItem } from "~/src/lib/database/schemas/product";
@@ -85,9 +85,14 @@ export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
 
 	productGroup.shops.forEach((shopItem : ShopPriceItem) => {
 		fields.push({
+			name: "Shop",
+			value: hyperlink(PriceAlertShopParseDetails[shopItem.shop].emote, shopItem.url),
+			inline: true,
+		});
+		fields.push({
 			name: "Price",
 			value: `${PriceAlertShopParseDetails[shopItem.shop].emote} $${shopItem.price}`,
-			inline: false,
+			inline: true,
 		});
 		const promotionsList : string[] = shopItem.promotions?.map((promotion : PromotionClassified) => {
 			let promotionString = promotion.description;
