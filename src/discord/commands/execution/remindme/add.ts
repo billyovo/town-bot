@@ -76,7 +76,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			interaction.user.send({ content: message }).catch(err => logger.error(err.message));
 		}
 		else if (interaction.channel?.isSendable()) {
-				interaction.channel!.send({ content: message }).catch(err => logger.error(err.message));
+				interaction.channel!.send({
+					content: message,
+					allowedMentions: {
+						users: [interaction.user.id],
+					},
+				}).catch(err => logger.error(err.message));
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});

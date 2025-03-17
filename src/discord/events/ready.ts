@@ -31,7 +31,12 @@ export async function readyHandler() {
 			else {
 				client.channels.fetch(reminder.channel).then(channel => {
 					if (channel?.isSendable()) {
-						channel.send({ content: reminder.message }).catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+						channel.send({
+							content: reminder.message,
+							allowedMentions: {
+								users: [reminder.owner],
+							},
+						}).catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 					}
 				});
 			}
