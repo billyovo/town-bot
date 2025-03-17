@@ -27,7 +27,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			formatted.push(`${productGroup.brand} ${productGroup.productName}`);
 			formatted.push(productGroup.shops.map((item : ShopPriceItem) => {
 				const numberOfPromotion = item.promotions?.length ?? 0;
-				return `${PriceAlertShopParseDetails[item.shop].emote} $${(item.price / item.quantity).toFixed(1)} (${`${numberOfPromotion} promotion${numberOfPromotion ? "s" : ""}`})`;
+				return `${PriceAlertShopParseDetails[item.shop].emote} $${item.price} / ${item.quantity}} (${`${numberOfPromotion} promotion${numberOfPromotion ? "s" : ""}`})`;
 			}));
 		});
 

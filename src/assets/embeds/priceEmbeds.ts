@@ -87,7 +87,7 @@ export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
 		fields.push({
 			name: "Price",
 			value: `${PriceAlertShopParseDetails[shopItem.shop].emote} $${shopItem.price}`,
-			inline: true,
+			inline: false,
 		});
 		const promotionsList : string[] = shopItem.promotions?.map((promotion : PromotionClassified) => {
 			let promotionString = promotion.description;
