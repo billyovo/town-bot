@@ -1,22 +1,20 @@
-import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, TextChannel } from "discord.js";
+import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, TextChannel, unorderedList } from "discord.js";
 import { PriceAlertListMode, PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/src/assets/embeds/priceEmbeds";
-import { splitMessage } from "~/src/lib/utils/discord/splitMessage";
 import { EventEmitter } from "node:events";
-import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
-import { PromotionType } from "~/src/@types/enum/price-alert";
+import { PriceAlertGrouped, PriceAlertModel, ShopPriceItem } from "~/src/lib/database/schemas/product";
+import { groupProductByNameAndBrand } from "~/src/lib/database/aggregations/product";
 
 enum ButtonType {
 	NEXT = "next",
 	PREVIOUS = "previous",
-	REMOVE = "remove",
 	CURRENT = "currentPage",
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const mode : PriceAlertListMode = interaction.options.getString("mode") as PriceAlertListMode;
 
-	const productsArray : PriceAlertItem[] = await PriceAlertModel.find({}).sort({ productName: 1 }).exec();
+	const productsArray : PriceAlertGrouped[] = await PriceAlertModel.aggregate(groupProductByNameAndBrand);
 
 	if (productsArray.length === 0) {
 		await interaction.reply({ content: "No products found" });
@@ -24,18 +22,18 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 
 	if (mode === PriceAlertListMode.ALL) {
-		const formattedProducts = productsArray.map((product : PriceAlertItem, index : number) => {
-			const pricePromotions = (product.promotions ?? []).filter(promotion => promotion.type === PromotionType.DISCOUNT);
-			return `${index + 1}. ${PriceAlertShopParseDetails[product.shop].emote} ${product.brand} [${product.productName}](<${product.url}>) $${product.price} (${pricePromotions.length} Promotions)\n`;
+		const formatted : Array<string | Array<string>> = [];
+		productsArray.forEach((productGroup : PriceAlertGrouped) => {
+			formatted.push(`${productGroup.brand} ${productGroup.productName}`);
+			formatted.push(productGroup.shops.map((item : ShopPriceItem) => {
+				const numberOfPromotion = item.promotions?.length ?? 0;
+				return `${PriceAlertShopParseDetails[item.shop].emote} $${(item.price / item.quantity).toFixed(1)} (${`${numberOfPromotion} promotion${numberOfPromotion ? "s" : ""}`})`;
+			}));
 		});
 
-		const list : string[] = splitMessage(formattedProducts);
-		await interaction.reply({ content: list[0] });
-		for (let i = 1; i < list.length; i++) {
-			if (interaction.channel?.isSendable()) {
-				await interaction.channel.send(list[i]);
-			}
-		}
+		const formattedList = unorderedList(formatted);
+
+		await interaction.reply({ content: formattedList });
 	}
 
 	if (mode === PriceAlertListMode.DETAILED) {
@@ -65,16 +63,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 				pointer = productsArray.length - 1;
 			}
 
-			const embed = getPriceListEmbed(productsArray[pointer]);
-			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
-		});
-
-		eventEmitter.on(ButtonType.REMOVE, async (i : CollectedMessageInteraction) => {
-			await PriceAlertModel.findOneAndDelete({ url: productsArray[pointer].url });
-			productsArray.splice(pointer, 1);
-			if (pointer > 0) {
-				pointer--;
-			}
 			const embed = getPriceListEmbed(productsArray[pointer]);
 			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
@@ -149,12 +137,7 @@ function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<But
 		.setCustomId(ButtonType.NEXT)
 		.setLabel("➡️")
 		.setStyle(ButtonStyle.Primary);
-	const remove = new ButtonBuilder()
-		.setCustomId(ButtonType.REMOVE)
-		.setLabel("🗑️")
-		.setStyle(ButtonStyle.Danger);
 
 	const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next);
-	const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(remove);
-	return [row1, row2];
+	return [row1];
 }

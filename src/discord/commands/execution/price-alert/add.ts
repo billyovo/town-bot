@@ -5,9 +5,14 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { PriceAlertItem } from "~/src/lib/database/schemas/product";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const link = interaction.options.get("url")!.value as string;
+	const link = interaction.options.getString("url");
 	const inputProductName = interaction.options.getString("name") ?? "";
 	const inputProductBrand = interaction.options.getString("brand") ?? "";
+	const quantity = interaction.options.getInteger("quantity") ?? 1;
+
+	if (!link) {
+		return interaction.reply({ content: "No URL received." });
+	}
 
 	const decodedURL = decodeURI(link);
 
@@ -26,6 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		productImage: output.data.productImage,
 		shop: output.data.shop,
 		promotions: output.data.promotions,
+		quantity: quantity,
 		failCount: 0,
 	};
 

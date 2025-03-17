@@ -6,7 +6,8 @@ enum ProductEditFields {
 	NAME = "name",
 	BRAND = "brand",
 	IMAGE = "image",
-	MODAL = "edit_product"
+	MODAL = "edit_product",
+	QUANTITY = "quantity"
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -33,8 +34,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const newProductName : string = response.fields.getTextInputValue(`${ProductEditFields.NAME}-${randomID}`);
 	const newBrand : string = response.fields.getTextInputValue(`${ProductEditFields.BRAND}-${randomID}`) || "";
 	const newImage : string = response.fields.getTextInputValue(`${ProductEditFields.IMAGE}-${randomID}`) || "";
+	const newQuantity : number = parseInt(response.fields.getTextInputValue(`${ProductEditFields.QUANTITY}-${randomID}`)) || 1;
 
-	await PriceAlertModel.updateOne({ url: product.url }, { productName: newProductName, brand: newBrand, productImage: newImage });
+	await PriceAlertModel.updateOne({ url: product.url }, { productName: newProductName, brand: newBrand, productImage: newImage, quantity: newQuantity });
 
 	await response.reply({ content: `Updated ${product.productName} of ${product.brand} to [${newProductName}](${product.url}) of ${newBrand}` });
 }
@@ -62,6 +64,15 @@ function getProductEditModal(product : PriceAlertItem, UUID: string) : ModalBuil
 		.setStyle(TextInputStyle.Short)
 		.setMinLength(1);
 
+	const quantityField = new TextInputBuilder()
+		.setCustomId(`${ProductEditFields.QUANTITY}-${UUID}`)
+		.setPlaceholder("Quantity")
+		.setValue(product.quantity.toString())
+		.setLabel("Quantity")
+		.setRequired(true)
+		.setStyle(TextInputStyle.Short)
+		.setMinLength(1);
+
 	const imageField = new TextInputBuilder()
 		.setCustomId(`${ProductEditFields.IMAGE}-${UUID}`)
 		.setPlaceholder("Image URL")
@@ -70,11 +81,13 @@ function getProductEditModal(product : PriceAlertItem, UUID: string) : ModalBuil
 		.setStyle(TextInputStyle.Short)
 		.setRequired(false);
 
+
 	const firstRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([productNameField]);
 	const secondRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([brandField]);
-	const thirdRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([imageField]);
+	const thirdRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([quantityField]);
+	const forthRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([imageField]);
 
-	productEditModal.addComponents([firstRow, secondRow, thirdRow]);
+	productEditModal.addComponents([firstRow, secondRow, thirdRow, forthRow]);
 
 	return productEditModal;
 }

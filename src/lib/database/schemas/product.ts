@@ -8,6 +8,7 @@ export interface PriceAlertItem {
     price: number,
     brand: string,
     productName: string,
+	quantity: number,
     productImage: string | null,
     promotions?: PromotionClassified[] | null,
     shop: PriceAlertShopOption,
@@ -16,6 +17,12 @@ export interface PriceAlertItem {
         price: number,
         date: Date,
     },
+}
+export type ShopPriceItem = Omit<PriceAlertItem, "brand" | "productName">;
+export interface PriceAlertGrouped {
+	productName: string,
+	brand: string,
+	shops: ShopPriceItem[]
 }
 const promotionSchema = new Schema({
 	type: String,
@@ -37,6 +44,7 @@ const priceAlertSchema = new Schema<PriceAlertItem>({
 	},
 	shop: String,
 	failCount: Number,
+	quantity: Number,
 	previous: {
 		price: Number,
 		date: Date,

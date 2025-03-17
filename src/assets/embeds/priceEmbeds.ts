@@ -1,8 +1,9 @@
-import { ColorResolvable, EmbedBuilder } from "discord.js";
+import { ColorResolvable, EmbedBuilder, EmbedField, unorderedList } from "discord.js";
 import { DateTime } from "luxon";
 import { PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
-import { PriceAlertItem } from "~/src/lib/database/schemas/product";
+import { PriceAlertGrouped, PriceAlertItem, ShopPriceItem } from "~/src/lib/database/schemas/product";
 import { PromotionType } from "~/src/@types/enum/price-alert";
+import { PromotionClassified } from "~/src/@types/price-alert";
 
 export function getPriceChangeEmbed(product : PriceAlertItem) {
 	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
@@ -67,35 +68,50 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 	return embed;
 }
 
-export function getPriceListEmbed(product: PriceAlertItem) {
-	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
+function getProductImage(shopsItems : ShopPriceItem[]) : string {
+	for (let i = 0; i < shopsItems.length; i++) {
+		if (!shopsItems[i].productImage) continue;
+
+		// @ts-expect-error typescript y u can't recognize non-null check?
+		return shopsItems[i].productImage;
+	}
+	return "";
+}
+
+export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
+	const productImage : string = getProductImage(productGroup.shops);
+
+	const fields : EmbedField[] = [];
+
+	productGroup.shops.forEach((shopItem : ShopPriceItem) => {
+		fields.push({
+			name: "Price",
+			value: `${PriceAlertShopParseDetails[shopItem.shop].emote} $${shopItem.price}`,
+			inline: true,
+		});
+		const promotionsList : string[] = shopItem.promotions?.map((promotion : PromotionClassified) => {
+			let promotionString = promotion.description;
+			if (promotion.endTime) {
+				promotionString += `\r\nEnd Time: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}`;
+			}
+
+			return promotionString;
+		}) ?? [];
+
+		fields.push({
+			name: "Promotions",
+			value: promotionsList.length ? unorderedList(promotionsList) : "-",
+			inline: true,
+		});
+	});
 
 	const embed = new EmbedBuilder()
-		.setAuthor({ name: product.brand })
-		.setTitle(product.productName)
-		.setURL(product.url)
-		.addFields(
-			{ name: "Price", value: `$${product.price.toFixed(1)}`, inline: true },
-			{ name: "Last Checked", value: DateTime.fromJSDate(product.lastChecked).toFormat("yyyy-MM-dd HH:mm"), inline: true },
-		)
-		.setColor("Green");
-
-	// is there a previous price?
-	// beware price = 0 here.
-	if (product.previous?.price !== undefined) {
-		embed.setFooter({ text: `Previous Price: $${product.previous.price.toFixed(1)}` });
-		embed.setTimestamp(product.previous.date);
-	}
-	if (product.productImage) embed.setImage(product.productImage);
-	if (storeImage) embed.setThumbnail(storeImage);
-	if (product.promotions) {
-		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
-			.map((promotion, index) => `**${index + 1}.** ${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`);
-		if (discountPromotions.length > 0) {
-			embed.addFields(discountPromotions.map((promotion, index) => (
-				{ name: `Promotion ${index + 1}`, value: promotion.substring(0, 1024) }
-			)));
-		}
+		.setAuthor({ name: productGroup.brand })
+		.setTitle(productGroup.productName)
+		.setColor("Green")
+		.addFields(fields);
+	if (productImage) {
+		embed.setImage(productImage);
 	}
 	return embed;
 }

@@ -63,6 +63,12 @@ export const command = new SlashCommandBuilder()
 			)
 			.addStringOption(option =>
 				option
+					.setName("quantity")
+					.setDescription("quantity")
+					.setRequired(false),
+			)
+			.addStringOption(option =>
+				option
 					.setName("url")
 					.setDescription("product url")
 					.setRequired(false),
