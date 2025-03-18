@@ -8,11 +8,11 @@ function getFullCommandName(interaction: ChatInputCommandInteraction | Autocompl
 }
 
 export function interactionHandler(interaction: BaseInteraction) {
-	if (!interaction.isChatInputCommand()) return;
-
-	const fullCommand = getFullCommandName(interaction);
-	logger.info(`${interaction.user.username} used ${fullCommand}`);
-	client.commands.get(fullCommand)?.execute(interaction);
+	if (interaction.isChatInputCommand() || interaction.isAutocomplete() || interaction.isContextMenuCommand()) {
+		const fullCommand = interaction.isContextMenuCommand() ? interaction.commandName : getFullCommandName(interaction);
+		client.commands.get(fullCommand)?.execute(interaction);
+		logger.info(`${interaction.user.username} used ${fullCommand}`);
+	}
 }
 
 export function autoCompleteHandler(interaction: BaseInteraction) {
