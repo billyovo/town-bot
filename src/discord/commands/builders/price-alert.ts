@@ -34,6 +34,12 @@ export const command = new SlashCommandBuilder()
 					.setDescription("product name, overrides the name in the url")
 					.setRequired(false)
 					.setAutocomplete(true),
+			)
+			.addNumberOption(option =>
+				option
+					.setName("quantity")
+					.setDescription("quantity")
+					.setRequired(false),
 			),
 	)
 	.addSubcommand(subcommand =>
@@ -60,12 +66,6 @@ export const command = new SlashCommandBuilder()
 					.setDescription("product name")
 					.setRequired(false)
 					.setAutocomplete(true),
-			)
-			.addStringOption(option =>
-				option
-					.setName("quantity")
-					.setDescription("quantity")
-					.setRequired(false),
 			)
 			.addStringOption(option =>
 				option

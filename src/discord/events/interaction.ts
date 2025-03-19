@@ -8,7 +8,7 @@ function getFullCommandName(interaction: ChatInputCommandInteraction | Autocompl
 }
 
 export function interactionHandler(interaction: BaseInteraction) {
-	if (interaction.isChatInputCommand() || interaction.isAutocomplete() || interaction.isContextMenuCommand()) {
+	if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
 		const fullCommand = interaction.isContextMenuCommand() ? interaction.commandName : getFullCommandName(interaction);
 		client.commands.get(fullCommand)?.execute(interaction);
 		logger.info(`${interaction.user.username} used ${fullCommand}`);
