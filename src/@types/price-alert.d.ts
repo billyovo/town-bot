@@ -6,7 +6,8 @@ export type ShopDetails = {
     shop: PriceAlertShopOption | null,
     domain: string | null,
     domainLong: string | null,
-    hostname: string
+    hostname: string,
+    url: string
 };
 
 

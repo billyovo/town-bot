@@ -2,12 +2,12 @@ import { ShopParseFunction } from "~/src/@types/price-alert";
 import { parseAeonPrice } from "~/src/lib/price-alert/scrape/websites/aeon";
 import { parseHktvmallPrice } from "~/src/lib/price-alert/scrape/websites/hktvmall";
 import { parseManningsPrice } from "~/src/lib/price-alert/scrape/websites/mannings";
-import { parseMujiPrice } from "~/src/lib/price-alert/scrape/websites/muji";
+import { parseShoplinePrice } from "~/src/lib/price-alert/scrape/websites/shopline";
 import { parseSephoraPrice } from "~/src/lib/price-alert/scrape/websites/sephora";
 import { parseWatsonsGroupPrice } from "~/src/lib/price-alert/scrape/websites/watsonsGroup";
 import { parseWellcomePrice } from "~/src/lib/price-alert/scrape/websites/wellcome";
 
-type ParseDetails = {
+export type ParseDetails = {
     image: string;
     parseFunction: ShopParseFunction;
 	emote: string;
@@ -20,8 +20,8 @@ export enum PriceAlertShopOption {
     PNS = "PNS",
     SEPHORA = "SEPHORA",
     MANNINGS = "MANNINGS",
-    MUJI = "MUJI",
-    WELLCOME = "WELLCOME",
+	SHOPLINE = "SHOPLINE",
+    WELLCOME = "WELLCOME"
 }
 
 export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetails> = {
@@ -55,10 +55,10 @@ export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetai
 		parseFunction: parseManningsPrice,
 		emote: "<:mannings:1263718526729060383>",
 	},
-	[PriceAlertShopOption.MUJI]: {
-		image: "https://i.imgur.com/ykFhg6J.png",
-		parseFunction: parseMujiPrice,
-		emote: "<:muji:1263718540322803804>",
+	[PriceAlertShopOption.SHOPLINE]: {
+		image: "https://i.imgur.com/HWQtgp9.png",
+		parseFunction: parseShoplinePrice,
+		emote: "<:shopline:1351507444072976384>",
 	},
 	[PriceAlertShopOption.WELLCOME]: {
 		image: "https://i.imgur.com/A5ogcsY.png",

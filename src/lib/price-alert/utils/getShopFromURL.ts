@@ -10,6 +10,7 @@ export function getShopFromURL(url: string) : ShopDetails {
 		domainLong: parsedURL.domain,
 		shop: PriceAlertShopOption[domain as keyof typeof PriceAlertShopOption],
 		hostname: parsedURL.hostname ?? "UNKNOWN HOSTNAME",
+		url: url,
 	};
 
 }

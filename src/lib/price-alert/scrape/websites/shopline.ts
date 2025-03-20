@@ -3,7 +3,7 @@ import { PriceAlertShopOption } from "../../utils/enums/priceAlertShopOption";
 import { getHTML, getLDScript } from "../../utils/scrapeGetters";
 import { formatBrandName } from "../../utils/format";
 
-export const parseMujiPrice : ShopParseFunction = async (url, _) => {
+export const parseShoplinePrice : ShopParseFunction = async (url, shop) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -24,8 +24,8 @@ export const parseMujiPrice : ShopParseFunction = async (url, _) => {
 			productName: productInformation.name,
 			price: productInformation.offers.price,
 			productImage: productInformation.image[0],
-			brand: formatBrandName(PriceAlertShopOption.MUJI),
-			shop: PriceAlertShopOption.MUJI,
+			brand: formatBrandName(productInformation.brand || shop.domain || "UNKNOWN BRAND"),
+			shop: PriceAlertShopOption.SHOPLINE,
 		},
 	};
 };

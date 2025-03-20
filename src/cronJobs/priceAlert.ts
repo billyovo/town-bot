@@ -15,7 +15,7 @@ scheduleJob("15 9,18 * * *", async () => {
 		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
 		await delay(randomDelayTime);
 
-		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, { skipImageFetch: true });
+		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, product, { skipImageFetch: true });
 		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);

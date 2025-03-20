@@ -1,10 +1,14 @@
 import { PriceAlertShopOption, PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
-import type { ShopParseFunctionReturn, ShopParseOptions } from "~/src/@types/price-alert";
+import type { ShopDetails, ShopParseFunctionReturn, ShopParseOptions } from "~/src/@types/price-alert";
 import { getShopFromURL } from "../utils/getShopFromURL";
+import { PriceAlertItem } from "../../database/schemas/product";
+import { getHTML } from "../utils/scrapeGetters";
 
 
-export async function parseShopWebsite(url: string, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
-	const shop = getShopFromURL(url);
+export async function parseShopWebsite(url: string, existingProduct : PriceAlertItem | null, options?: ShopParseOptions) : Promise<ShopParseFunctionReturn> {
+	const shop : ShopDetails = getShopFromURL(url);
+
+	shop.shop = shop.shop ?? existingProduct?.shop;
 
 	if (!shop?.domain) {
 		return {
@@ -13,15 +17,8 @@ export async function parseShopWebsite(url: string, options?: ShopParseOptions) 
 			success: false,
 		};
 	}
-	if (!shop.shop) {
-		return {
-			data: null,
-			error: `Shop not supported: ${shop.domain ?? "UNKNOWN DOMAIN"}`,
-			success: false,
-		};
-	}
 
-	const parseFunction = getParseWebsiteFunction(shop.shop);
+	const parseFunction = await getParseWebsiteFunction(shop);
 
 	if (!parseFunction) {
 		return {
@@ -34,7 +31,25 @@ export async function parseShopWebsite(url: string, options?: ShopParseOptions) 
 	return await parseFunction(url, shop, options);
 }
 
-export function getParseWebsiteFunction(shop: PriceAlertShopOption) {
+async function getMiscShop(shop: ShopDetails) : Promise<PriceAlertShopOption | null> {
+	const html = await getHTML(shop.url);
+	if (!html.success) return null;
 
-	return PriceAlertShopParseDetails[shop]?.parseFunction ?? null;
+	const root = html.data;
+	const links = root.getElementsByTagName("link");
+
+	const shopLinks = links.filter(link => link.getAttribute("href")?.includes("https://cdn.shoplineapp.com"));
+	if (shopLinks.length === 0) return null;
+	return PriceAlertShopOption.SHOPLINE;
+}
+
+export async function getParseWebsiteFunction(shop: ShopDetails) {
+	if (!(shop?.shop in PriceAlertShopOption)) {
+		const detectedShop : PriceAlertShopOption | null = await getMiscShop(shop);
+		if (!detectedShop) return null;
+		return PriceAlertShopParseDetails[detectedShop].parseFunction;
+	}
+	else {
+		return PriceAlertShopParseDetails[shop.shop as PriceAlertShopOption].parseFunction;
+	}
 }

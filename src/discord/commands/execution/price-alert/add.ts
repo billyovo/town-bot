@@ -18,7 +18,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	await interaction.deferReply();
 
-	const output = await parseShopWebsite(decodedURL);
+	const output = await parseShopWebsite(decodedURL, null);
 
 	if (!output.success) return await interaction.editReply({ content: output.error ?? "Unknown error" });
 
