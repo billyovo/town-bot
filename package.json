@@ -19,7 +19,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.68",
     "axios": "^1.8.3",
-    "discord.js": "^14.18.0",
+    "discord.js": "^14.19.1",
     "dotenv": "^16.4.7",
     "luxon": "^3.5.0",
     "mongoose": "^8.12.1",
