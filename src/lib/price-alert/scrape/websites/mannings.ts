@@ -5,7 +5,6 @@ import { logger } from "~/src/lib/logger/logger";
 import { APIClient } from "~/src/lib/utils/fetch/client";
 import { PriceAlertShopOption } from "../../utils/enums/priceAlertShopOption";
 
-
 export const parseManningsPrice: ShopParseFunction = async (url) => {
 	const match = url.match(/\/p\/(\d+)(\/|$|\?)/);
 
@@ -29,8 +28,22 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 		};
 	}
 
+	console.log("Product Details:", productDetails.data);
+
 	const productImage = getProductImage(productDetails.data.media_gallery_entries);
-	const promotions = getPromotions(productDetails.data.offers);
+	const promotions : PromotionClassified[] = productDetails.data.offers?.map((offer : Offer) => {
+		if (offer.free_gift.is_freegift) {
+			return {
+				type: PromotionType.FREEBIE,
+				description: offer.content[0].description,
+			};
+		}
+		return {
+			type: PromotionType.DISCOUNT,
+			description: offer.content[0].description,
+		};
+	},
+	);
 
 	const data = {
 		brand: productDetails.data.brand_information.name,
@@ -48,50 +61,6 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 	};
 };
 
-function getPromotions(offers: Offer[]): PromotionClassified[] | null {
-	const parsedPromotions = offers.map((offer) => {
-		const parsePromotMessage = getPromoteMessage(offer);
-
-		if (offer.free_gift.is_freegift) {
-			if (offer.free_gift.available) {
-				return {
-					type: PromotionType.FREEBIE,
-					description: parsePromotMessage,
-				};
-			}
-			// If the free gift is not available, we do not return it as a promotion
-			else {
-				return null;
-			}
-		}
-
-		return {
-			type: PromotionType.DISCOUNT,
-			description: parsePromotMessage,
-		};
-	}).filter((p): p is PromotionClassified => p !== null);
-
-	if (parsedPromotions.length === 0) {
-		return null;
-	}
-
-	return parsedPromotions;
-
-}
-function getPromoteMessage(offer: Offer): string {
-	const message = offer.content.map((c) => {
-		if (c.message === c.description) {
-			return c.message;
-		}
-		return `${c.message} - ${c.description}`;
-	});
-
-	if (message.length === 0) {
-		return "No promotion message available";
-	}
-
-	return message.join(", ");
-}
 
 function getProductImage(media: MediaEntry[]): string | null {
 	const BASEIMAGEURL = "https://www.mannings.com.hk/media/catalog/product";
@@ -99,8 +68,6 @@ function getProductImage(media: MediaEntry[]): string | null {
 	if (media.length === 0) {
 		return null;
 	}
-
-	media.sort((a, b) => a.position - b.position);
 
 	for (const entry of media) {
 		if (entry.media_type === "image" && !entry.disabled) {
