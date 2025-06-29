@@ -131,4 +131,37 @@ export const command = new SlashCommandBuilder()
 					.setDescription("product url")
 					.setRequired(false),
 			),
+	)
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName("enable")
+			.setDescription("re-enable price alert a disabled price alert")
+			.addStringOption(option =>
+				option
+					.setName("shop")
+					.setDescription("shop")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("brand")
+					.setDescription("brand")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("name")
+					.setDescription("product name")
+					.setRequired(false)
+					.setAutocomplete(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName("url")
+					.setDescription("product url")
+					.setRequired(false),
+			),
 	);
+

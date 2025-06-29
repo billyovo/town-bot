@@ -7,7 +7,8 @@ enum ProductEditFields {
 	BRAND = "brand",
 	IMAGE = "image",
 	MODAL = "edit_product",
-	QUANTITY = "quantity"
+	QUANTITY = "quantity",
+	ENABLED = "enabled",
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -35,8 +36,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const newBrand : string = response.fields.getTextInputValue(`${ProductEditFields.BRAND}-${randomID}`) || "";
 	const newImage : string = response.fields.getTextInputValue(`${ProductEditFields.IMAGE}-${randomID}`) || "";
 	const newQuantity : number = parseInt(response.fields.getTextInputValue(`${ProductEditFields.QUANTITY}-${randomID}`)) || 1;
+	const newEnabled : boolean = parseInt(response.fields.getTextInputValue(`${ProductEditFields.ENABLED}-${randomID}`)) > 0;
 
-	await PriceAlertModel.updateOne({ url: product.url }, { productName: newProductName, brand: newBrand, productImage: newImage, quantity: newQuantity });
+	await PriceAlertModel.updateOne({ url: product.url }, { productName: newProductName, brand: newBrand, productImage: newImage, quantity: newQuantity, isEnabled: newEnabled }).exec();
 
 	await response.reply({ content: `Updated ${product.productName} of ${product.brand} to [${newProductName}](${product.url}) of ${newBrand}` });
 }
@@ -81,13 +83,20 @@ function getProductEditModal(product : PriceAlertItem, UUID: string) : ModalBuil
 		.setStyle(TextInputStyle.Short)
 		.setRequired(false);
 
+	const enabledField = new TextInputBuilder()
+		.setCustomId(`${ProductEditFields.ENABLED}-${UUID}`)
+		.setPlaceholder("Enabled")
+		.setLabel("Enabled")
+		.setValue(product.isEnabled ? "1" : "0")
+		.setStyle(TextInputStyle.Short);
 
 	const firstRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([productNameField]);
 	const secondRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([brandField]);
 	const thirdRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([quantityField]);
 	const forthRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([imageField]);
+	const fifthRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([enabledField]);
 
-	productEditModal.addComponents([firstRow, secondRow, thirdRow, forthRow]);
+	productEditModal.addComponents([firstRow, secondRow, thirdRow, forthRow, fifthRow]);
 
 	return productEditModal;
 }

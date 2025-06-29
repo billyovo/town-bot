@@ -33,6 +33,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		promotions: output.data.promotions,
 		quantity: quantity,
 		failCount: 0,
+		isEnabled: true,
 	};
 
 	const result = await addProductToAlert(itemToBeadded);

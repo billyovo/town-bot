@@ -20,7 +20,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const repliedMessage = await interaction.reply({ content: "Fetching..." });
 
 	const total = await PriceAlertModel.countDocuments();
-	const products : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({}).lean().cursor();
+	const products : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({ isEnabled: true }).lean().cursor();
 
 	let count = 0;
 	for await (const product of products) {

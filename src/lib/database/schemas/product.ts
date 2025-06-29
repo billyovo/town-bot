@@ -17,6 +17,7 @@ export interface PriceAlertItem {
         price: number,
         date: Date,
     },
+	isEnabled: boolean,
 }
 export type ShopPriceItem = Omit<PriceAlertItem, "brand" | "productName">;
 export interface PriceAlertGrouped {
@@ -49,6 +50,7 @@ const priceAlertSchema = new Schema<PriceAlertItem>({
 		price: Number,
 		date: Date,
 	},
+	isEnabled: Boolean,
 });
 
 export const PriceAlertModel = model<PriceAlertItem>("products", priceAlertSchema);

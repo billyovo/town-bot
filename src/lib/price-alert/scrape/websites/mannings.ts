@@ -28,8 +28,6 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 		};
 	}
 
-	console.log("Product Details:", productDetails.data);
-
 	const productImage = getProductImage(productDetails.data.media_gallery_entries);
 	const promotions : PromotionClassified[] = productDetails.data.offers?.map((offer : Offer) => {
 		if (offer.free_gift.is_freegift) {
@@ -134,6 +132,10 @@ async function fetchProductDetail(skuID: string): Promise<Success<ProductItem> |
 				"store": "zh_HK",
 			},
 		});
+
+		if (productDetailsRes.data.data.productsV2.items.length === 0) {
+			throw new Error("Product not found");
+		}
 	}
 	catch (error) {
 		logger.error(`Cannot Get ${url}: ${error}`);

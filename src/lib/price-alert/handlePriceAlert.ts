@@ -88,12 +88,10 @@ const defaultActions : ScrapeResultActions = {
 			content: `Failed to check [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} ${updatedProduct.failCount} times.\r\nReason: ${error ?? "Unknown Error"}`,
 		});
 	},
-	onTooManyFailures: (updatedProduct) => {
-		PriceAlertModel.findOneAndDelete({ url: updatedProduct.url }).catch((error) => {
-			logger.error(`Failed to delete product: ${error}`);
-		});
+	onTooManyFailures: async (updatedProduct) => {
+		await PriceAlertModel.updateOne({ url: updatedProduct.url }, { isEnabled: false });
 		axios.post(process.env.PRICE_WEBHOOK as string, {
-			content: `Deleted [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
+			content: `Disabled [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
 		}).catch((error) => {
 			logger.error(`Failed to send too many failures webhook: ${error}`);
 		});
