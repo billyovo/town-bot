@@ -4,8 +4,8 @@ import { ApplicationIntegrationType, InteractionContextType, SlashCommandBuilder
 export const command = new SlashCommandBuilder()
 	.setName("draw")
 	.setDescription("draw something")
-	.setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
-	.setContexts([InteractionContextType.Guild])
+	.setIntegrationTypes([ApplicationIntegrationType.UserInstall, ApplicationIntegrationType.GuildInstall])
+	.setContexts([InteractionContextType.Guild, InteractionContextType.PrivateChannel])
 	.addStringOption(option => option.setName("prompt").setDescription("prompt").setRequired(true))
 	.addStringOption(option =>
 		option.setName("size")
@@ -17,27 +17,12 @@ export const command = new SlashCommandBuilder()
 					"value": "1024x1024",
 				},
 				{
-					"name": "1792x1024",
-					"value": "1792x1024",
+					"name": "1024x1536",
+					"value": "1024x1536",
 				},
 				{
-					"name": "1024x1792",
-					"value": "1024x1792",
-				},
-			),
-	)
-	.addStringOption(option =>
-		option.setName("style")
-			.setDescription("style")
-			.setRequired(false)
-			.addChoices(
-				{
-					"name": "vivid",
-					"value": "vivid",
-				},
-				{
-					"name": "natural",
-					"value": "natural",
+					"name": "1536x1024",
+					"value": "1536x1024",
 				},
 			),
 	)
@@ -47,12 +32,16 @@ export const command = new SlashCommandBuilder()
 			.setRequired(false)
 			.addChoices(
 				{
-					"name": "hd",
-					"value": "hd",
+					"name": "low",
+					"value": "low",
 				},
 				{
-					"name": "standard",
-					"value": "standard",
+					"name": "medium",
+					"value": "medium",
+				},
+				{
+					"name": "high",
+					"value": "high",
 				},
 			),
 	);
