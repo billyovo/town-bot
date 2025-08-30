@@ -27,18 +27,25 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	await interaction.deferReply();
 
-	const imageRequest = await axios.post(process.env.DRAW_LINK, body, {
-		headers: headers,
-		params: {
-			"api-version": process.env.DRAW_API_VERSION,
-		},
-		timeout: 120000,
-	})
-		.catch(async (error) => {
-			logger.error(error.message);
-			await interaction.editReply(error.response?.data?.error?.message ?? error.message ?? "Failed to generate image");
-			return;
+	let imageRequest;
+	try {
+		imageRequest = await axios.post(process.env.DRAW_LINK, body, {
+			headers,
+			params: { "api-version": process.env.DRAW_API_VERSION },
+			timeout: 120000,
 		});
+	}
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	catch (error: any) {
+		const msg =
+			error?.response?.data?.error?.message ??
+			error?.response?.data?.message ??
+			error?.message ??
+			"Failed to generate image";
+		logger.error(msg);
+		await interaction.editReply(msg);
+		return;
+	}
 
 	if (!imageRequest) {
 		await interaction.editReply("An error occurred when sending the request.");
