@@ -35,19 +35,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		timeout: 120000,
 	})
 		.catch(async (error) => {
-			await interaction.editReply(error.response?.data?.error?.message ?? "Failed to generate image");
+			logger.error(error.message);
+			await interaction.editReply(error.response?.data?.error?.message ?? error.message ?? "Failed to generate image");
 			return;
 		});
+
 	if (!imageRequest) {
-		logger.error("Draw: An error occurred while fetching the image.");
-		logger.error(imageRequest);
+		await interaction.editReply("An error occurred when sending the request.");
 		return;
 	}
 
 	const imageBase64 : string = imageRequest.data.data?.[0]?.b64_json;
 
 	if (!imageBase64) {
-		await interaction.editReply({ content: "Failed to generate image." });
+		await interaction.editReply({ content: "Image not found in response." });
 		return;
 	}
 
