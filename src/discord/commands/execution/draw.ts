@@ -40,6 +40,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		});
 	if (!imageRequest) {
 		logger.error("Draw: An error occurred while fetching the image.");
+		console.log(imageRequest);
 		return;
 	}
 
