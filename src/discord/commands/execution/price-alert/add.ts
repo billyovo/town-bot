@@ -1,8 +1,9 @@
 import { getAddedToAlertEmbed } from "~/src/assets/embeds/priceEmbeds";
 import { addProductToAlert } from "~/src/lib/price-alert/utils/db";
 import { parseShopWebsite } from "~/src/lib/price-alert/scrape/parse";
-import { ChatInputCommandInteraction } from "discord.js";
-import { PriceAlertItem } from "~/src/lib/database/schemas/product";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
+import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
+import { randomUUID } from "crypto";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const link = interaction.options.getString("url");
@@ -40,5 +41,46 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	if (!result.success) return await interaction.editReply({ content: result.error ?? "Unknown error" });
 
 	const embed = getAddedToAlertEmbed(itemToBeadded);
-	return await interaction.editReply({ embeds: [embed] });
+
+	const similarProducts : PriceAlertItem[] = await PriceAlertModel.aggregate(
+		[
+			{
+				$search: {
+					autocomplete: {
+						query: itemToBeadded.productName,
+						path: "productName",
+						fuzzy: {},
+					},
+				},
+			},
+		],
+	).limit(1).exec();
+
+	if (!similarProducts.length) {
+		return await interaction.editReply({ embeds: [embed], content: "Added to price alert" });
+	}
+
+	const similarProduct : PriceAlertItem = similarProducts[0];
+	const row = new ActionRowBuilder<ButtonBuilder>();
+	const randomID : string = randomUUID();
+	row.addComponents(
+		new ButtonBuilder()
+			.setLabel("Merge")
+			.setStyle(ButtonStyle.Success)
+			.setCustomId(`priceAlert-merge-yes-${randomID}`),
+	);
+
+	await interaction.editReply({ embeds: [embed], components: [row], content: `Found a similar product:\n**${similarProduct.brand} ${similarProduct.productName}**\n\nDo you want to merge these two products infos?` });
+
+	const collector = interaction.channel?.createMessageComponentCollector({ filter: (i) => i.user.id === interaction.user.id && (i.customId === `priceAlert-merge-yes-${randomID}` || i.customId === `priceAlert-merge-no-${randomID}`), time: 20000, max: 1 });
+	collector?.on("collect", async (i) => {
+		if (i.customId === `priceAlert-merge-yes-${randomID}`) {
+			await PriceAlertModel.updateOne({ url: itemToBeadded.url }, { productName: similarProduct.productName, brand: similarProduct.brand }).exec();
+			const newEmbed = getAddedToAlertEmbed({ ...itemToBeadded, productName: similarProduct.productName, brand: similarProduct.brand });
+			await interaction.editReply({ content: `Merged ${itemToBeadded.productName} into ${similarProduct.productName}`, embeds: [newEmbed] });
+		}
+	});
+	collector?.on("end", async () => {
+		await interaction.editReply({ components: [], content: "" });
+	});
 }
