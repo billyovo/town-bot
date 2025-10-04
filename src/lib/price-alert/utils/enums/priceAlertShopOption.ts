@@ -6,6 +6,7 @@ import { parseShoplinePrice } from "~/src/lib/price-alert/scrape/websites/shopli
 import { parseSephoraPrice } from "~/src/lib/price-alert/scrape/websites/sephora";
 import { parseWatsonsGroupPrice } from "~/src/lib/price-alert/scrape/websites/watsonsGroup";
 import { parseWellcomePrice } from "~/src/lib/price-alert/scrape/websites/wellcome";
+import { parseStylevanaPrice } from "../../scrape/websites/stylevana";
 
 export type ParseDetails = {
     image: string;
@@ -21,7 +22,8 @@ export enum PriceAlertShopOption {
     SEPHORA = "SEPHORA",
     MANNINGS = "MANNINGS",
 	SHOPLINE = "SHOPLINE",
-    WELLCOME = "WELLCOME"
+    WELLCOME = "WELLCOME",
+	STYLEVANA = "STYLEVANA",
 }
 
 export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetails> = {
@@ -65,6 +67,12 @@ export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetai
 		parseFunction: parseWellcomePrice,
 		emote: "<:wellcome:1263718551424991243>",
 	},
+	[PriceAlertShopOption.STYLEVANA]: {
+		image: "https://i.imgur.com/CWY9dNS.png",
+		parseFunction: parseStylevanaPrice,
+		emote: "<:stylevana:1423928481271775303>",
+	},
+
 } satisfies Record<PriceAlertShopOption, ParseDetails>;
 
 export enum PriceAlertListMode {
