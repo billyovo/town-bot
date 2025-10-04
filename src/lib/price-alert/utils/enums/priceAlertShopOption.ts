@@ -75,5 +75,6 @@ export enum PriceAlertListMode {
 export enum PriceAlertResult {
     SUCCESS = "SUCCESS",
     FAIL = "FAIL",
-    PRICE_CHANGE = "PRICE_CHANGE"
+    PRICE_DECREASE = "PRICE_DECREASE",
+	PRICE_INCREASE = "PRICE_INCREASE",
 }

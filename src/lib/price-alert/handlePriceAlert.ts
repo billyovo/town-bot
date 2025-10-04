@@ -7,14 +7,13 @@ import { PriceAlertItem, PriceAlertModel } from "../database/schemas/product";
 import { getPriceChangeEmbed } from "~/src/assets/embeds/priceEmbeds";
 import axios from "axios";
 
-function hasPromotionsChanged(oldPromotions: PromotionClassified[] | undefined, newPromotions: PromotionClassified[] | undefined) : boolean {
-	if (!oldPromotions?.length && !newPromotions?.length) return false;
-	if (!oldPromotions?.length || !newPromotions?.length) return true;
-	if (oldPromotions.length !== newPromotions.length) return true;
+function hasNewPromotion(oldPromotions: PromotionClassified[] | undefined, newPromotions: PromotionClassified[] | undefined) : boolean {
+	if (!oldPromotions || oldPromotions.length === 0) return false;
+	if (!newPromotions || newPromotions.length === 0) return false;
 
-	for (const promotion of newPromotions ?? []) {
-		const oldPromotion = (oldPromotions ?? []).find((oldPromotion) => oldPromotion.description === promotion.description);
-		if (!oldPromotion) {
+	for (const newPromotion of newPromotions) {
+		const match = oldPromotions.find(oldPromotion => oldPromotion.description === newPromotion.description);
+		if (!match) {
 			return true;
 		}
 	}
@@ -37,10 +36,11 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 	logger.info(`Checked Product: ${newProductInfo.data.productName}`);
 	const oldPromotions : PromotionClassified[] | undefined = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
 	const newPromotions : PromotionClassified[] | undefined = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
-	const isPromotionChanged = hasPromotionsChanged(oldPromotions, newPromotions);
-	const isPriceChanged = (newProductInfo.data.price.toFixed(1) !== oldProductInfo.price.toFixed(1));
+	const isNewPromotionAdded = hasNewPromotion(oldPromotions, newPromotions);
+	const isPriceReduced = newProductInfo.data.price < oldProductInfo.price;
+	const isPriceIncreased = newProductInfo.data.price > oldProductInfo.price;
 
-	if (isPriceChanged || isPromotionChanged) {
+	if (isNewPromotionAdded || isPriceReduced) {
 		return {
 			data: {
 				...oldProductInfo,
@@ -48,40 +48,61 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 				price: newProductInfo.data.price,
 				promotions: newProductInfo.data.promotions,
 				previous: {
-					price: isPriceChanged ? oldProductInfo.price : (oldProductInfo?.previous?.price ?? oldProductInfo.price),
-					date: isPriceChanged ? oldProductInfo.lastChecked : (oldProductInfo?.previous?.date ?? oldProductInfo.lastChecked),
+					price: isPriceReduced ? oldProductInfo.price : (oldProductInfo?.previous?.price ?? oldProductInfo.price),
+					date: isPriceReduced ? oldProductInfo.lastChecked : (oldProductInfo?.previous?.date ?? oldProductInfo.lastChecked),
 				},
 				failCount: 0,
 			},
-			result: PriceAlertResult.PRICE_CHANGE,
+			result: PriceAlertResult.PRICE_DECREASE,
 		};
 	}
-	else {
+
+	if (isPriceIncreased) {
 		return {
-			data:{
+			data: {
 				...oldProductInfo,
 				lastChecked: new Date(),
+				price: newProductInfo.data.price,
+				promotions: newProductInfo.data.promotions,
+				previous: {
+					price: oldProductInfo.price,
+					date: oldProductInfo.lastChecked,
+				},
 				failCount: 0,
 			},
-			result: PriceAlertResult.SUCCESS,
+			result: PriceAlertResult.PRICE_INCREASE,
 		};
 	}
+
+	return {
+		data:{
+			...oldProductInfo,
+			lastChecked: new Date(),
+			failCount: 0,
+		},
+		result: PriceAlertResult.SUCCESS,
+	};
+
 }
 
 type ScrapeResultActions = {
-	onPriceChange: (product: PriceAlertItem) => void,
+	onPriceIncrease: (product: PriceAlertItem) => void,
+	onPriceDecrease: (product: PriceAlertItem) => void,
 	onFailure: (product: PriceAlertItem, error?: string) => void,
 	onTooManyFailures?: (product: PriceAlertItem) => void,
 	onSuccess?: (product: PriceAlertItem) => void,
 }
 
 const defaultActions : ScrapeResultActions = {
-	onPriceChange: (updatedProduct) => {
+	onPriceDecrease: (updatedProduct) => {
 		axios.post(process.env.PRICE_WEBHOOK as string, {
 			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()],
 		}).catch((error) => {
 			logger.error(`Failed to send price change webhook: ${error}`);
 		});
+	},
+	onPriceIncrease: () => {
+		// Do nothing!
 	},
 	onFailure: (updatedProduct, error) => {
 		axios.post(process.env.PRICE_WEBHOOK as string, {
@@ -100,8 +121,11 @@ const defaultActions : ScrapeResultActions = {
 
 export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions = defaultActions) => {
 	switch (scrapeResult.result) {
-	case PriceAlertResult.PRICE_CHANGE:
-		actions.onPriceChange(scrapeResult.data);
+	case PriceAlertResult.PRICE_DECREASE:
+		actions.onPriceDecrease(scrapeResult.data);
+		break;
+	case PriceAlertResult.PRICE_INCREASE:
+		actions.onPriceIncrease(scrapeResult.data);
 		break;
 	case PriceAlertResult.SUCCESS:
 		actions.onSuccess?.(scrapeResult.data);
