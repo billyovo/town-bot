@@ -19,7 +19,7 @@ function generateProgressBar(checkedProduct: number, total: number) {
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const repliedMessage = await interaction.reply({ content: "Fetching..." });
 
-	const total = await PriceAlertModel.countDocuments();
+	const total = await PriceAlertModel.countDocuments({ isEnabled: true });
 	const products : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({ isEnabled: true }).lean().cursor();
 
 	let count = 0;
