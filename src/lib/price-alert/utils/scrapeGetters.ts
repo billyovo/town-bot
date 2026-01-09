@@ -21,13 +21,19 @@ export async function getHTML(url : string) : Promise<Success<HTMLElement> | Fai
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getLDScript(root : HTMLElement) : Promise<Record<string, any> | null> {
-	const productInfoString = root.querySelector("script[type=\"application/ld+json\"]")?.text;
-	if (!productInfoString) return null;
+	const allAvailableProductInfoString = root.querySelectorAll("script[type=\"application/ld+json\"]");
+	if (!allAvailableProductInfoString) return null;
 
-	try {
-		return JSON.parse(productInfoString);
+	for (const scriptContent of allAvailableProductInfoString) {
+		try {
+			const jsonData = JSON.parse(scriptContent?.text || "");
+			if (jsonData["@type"] === "Product") {
+				return jsonData;
+			}
+		}
+		catch (e) {
+			continue;
+		}
 	}
-	catch (e) {
-		return null;
-	}
+	return null;
 }
