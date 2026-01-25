@@ -22,12 +22,6 @@ export const command = new SlashCommandBuilder()
 			.setDescription("convert time")
 			.addStringOption(option =>
 				option
-					.setName("time")
-					.setDescription("time with format HH:mm or dd/MM HH:mm, e.g. 30/05 10:00 for May 30th 10AM")
-					.setRequired(true),
-			)
-			.addStringOption(option =>
-				option
 					.setName("from_timezone")
 					.setDescription("from timezone")
 					.setRequired(true)
