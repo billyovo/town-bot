@@ -12,14 +12,23 @@ if (!process.env.CLIENT_ID || !process.env.DISCORD_TOKEN) {
 	process.exit(1);
 }
 
-const commandsPath = path.resolve(__dirname, "../src/discord/commands/builders");
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts")).map((file) => path.parse(file).name);
+const commandsPaths = [
+	path.resolve(__dirname, "../src/discord/commands/builders/slash"),
+	path.resolve(__dirname, "../src/discord/commands/builders/context"),
+];
+
+const commandFiles = commandsPaths.flatMap(commandsPath =>
+	fs.readdirSync(commandsPath)
+		.filter(file => file.endsWith(".ts"))
+		.map(file => path.resolve(commandsPath, path.parse(file).name)),
+);
+
 const rest = new REST().setToken(`${process.env.DISCORD_TOKEN}`);
 
 const commands : RESTPostAPIApplicationCommandsJSONBody[] = [];
 
 const importPromises = commandFiles.map(file =>
-	import(path.resolve(commandsPath, file)).then(module =>
+	import(file).then(module =>
 		commands.push(module.command.toJSON()),
 	),
 );
