@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, LabelBuilder, MessageFlags, ModalBuilder, ModalSubmitInteraction, SeparatorBuilder, TextDisplayBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ChatInputCommandInteraction, ContainerBuilder, LabelBuilder, MessageFlags, ModalBuilder, ModalSubmitInteraction, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, TextInputBuilder, TextInputStyle, bold } from "discord.js";
 import { DateTime } from "luxon";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -34,14 +34,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const fromDateTime = DateTime.now().setZone(fromTimezone).set({ hour: hours, minute: minutes, day: days, month: months });
 	const toDateTime = fromDateTime.setZone(toTimezone);
 
-	const displays: (TextDisplayBuilder | SeparatorBuilder)[] = [
-		new TextDisplayBuilder().setContent(`**${fromTimezone} (${fromDateTime.toFormat("ZZ")})**\n${fromDateTime.toFormat("yyyy-MM-dd HH:mm")}`),
-		new SeparatorBuilder(),
-		new TextDisplayBuilder().setContent(`**${toTimezone} (${toDateTime.toFormat("ZZ")})**\n${toDateTime.toFormat("yyyy-MM-dd HH:mm")}`),
-	];
+	const container = new ContainerBuilder();
+	const fromTitle = bold(`${fromTimezone} (${fromDateTime.toFormat("ZZ")})`);
+	const fromTime = fromDateTime.toFormat("yyyy-MM-dd HH:mm");
+	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**${fromTitle}**\n${fromTime}`));
+	container.addSeparatorComponents(new SeparatorBuilder({ spacing: SeparatorSpacingSize.Small }));
+	const toTitle = bold(`${toTimezone} (${toDateTime.toFormat("ZZ")})`);
+	const toTime = toDateTime.toFormat("yyyy-MM-dd HH:mm");
+	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**${toTitle}**\n${toTime}`));
 
 	await collected.reply({
-		components: [...displays],
+		components: [container],
 		flags: MessageFlags.IsComponentsV2,
 	});
 }

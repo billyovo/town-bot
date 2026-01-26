@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, TextDisplayBuilder, SeparatorBuilder, MessageFlags } from "discord.js";
+import { ChatInputCommandInteraction, TextDisplayBuilder, SeparatorBuilder, MessageFlags, ContainerBuilder, SeparatorSpacingSize, bold } from "discord.js";
 import { DateTime } from "luxon";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -15,17 +15,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		zones.push("Canada/Pacific");
 		zones.push("Australia/Queensland");
 	}
-
-	const displays : (TextDisplayBuilder | SeparatorBuilder)[] = zones.flatMap((zone) => {
+	const container = new ContainerBuilder();
+	zones.forEach((zone) => {
 		const dt = DateTime.now().setZone(zone);
-		const title = `${zone} (${dt.toFormat("ZZ")}) ${dt.isInDST ? "🌞" : ""}`;
+		const title = bold(`${zone} (${dt.toFormat("ZZ")}) ${dt.isInDST ? "🌞" : ""}`);
 		const time = dt.toFormat("MM/dd HH:mm");
-		return [new TextDisplayBuilder().setContent(`**${title}**\n${time}`), new SeparatorBuilder()];
+		const text = new TextDisplayBuilder().setContent(`**${title}**\n${time}`);
+		container.addTextDisplayComponents(text);
+		container.addSeparatorComponents(new SeparatorBuilder({ spacing: SeparatorSpacingSize.Small }));
 	});
 
-	displays.pop();
+	container.components.pop();
+
 	await interaction.reply({
-		components: [...displays],
+		components: [container],
 		flags: MessageFlags.IsComponentsV2,
 	});
 }
