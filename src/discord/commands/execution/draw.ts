@@ -25,7 +25,7 @@ function createPromptArray(prompt: string, imageBase64: string | null) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	if (!process.env.DRAW_LINK || !process.env.DRAW_KEY || !process.env.DRAW_API_VERSION) {
+	if (!process.env.DRAW_LINK || !process.env.DRAW_KEY) {
 		await interaction.reply("The draw API token is not provided.");
 		return;
 	}
