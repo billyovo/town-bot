@@ -63,7 +63,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		},
 	}).catch(async err => {
 		logger.error(`Error while calling image generation ${JSON.stringify(err?.response?.data) || err.message}`);
-		await interaction.editReply({ content: `Error occured: ${err?.response?.data || err.message}` });
+		await interaction.editReply({ content: `Error occured: ${err?.response?.data?.message || err.message}` });
 		return null;
 	});
 
