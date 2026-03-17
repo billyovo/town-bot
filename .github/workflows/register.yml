@@ -1,12 +1,6 @@
 name: Register
 on:
-  workflow_run:
-    workflows: ["Deploy to Cloud"]
-    types:
-      - completed
-    branches:
-      - master
-
+  workflow_call:
   workflow_dispatch:
 
 concurrency:
@@ -15,7 +9,6 @@ concurrency:
 
 jobs:
   register:
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     environment: prod
     steps:

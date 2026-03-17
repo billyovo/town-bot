@@ -1,13 +1,7 @@
 name: Build and Publish
 
 on:
-  push:
-    branches: ["master"]
-    paths:
-      - "Dockerfile"
-      - "docker-compose.yaml"
-      - "src/**"
-      - ".github/workflows/**"
+  workflow_call:
   workflow_dispatch:
 
 env:
