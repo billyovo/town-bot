@@ -3,40 +3,43 @@ name: Deploy to Cloud
 on:
   workflow_run:
     workflows: ["Build and Publish"]
+    branches:
+      - master
     types:
       - completed
   workflow_dispatch:
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-        environment: prod
-        steps:
-            - name: Deploy Start Notification
-              env:
-                DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-              uses: Ilshidur/action-discord@master
-              with:
-                args: '{{ EVENT_PAYLOAD.repository.full_name }} deploy started'
+  deploy:
+    if : ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Deploy Start Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.4.0
+        with:
+          args: "{{ EVENT_PAYLOAD.repository.full_name }} deploy started"
 
-            - name: executing remote ssh commands using ssh key
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USER }}
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                port: ${{ secrets.SSH_PORT }}
-                script: |
-                  cd ${{ vars.SERVER_DIRECTORY }}
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git fetch
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S git reset --hard origin/master
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose pull
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
-                  echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d --build --remove-orphans
-                
-            - name: Deploy Finish Notification
-              env:
-                DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-              uses: Ilshidur/action-discord@master
-              with:
-                args: '{{ EVENT_PAYLOAD.repository.full_name }} deploy finished'
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ vars.SERVER_DIRECTORY }}
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S git fetch
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S git reset --hard origin/master
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose pull
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose down
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker compose up -d --build --remove-orphans
+
+      - name: Deploy Finish Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.4.0
+        with:
+          args: "{{ EVENT_PAYLOAD.repository.full_name }} deploy finished"
