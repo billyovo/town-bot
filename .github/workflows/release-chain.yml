@@ -29,3 +29,8 @@ jobs:
     needs: deploy
     secrets: inherit
     uses: ./.github/workflows/register.yml
+
+  unregister:
+    needs: register
+    secrets: inherit
+    uses: ./.github/workflows/unregister.yml
