@@ -22,6 +22,10 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, __
 	const root = html.data;
 
 	const allScripts = root.querySelectorAll("script");
+	if (!allScripts || allScripts.length === 0) {
+		logger.error(root.toString());
+		return { success: false, error: "No script tags found", data: null };
+	}
 	const productDataScript = getProductScriptFromScripts(allScripts);
 	if (!productDataScript) return { success: false, error: "Product data not found", data: null };
 
