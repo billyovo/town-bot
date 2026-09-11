@@ -1,7 +1,12 @@
 import { DateTime } from "luxon";
 
-export function returnDiff(now : DateTime) {
-	const arrival_date = DateTime.now().setZone("Asia/Taipei").startOf("day").set({ day: 24, month: 4, year: 2022 });
+type Day = {
+	day: number;
+	month: number;
+	year: number;
+}
+export function returnDiff(now : DateTime, targetDay: Day) {
+	const arrival_date = DateTime.now().setZone("Asia/Taipei").startOf("day").set(targetDay);
 
 	if (now.ordinal === arrival_date.ordinal) {
 		const diff = now.diff(arrival_date, "years").toObject();

@@ -5,6 +5,7 @@ import "./cronJobs/catFat";
 import "./cronJobs/hkoRain";
 import "./cronJobs/priceAlert";
 import "./cronJobs/richLife";
+import "./cronJobs/unemployedLife";
 import path from "path";
 
 dotenv.config({ path: path.resolve(__dirname, "./secrets/deposit/.env") });
