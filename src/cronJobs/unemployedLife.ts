@@ -12,7 +12,7 @@ scheduleJob("1 0 * * *", () => {
 		.then((channel : Channel | null) => {
 			if (channel?.type !== ChannelType.GuildText) return;
 
-			channel.send(`@everyone 失業後${returnDiff(now, day)} **NEGATIVE**`);
+			channel.send(`@everyone ahlegs bb 失業後${returnDiff(now, day)} **NEGATIVE** `);
 		})
 		.catch((error : Error) => {logger.error(error.message);});
 
