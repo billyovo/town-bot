@@ -8,6 +8,13 @@ export const command = new SlashCommandBuilder()
 	.addStringOption((option) => option.setName("prompt").setDescription("prompt").setRequired(true))
 	.addStringOption((option) =>
 		option
+			.setName("model")
+			.setDescription("model")
+			.setRequired(false)
+			.addChoices({ name: "Gemini", value: "gemini" }, { name: "ChatGPT", value: "chatgpt" }),
+	)
+	.addStringOption((option) =>
+		option
 			.setName("size")
 			.setDescription("size")
 			.setRequired(false)
