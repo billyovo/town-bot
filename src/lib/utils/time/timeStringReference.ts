@@ -1,4 +1,4 @@
-export const timeStringToMills : Record<string, number> = {
+export const timeStringToMills: Record<string, number> = {
 	s: 1000,
 	second: 1000,
 	seconds: 1000,
@@ -26,12 +26,12 @@ export const timeStringToMills : Record<string, number> = {
 	years: 1000 * 60 * 60 * 24 * 365,
 };
 
-export const timeToHuman : Record<string, number> = {
-	"second": 1000,
-	"minute": 1000 * 60,
-	"hour": 1000 * 60 * 60,
-	"day": 1000 * 60 * 60 * 24,
-	"week": 1000 * 60 * 60 * 24 * 7,
-	"month": 1000 * 60 * 60 * 24 * 30,
-	"year": 1000 * 60 * 60 * 24 * 365,
+export const timeToHuman: Record<string, number> = {
+	second: 1000,
+	minute: 1000 * 60,
+	hour: 1000 * 60 * 60,
+	day: 1000 * 60 * 60 * 24,
+	week: 1000 * 60 * 60 * 24 * 7,
+	month: 1000 * 60 * 60 * 24 * 30,
+	year: 1000 * 60 * 60 * 24 * 365,
 };

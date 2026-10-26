@@ -3,18 +3,17 @@ import { ShopParseFunction } from "~/src/@types/price-alert";
 import { APIClient } from "~/src/lib/utils/fetch/client";
 import { formatBrandName, parsePriceToFloat } from "~/src/lib/price-alert/utils/format";
 
-export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) => {
+export const parseSephoraPrice: ShopParseFunction = async (url, shopDetails) => {
 	if (shopDetails.domainLong !== "sephora.hk") {
 		return {
 			success: false,
 			error: "Only sephora.hk supported!",
 			data: null,
 		};
-
 	}
 	const regex = /\/products\/(.*)/g;
 	const regexResult = regex.exec(url);
-	const slug : string = regexResult ? regexResult[1] : "";
+	const slug: string = regexResult ? regexResult[1] : "";
 	const slugArray = slug.split("/");
 
 	const nameSlug = slugArray[0];
@@ -36,8 +35,7 @@ export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) =>
 			},
 		});
 		productData = response.data;
-	}
-	catch {
+	} catch {
 		return { success: false, error: "Failed to fetch", data: null };
 	}
 
@@ -46,7 +44,8 @@ export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) =>
 	const productImage = productData.data.attributes["image-urls"] ? productData.data.attributes["image-urls"][0] : null;
 	const brand = productData.data.attributes["brand-name"];
 
-	if (!productPrice || !productName) return { success: false, error: "Failed to parse price or product name", data: null };
+	if (!productPrice || !productName)
+		return { success: false, error: "Failed to parse price or product name", data: null };
 
 	return {
 		data: {

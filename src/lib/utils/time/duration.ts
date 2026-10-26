@@ -1,7 +1,7 @@
 import { timeStringToMills, timeToHuman } from "./timeStringReference";
 import { Failure, Success } from "~/src/@types/utils";
 
-export function parseDurationStringToMills(duration: string) : Success<number> | Failure {
+export function parseDurationStringToMills(duration: string): Success<number> | Failure {
 	const regex = /\d*\.?\d+[a-z]+/gi;
 	const matches = duration.match(regex);
 	if (!matches) {

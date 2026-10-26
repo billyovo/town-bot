@@ -4,34 +4,22 @@ export const command = new SlashCommandBuilder()
 	.setDescription("time")
 	.setIntegrationTypes([ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall])
 	.setContexts([InteractionContextType.Guild, InteractionContextType.PrivateChannel])
-	.addSubcommand(subcommand =>
+	.addSubcommand((subcommand) =>
 		subcommand
 			.setName("now")
 			.setDescription("get time now")
-			.addStringOption(option =>
-				option
-					.setName("timezone")
-					.setDescription("timezone")
-					.setRequired(false)
-					.setAutocomplete(true),
+			.addStringOption((option) =>
+				option.setName("timezone").setDescription("timezone").setRequired(false).setAutocomplete(true),
 			),
 	)
-	.addSubcommand(subcommand =>
+	.addSubcommand((subcommand) =>
 		subcommand
 			.setName("convert")
 			.setDescription("convert time")
-			.addStringOption(option =>
-				option
-					.setName("from_timezone")
-					.setDescription("from timezone")
-					.setRequired(true)
-					.setAutocomplete(true),
+			.addStringOption((option) =>
+				option.setName("from_timezone").setDescription("from timezone").setRequired(true).setAutocomplete(true),
 			)
-			.addStringOption(option =>
-				option
-					.setName("to_timezone")
-					.setDescription("to timezone")
-					.setRequired(true)
-					.setAutocomplete(true),
+			.addStringOption((option) =>
+				option.setName("to_timezone").setDescription("to timezone").setRequired(true).setAutocomplete(true),
 			),
 	);

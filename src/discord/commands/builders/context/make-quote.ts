@@ -1,4 +1,9 @@
-import { ApplicationCommandType, ApplicationIntegrationType, ContextMenuCommandBuilder, InteractionContextType } from "discord.js";
+import {
+	ApplicationCommandType,
+	ApplicationIntegrationType,
+	ContextMenuCommandBuilder,
+	InteractionContextType,
+} from "discord.js";
 
 export const command = new ContextMenuCommandBuilder()
 	.setName("make-quote")

@@ -17,15 +17,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	if (url) {
 		query = { url: decodeURI(url) };
-	}
-	else {
+	} else {
 		query = { productName: productName, brand: brand, shop: shop as PriceAlertShopOption };
 	}
 
-	const product : PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
+	const product: PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
 	if (!product) return interaction.reply({ content: "Product not found" });
 
 	await PriceAlertModel.updateOne({ url: product.url }, { isEnabled: !product.isEnabled }).exec();
 
-	interaction.reply({ content: `${product.isEnabled ? "Disabled" : "Enabled"} [${product.productName}](${product.url}) of ${product.shop} successfully` });
+	interaction.reply({
+		content: `${product.isEnabled ? "Disabled" : "Enabled"} [${product.productName}](${product.url}) of ${product.shop} successfully`,
+	});
 }

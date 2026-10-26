@@ -16,7 +16,6 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 		};
 	}
 
-
 	const skuID = match[1];
 
 	const productDetails = await fetchProductDetail(skuID);
@@ -29,7 +28,7 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 	}
 
 	const productImage = getProductImage(productDetails.data.media_gallery_entries);
-	const promotions : PromotionClassified[] = productDetails.data.offers?.map((offer : Offer) => {
+	const promotions: PromotionClassified[] = productDetails.data.offers?.map((offer: Offer) => {
 		if (offer.free_gift.is_freegift) {
 			return {
 				type: PromotionType.FREEBIE,
@@ -40,8 +39,7 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 			type: PromotionType.DISCOUNT,
 			description: offer.content[0].description,
 		};
-	},
-	);
+	});
 
 	const data = {
 		brand: productDetails.data.brand_information.name,
@@ -59,7 +57,6 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 	};
 };
 
-
 function getProductImage(media: MediaEntry[]): string | null {
 	const BASEIMAGEURL = "https://www.mannings.com.hk/media/catalog/product";
 
@@ -74,7 +71,6 @@ function getProductImage(media: MediaEntry[]): string | null {
 	}
 	return null;
 }
-
 
 async function fetchProductDetail(skuID: string): Promise<Success<ProductItem> | Failure> {
 	const BASEURL = "https://www.mannings.com.hk/graphql";
@@ -129,15 +125,14 @@ async function fetchProductDetail(skuID: string): Promise<Success<ProductItem> |
 	try {
 		productDetailsRes = await APIClient.get(url, {
 			headers: {
-				"store": "zh_HK",
+				store: "zh_HK",
 			},
 		});
 
 		if (productDetailsRes.data.data.productsV2.items.length === 0) {
 			throw new Error("Product not found");
 		}
-	}
-	catch (error) {
+	} catch (error) {
 		logger.error(`Cannot Get ${url}: ${error}`);
 		return {
 			data: null,
@@ -168,7 +163,7 @@ type ProductItem = {
 		name: string;
 	};
 	media_gallery_entries: MediaEntry[];
-}
+};
 
 type Offer = {
 	free_gift: {
@@ -181,11 +176,11 @@ type Offer = {
 	}[];
 	is_yuu_promotion: boolean;
 	__typename: string;
-}
+};
 
 type MediaEntry = {
 	position: number;
 	disabled: boolean;
 	file: string;
 	media_type: string;
-}
+};

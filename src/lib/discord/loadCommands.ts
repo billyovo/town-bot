@@ -5,7 +5,11 @@ import { Collection } from "discord.js";
 import { AutoCompleteCollection, CommandsCollection } from "~/src/@types/discord";
 import { logger } from "~/src/lib/logger/logger";
 
-async function loadCommandsFromFolder(folderPath: string, rootPath: string, commandsCollection: CommandsCollection | AutoCompleteCollection) {
+async function loadCommandsFromFolder(
+	folderPath: string,
+	rootPath: string,
+	commandsCollection: CommandsCollection | AutoCompleteCollection,
+) {
 	const commandFiles = readdirSync(folderPath);
 
 	const importPromises = commandFiles.map(async (file) => {
@@ -13,8 +17,7 @@ async function loadCommandsFromFolder(folderPath: string, rootPath: string, comm
 
 		if (lstatSync(filePath).isDirectory()) {
 			await loadCommandsFromFolder(filePath, rootPath, commandsCollection);
-		}
-		else {
+		} else {
 			const command = url.pathToFileURL(filePath).toString();
 			const module = await import(command);
 			const commandName = relative(rootPath, filePath).replace(".ts", "").replace(".js", "").replace("/", "\\");
@@ -37,7 +40,7 @@ export async function loadSlashCommands(): Promise<CommandsCollection> {
 
 export async function loadAutoCompleteCommands(): Promise<AutoCompleteCollection> {
 	const rootPath = join(__dirname, "../../discord/commands/autoComplete");
-	const commandsCollection : AutoCompleteCollection = new Collection();
+	const commandsCollection: AutoCompleteCollection = new Collection();
 
 	await loadCommandsFromFolder(rootPath, rootPath, commandsCollection);
 

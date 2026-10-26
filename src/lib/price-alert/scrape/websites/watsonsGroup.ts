@@ -9,7 +9,7 @@ import { PromotionType } from "~/src/@types/enum/price-alert";
 import { formatBrandName } from "../../utils/format";
 import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
-export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetails, options) => {
+export const parseWatsonsGroupPrice: ShopParseFunction = async (url, shopDetails, options) => {
 	if (!shopDetails.shop) {
 		return {
 			data: null,
@@ -18,7 +18,7 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 		};
 	}
 
-	const shopDetail : WatsonsGroupShopDetails | null = getBaseURLAndCode(shopDetails.shop);
+	const shopDetail: WatsonsGroupShopDetails | null = getBaseURLAndCode(shopDetails.shop);
 	if (!shopDetail) {
 		return {
 			data: null,
@@ -28,9 +28,8 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 	}
 	const { baseURL, shopCode, shopOption } = shopDetail;
 
-
 	const regex = /BP_.*/g;
-	const productID : string | undefined = regex.exec(url)?.[0]?.replace("BP_", "");
+	const productID: string | undefined = regex.exec(url)?.[0]?.replace("BP_", "");
 
 	if (!productID) {
 		return {
@@ -40,9 +39,15 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 		};
 	}
 
-	const productDetails : Success<ProductDetail> | Failure = await fetchProductDetail(`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`);
-	const promotionPrice : number = await fetchPromotionPrice(`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`);
-	const productPromotions = await fetchProductPromotions(`${baseURL}/api/v2/${shopCode}/products/${productID}/promotions?fields=FULL&lang=zh_HK&curr=HKD`);
+	const productDetails: Success<ProductDetail> | Failure = await fetchProductDetail(
+		`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`,
+	);
+	const promotionPrice: number = await fetchPromotionPrice(
+		`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`,
+	);
+	const productPromotions = await fetchProductPromotions(
+		`${baseURL}/api/v2/${shopCode}/products/${productID}/promotions?fields=FULL&lang=zh_HK&curr=HKD`,
+	);
 
 	if (!productDetails.success) {
 		return {
@@ -51,9 +56,11 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 			success: false,
 		};
 	}
-	const productImage : string | null = options?.skipImageFetch ? null : await processProductImage(productDetails.data.productImage, baseURL);
+	const productImage: string | null = options?.skipImageFetch
+		? null
+		: await processProductImage(productDetails.data.productImage, baseURL);
 	return {
-		data:{
+		data: {
 			brand: formatBrandName(productDetails.data.brand),
 			productName: productDetails.data.productName,
 			productImage: productImage,
@@ -63,22 +70,20 @@ export const parseWatsonsGroupPrice : ShopParseFunction = async (url, shopDetail
 		},
 		success: true,
 	};
-
 };
 
 type ProductDetail = {
-	brand: string,
-	productName: string,
-	productImage: string,
-	discountedPriceWithoutPromotion: number,
-}
+	brand: string;
+	productName: string;
+	productImage: string;
+	discountedPriceWithoutPromotion: number;
+};
 
-async function fetchProductDetail(url : string) : Promise<Success<ProductDetail> | Failure> {
+async function fetchProductDetail(url: string): Promise<Success<ProductDetail> | Failure> {
 	let productDetailsRes;
 	try {
 		productDetailsRes = await APIClient.get(url, {});
-	}
-	catch (error) {
+	} catch (error) {
 		logger.error(`Cannot Get ${url}: ${error}`);
 		return {
 			data: null,
@@ -95,13 +100,14 @@ async function fetchProductDetail(url : string) : Promise<Success<ProductDetail>
 		};
 	}
 
-	const brand : string = productDetail.masterBrand.name;
-	const productName :string = productDetail.elabProductName;
-	const productImage : string = productDetail.images[0].url;
-	const discountedPriceWithoutPromotion : number = productDetail.elabMarkDownMemPrice?.value || productDetail.elabMarkDownPrice?.value || productDetail.price?.value;
+	const brand: string = productDetail.masterBrand.name;
+	const productName: string = productDetail.elabProductName;
+	const productImage: string = productDetail.images[0].url;
+	const discountedPriceWithoutPromotion: number =
+		productDetail.elabMarkDownMemPrice?.value || productDetail.elabMarkDownPrice?.value || productDetail.price?.value;
 
 	return {
-		data:{
+		data: {
 			brand,
 			productName,
 			productImage,
@@ -111,28 +117,29 @@ async function fetchProductDetail(url : string) : Promise<Success<ProductDetail>
 	};
 }
 
-
 type PromotionPriceResponse = {
 	avgDiscountedPrice: {
-		value: number
-	}
-}
+		value: number;
+	};
+};
 
-async function fetchPromotionPrice(url : string) : Promise<number> {
+async function fetchPromotionPrice(url: string): Promise<number> {
 	let promotionPriceRes;
 	try {
 		promotionPriceRes = await APIClient.get(url);
-	}
-	catch (error) {
+	} catch (error) {
 		logger.error(`Cannot Get ${url}: ${error}`);
 		return Infinity;
 	}
 	const memberPrice = promotionPriceRes.data.elabmarkdownMemPrice?.value ?? Infinity;
-	if (!promotionPriceRes.data.elabMultiBuyPromotionList?.length && (memberPrice === Infinity)) return Infinity;
+	if (!promotionPriceRes.data.elabMultiBuyPromotionList?.length && memberPrice === Infinity) return Infinity;
 
-	const promotionPrice : number = promotionPriceRes.data.elabMultiBuyPromotionList.reduce((minPrice : number, item : PromotionPriceResponse) => {
-		return (Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice);
-	}, Infinity);
+	const promotionPrice: number = promotionPriceRes.data.elabMultiBuyPromotionList.reduce(
+		(minPrice: number, item: PromotionPriceResponse) => {
+			return Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice;
+		},
+		Infinity,
+	);
 
 	return Math.min(promotionPrice, memberPrice);
 }
@@ -141,65 +148,73 @@ async function fetchProductPromotions(url: string) {
 	let productPromotionsRes;
 	try {
 		productPromotionsRes = await APIClient.get(url);
-	}
-	catch (error) {
+	} catch (error) {
 		logger.error(`Cannot Get Promotions for WatsonsGroup: ${url}: ${error}`);
 		return [];
 	}
-	const parsedPromotions = productPromotionsRes.data?.elabPromotions?.map((promotion: { longDescription: string; description: string; title: string; startDate: string | null; endDate: string | null; }) => {
-		const description : string = promotion.longDescription ?? promotion.description ?? promotion.title;
-		const promotionType : PromotionType = classifyPromotionByKeywords(description);
+	const parsedPromotions =
+		productPromotionsRes.data?.elabPromotions?.map(
+			(promotion: {
+				longDescription: string;
+				description: string;
+				title: string;
+				startDate: string | null;
+				endDate: string | null;
+			}) => {
+				const description: string = promotion.longDescription ?? promotion.description ?? promotion.title;
+				const promotionType: PromotionType = classifyPromotionByKeywords(description);
 
-		return {
-			type: promotionType,
-			description: description,
-			startTime: promotion.startDate ? new Date(promotion.startDate) : null,
-			endTime: promotion.endDate ? new Date(promotion.endDate) : null,
-		};
-	}) ?? [];
+				return {
+					type: promotionType,
+					description: description,
+					startTime: promotion.startDate ? new Date(promotion.startDate) : null,
+					endTime: promotion.endDate ? new Date(promotion.endDate) : null,
+				};
+			},
+		) ?? [];
 
 	return parsedPromotions;
 }
 
 type WatsonsGroupShopDetails = {
-	baseURL: string,
-	shopCode: string,
-	shopOption: PriceAlertShopOption,
+	baseURL: string;
+	shopCode: string;
+	shopOption: PriceAlertShopOption;
 };
 
-function getBaseURLAndCode(shop: PriceAlertShopOption) : WatsonsGroupShopDetails | null {
+function getBaseURLAndCode(shop: PriceAlertShopOption): WatsonsGroupShopDetails | null {
 	switch (shop) {
-	case PriceAlertShopOption.WATSONS:{
-		return {
-			baseURL: "https://api.watsons.com.hk",
-			shopCode: "wtchk",
-			shopOption: PriceAlertShopOption.WATSONS,
-		};
-	}
-	case PriceAlertShopOption.PNS:{
-		return {
-			baseURL: "https://api.pns.hk",
-			shopCode: "pnshk",
-			shopOption: PriceAlertShopOption.PNS,
-		};
-	}
+		case PriceAlertShopOption.WATSONS: {
+			return {
+				baseURL: "https://api.watsons.com.hk",
+				shopCode: "wtchk",
+				shopOption: PriceAlertShopOption.WATSONS,
+			};
+		}
+		case PriceAlertShopOption.PNS: {
+			return {
+				baseURL: "https://api.pns.hk",
+				shopCode: "pnshk",
+				shopOption: PriceAlertShopOption.PNS,
+			};
+		}
 	}
 
 	return null;
 }
 
-async function processProductImage(url : string | null, baseURL: string) {
+async function processProductImage(url: string | null, baseURL: string) {
 	if (!url) return null;
 
-	const productCDNImage : string = url.startsWith("/") ? `${baseURL}${url}` : url;
+	const productCDNImage: string = url.startsWith("/") ? `${baseURL}${url}` : url;
 
-	const productImageBase64 : Base64String | null = await getImageBase64FromLink(productCDNImage);
+	const productImageBase64: Base64String | null = await getImageBase64FromLink(productCDNImage);
 	if (!productImageBase64) {
 		logger.error(`Cannot get image from ${productCDNImage}`);
 		return null;
 	}
 
-	const imgurURL : string | null = await createImgurURLFromBase64(productImageBase64);
+	const imgurURL: string | null = await createImgurURLFromBase64(productImageBase64);
 	if (!imgurURL) {
 		logger.error(`Cannot create imgur URL from ${productCDNImage}`);
 		return null;

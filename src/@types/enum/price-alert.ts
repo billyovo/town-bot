@@ -1,4 +1,4 @@
 export enum PromotionType {
-    DISCOUNT = "DISCOUNT",
-    FREEBIE = "FREEBIE",
+	DISCOUNT = "DISCOUNT",
+	FREEBIE = "FREEBIE",
 }

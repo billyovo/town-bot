@@ -1,7 +1,7 @@
 import { AutocompleteInteraction } from "discord.js";
 import { PriceAlertModel } from "~/src/lib/database/schemas/product";
 
-export async function autoComplete(interaction : AutocompleteInteraction) {
+export async function autoComplete(interaction: AutocompleteInteraction) {
 	const focusedOption = interaction.options.getFocused(true);
 
 	const productName = interaction.options.getString("name") ?? "";
@@ -9,12 +9,12 @@ export async function autoComplete(interaction : AutocompleteInteraction) {
 	const shop = interaction.options.getString("shop") ?? "";
 
 	const productNameQuery = productName ? { productName: productName } : {};
-	const brandQuery = brand ? { brand: brand } : { };
-	const shopQuery = shop ? { shop: shop } : { };
+	const brandQuery = brand ? { brand: brand } : {};
+	const shopQuery = shop ? { shop: shop } : {};
 
-	const groupQuery : {
-        [key: string]: string;
-    } = {};
+	const groupQuery: {
+		[key: string]: string;
+	} = {};
 
 	// whichever option is focused, we want to use that as the key in the group query
 	if (focusedOption.name === "name") {
@@ -36,26 +36,29 @@ export async function autoComplete(interaction : AutocompleteInteraction) {
 	]).exec();
 
 	if (focusedOption.name === "name") {
-		return interaction.respond(products.map(product => ({
-			name: product._id.productName,
-			value: product._id.productName,
-		})));
+		return interaction.respond(
+			products.map((product) => ({
+				name: product._id.productName,
+				value: product._id.productName,
+			})),
+		);
 	}
 
 	if (focusedOption.name === "brand") {
-		return interaction.respond(products.map(product => ({
-			name: product._id.brand,
-			value: product._id.brand,
-		})),
+		return interaction.respond(
+			products.map((product) => ({
+				name: product._id.brand,
+				value: product._id.brand,
+			})),
 		);
 	}
 
 	if (focusedOption.name === "shop") {
-		return interaction.respond(products.map(product => ({
-			name: product._id.shop,
-			value: product._id.shop,
-		})),
+		return interaction.respond(
+			products.map((product) => ({
+				name: product._id.shop,
+				value: product._id.shop,
+			})),
 		);
 	}
-
 }

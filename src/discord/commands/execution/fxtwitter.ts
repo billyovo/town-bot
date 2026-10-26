@@ -12,5 +12,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const tweetUser = link.split("/")[3];
 
 	await interaction.reply({ content: `[Twitter | ${tweetUser}](${fixedLink})` });
-
 }

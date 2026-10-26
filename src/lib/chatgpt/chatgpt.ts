@@ -10,16 +10,15 @@ const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
-const getGptMessage : GetGptMessage = async (chatMessages) => {
+const getGptMessage: GetGptMessage = async (chatMessages) => {
 	try {
-		const parms : OpenAI.Chat.ChatCompletionCreateParams = {
+		const parms: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages: chatMessages,
 			model: config.model,
 		};
-		const response : OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(parms);
+		const response: OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(parms);
 		return response;
-	}
-	catch (error) {
+	} catch (error) {
 		if (error instanceof Error) {
 			logger.error(error.message);
 		}
@@ -27,7 +26,7 @@ const getGptMessage : GetGptMessage = async (chatMessages) => {
 	}
 };
 
-const sendMessage = async (content : string, channel: TextChannel, replyID?: Snowflake) => {
+const sendMessage = async (content: string, channel: TextChannel, replyID?: Snowflake) => {
 	const messageArray = splitMessage(content);
 	let updatedReplyID = replyID;
 	for (const message of messageArray) {
@@ -43,7 +42,7 @@ const sendMessage = async (content : string, channel: TextChannel, replyID?: Sno
 	}
 };
 
-const getChatMessageHistory : GetChatMessageHistory = async (message, botID, chatMessages = []) => {
+const getChatMessageHistory: GetChatMessageHistory = async (message, botID, chatMessages = []) => {
 	try {
 		const filter = new RegExp(`^<@${botID}>`, "g");
 		const filteredMessage = message.content.replace(filter, "");
@@ -51,8 +50,8 @@ const getChatMessageHistory : GetChatMessageHistory = async (message, botID, cha
 		if (chatMessages.length === 0 && filteredMessage == "") return null;
 
 		chatMessages.unshift({
-			"role": message.author.id === botID ? "assistant" : "user",
-			"content": filteredMessage,
+			role: message.author.id === botID ? "assistant" : "user",
+			content: filteredMessage,
 		});
 		if (message.reference) {
 			const refeMessageId = message.reference.messageId;
@@ -61,8 +60,7 @@ const getChatMessageHistory : GetChatMessageHistory = async (message, botID, cha
 		}
 
 		return chatMessages;
-	}
-	catch (error) {
+	} catch (error) {
 		if (error instanceof Error) {
 			logger.error(error.message);
 		}
@@ -70,8 +68,7 @@ const getChatMessageHistory : GetChatMessageHistory = async (message, botID, cha
 	}
 };
 
-
-export async function chatgpt(message : Message) {
+export async function chatgpt(message: Message) {
 	try {
 		const botID = client.user?.id;
 		if (!botID) return;
@@ -79,18 +76,14 @@ export async function chatgpt(message : Message) {
 		if (!message.mentions.has(botID) || message.mentions.everyone) return;
 
 		const messagesHistory = await getChatMessageHistory(message, botID);
-		if (!messagesHistory) return sendMessage("Hello! How can I assist you today?", message.channel as TextChannel, message.id);
+		if (!messagesHistory)
+			return sendMessage("Hello! How can I assist you today?", message.channel as TextChannel, message.id);
 
 		const response = await getGptMessage(messagesHistory);
 		if (!response) throw new Error("Some Error Occured, Please try again later :(");
 
-		sendMessage(
-			response.choices[0].message.content,
-			message.channel as TextChannel,
-			message.id,
-		);
-	}
-	catch (error) {
+		sendMessage(response.choices[0].message.content, message.channel as TextChannel, message.id);
+	} catch (error) {
 		if (error instanceof Error) {
 			logger.error(error.message);
 		}

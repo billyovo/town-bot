@@ -3,7 +3,7 @@ import { PriceAlertShopOption } from "../../utils/enums/priceAlertShopOption";
 import { getHTML } from "../../utils/scrapeGetters";
 import { formatBrandName } from "../../utils/format";
 
-export const parseStylevanaPrice : ShopParseFunction = async (url) => {
+export const parseStylevanaPrice: ShopParseFunction = async (url) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -15,11 +15,12 @@ export const parseStylevanaPrice : ShopParseFunction = async (url) => {
 	const price = yotpoNode.getAttribute("data-price");
 	const productImage = yotpoNode.getAttribute("data-image-url");
 	const productCombinedName = yotpoNode.getAttribute("data-name");
-	const productNameInfo = productCombinedName?.split("-")?.map(part => part.trim());
+	const productNameInfo = productCombinedName?.split("-")?.map((part) => part.trim());
 	const brand = productNameInfo?.[0];
-	const productName = productNameInfo?.[2] ? productNameInfo.slice(1, 3).join(" ") : productNameInfo?.[1] ?? "";
+	const productName = productNameInfo?.[2] ? productNameInfo.slice(1, 3).join(" ") : (productNameInfo?.[1] ?? "");
 
-	if (!brand || !productName || !price) return { success: false, error: "Product Information not found on the site!", data: null };
+	if (!brand || !productName || !price)
+		return { success: false, error: "Product Information not found on the site!", data: null };
 
 	return {
 		success: true,

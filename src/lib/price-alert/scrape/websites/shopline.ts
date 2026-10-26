@@ -3,7 +3,7 @@ import { PriceAlertShopOption } from "../../utils/enums/priceAlertShopOption";
 import { getHTML, getLDScript } from "../../utils/scrapeGetters";
 import { formatBrandName } from "../../utils/format";
 
-export const parseShoplinePrice : ShopParseFunction = async (url, shop) => {
+export const parseShoplinePrice: ShopParseFunction = async (url, shop) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -15,7 +15,6 @@ export const parseShoplinePrice : ShopParseFunction = async (url, shop) => {
 	if (!productInformation?.offers?.price) return { success: false, error: "Failed to parse product price", data: null };
 	if (!productInformation?.name) return { success: false, error: "Failed to parse product name", data: null };
 	if (!productInformation?.image) return { success: false, error: "Failed to parse product image", data: null };
-
 
 	return {
 		success: true,

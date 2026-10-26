@@ -1,4 +1,19 @@
-import { ButtonStyle, ChatInputCommandInteraction, CollectedMessageInteraction, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, TextChannel, unorderedList, hyperlink, MessageFlags, hideLinkEmbed } from "discord.js";
+import {
+	ButtonStyle,
+	ChatInputCommandInteraction,
+	CollectedMessageInteraction,
+	Interaction,
+	ModalBuilder,
+	TextInputBuilder,
+	TextInputStyle,
+	ActionRowBuilder,
+	ButtonBuilder,
+	TextChannel,
+	unorderedList,
+	hyperlink,
+	MessageFlags,
+	hideLinkEmbed,
+} from "discord.js";
 import { PriceAlertListMode, PriceAlertShopParseDetails } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getPriceListEmbed } from "~/src/assets/embeds/priceEmbeds";
 import { EventEmitter } from "node:events";
@@ -13,9 +28,9 @@ enum ButtonType {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-	const mode : PriceAlertListMode = interaction.options.getString("mode") as PriceAlertListMode;
+	const mode: PriceAlertListMode = interaction.options.getString("mode") as PriceAlertListMode;
 
-	const productsArray : PriceAlertGrouped[] = await PriceAlertModel.aggregate(groupProductByNameAndBrand);
+	const productsArray: PriceAlertGrouped[] = await PriceAlertModel.aggregate(groupProductByNameAndBrand);
 
 	if (productsArray.length === 0) {
 		await interaction.reply({ content: "No products found" });
@@ -23,19 +38,23 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	}
 
 	if (mode === PriceAlertListMode.ALL) {
-		const formatted : Array<string | Array<string>> = [];
-		productsArray.forEach((productGroup : PriceAlertGrouped) => {
+		const formatted: Array<string | Array<string>> = [];
+		productsArray.forEach((productGroup: PriceAlertGrouped) => {
 			formatted.push(`${productGroup.brand} ${productGroup.productName}`);
-			formatted.push(productGroup.shops.map((item : ShopPriceItem) => {
-				const numberOfPromotion = item.promotions?.length ?? 0;
-				const priceDisplay = `${(item.quantity !== 1) ? `$${(item.price / item.quantity).toFixed(1)} (${item.price}/${item.quantity}pcs)` : `$${item.price}`}`;
-				const promotionDisplay = numberOfPromotion ? `(${numberOfPromotion} promotion${numberOfPromotion === 1 ? "" : "s"})` : "";
-				const hyperlinkDisplay = `${hyperlink("🔗", hideLinkEmbed(item.url))}`;
-				return `${PriceAlertShopParseDetails[item.shop].emote} ${priceDisplay} ${promotionDisplay} ${hyperlinkDisplay}`;
-			}));
+			formatted.push(
+				productGroup.shops.map((item: ShopPriceItem) => {
+					const numberOfPromotion = item.promotions?.length ?? 0;
+					const priceDisplay = `${item.quantity !== 1 ? `$${(item.price / item.quantity).toFixed(1)} (${item.price}/${item.quantity}pcs)` : `$${item.price}`}`;
+					const promotionDisplay = numberOfPromotion
+						? `(${numberOfPromotion} promotion${numberOfPromotion === 1 ? "" : "s"})`
+						: "";
+					const hyperlinkDisplay = `${hyperlink("🔗", hideLinkEmbed(item.url))}`;
+					return `${PriceAlertShopParseDetails[item.shop].emote} ${priceDisplay} ${promotionDisplay} ${hyperlinkDisplay}`;
+				}),
+			);
 		});
 
-		const formattedList : string = unorderedList(formatted);
+		const formattedList: string = unorderedList(formatted);
 		const messages = splitMessage(formattedList);
 
 		await interaction.reply({
@@ -52,22 +71,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const eventEmitter = new EventEmitter();
 		createProductDetailButtonCollector(interaction, eventEmitter);
 
-		eventEmitter.on(ButtonType.NEXT, async (i : CollectedMessageInteraction) => {
+		eventEmitter.on(ButtonType.NEXT, async (i: CollectedMessageInteraction) => {
 			if (pointer < productsArray.length - 1) {
 				pointer++;
-			}
-			else {
+			} else {
 				pointer = 0;
 			}
 			const embed = getPriceListEmbed(productsArray[pointer]);
 			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
-		eventEmitter.on(ButtonType.PREVIOUS, async (i : CollectedMessageInteraction) => {
+		eventEmitter.on(ButtonType.PREVIOUS, async (i: CollectedMessageInteraction) => {
 			if (pointer > 0) {
 				pointer--;
-			}
-			else {
+			} else {
 				pointer = productsArray.length - 1;
 			}
 
@@ -75,13 +92,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			await i.update({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
 		});
 
-		eventEmitter.on(ButtonType.CURRENT, async (i : CollectedMessageInteraction) => {
+		eventEmitter.on(ButtonType.CURRENT, async (i: CollectedMessageInteraction) => {
 			await i.showModal(getInputModal());
 			const filter = (i: Interaction) => i.user.id === interaction.user.id;
 			const receivedPageNumberInteraction = await interaction.awaitModalSubmit({ filter, time: 30000 });
 
 			const receivedPageNumber = parseInt(receivedPageNumberInteraction.fields.getTextInputValue("pageNumberInput"));
-			if (!Number.isInteger(receivedPageNumber) || (receivedPageNumber < 1) || (receivedPageNumber > productsArray.length)) {
+			if (
+				!Number.isInteger(receivedPageNumber) ||
+				receivedPageNumber < 1 ||
+				receivedPageNumber > productsArray.length
+			) {
 				await receivedPageNumberInteraction.reply({ content: "Invalid page number", flags: MessageFlags.Ephemeral });
 				return;
 			}
@@ -90,16 +111,28 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 			// we already replied to the interaction with i.showModal, so we can just edit the message, blame @discord
 			// and we need to reply to the modal interaction to prevent error as well, thanks @discord
-			await i.message.edit({ content: "", embeds: [embed], components: [...getButtons(pointer, productsArray.length)] });
-			await receivedPageNumberInteraction.reply({ content: `Jumped to page ${receivedPageNumber}`, flags: MessageFlags.Ephemeral });
-
+			await i.message.edit({
+				content: "",
+				embeds: [embed],
+				components: [...getButtons(pointer, productsArray.length)],
+			});
+			await receivedPageNumberInteraction.reply({
+				content: `Jumped to page ${receivedPageNumber}`,
+				flags: MessageFlags.Ephemeral,
+			});
 		});
 	}
 }
 
-async function createProductDetailButtonCollector(interaction: ChatInputCommandInteraction, eventEmitter: EventEmitter) {
+async function createProductDetailButtonCollector(
+	interaction: ChatInputCommandInteraction,
+	eventEmitter: EventEmitter,
+) {
 	const filter = (i: Interaction) => i.user.id === interaction.user.id;
-	const collector = interaction?.channel instanceof TextChannel ? interaction.channel.createMessageComponentCollector({ filter, time: 300000 }) : null;
+	const collector =
+		interaction?.channel instanceof TextChannel
+			? interaction.channel.createMessageComponentCollector({ filter, time: 300000 })
+			: null;
 
 	if (!collector) return;
 
@@ -113,10 +146,8 @@ async function createProductDetailButtonCollector(interaction: ChatInputCommandI
 	});
 }
 
-function getInputModal() : ModalBuilder {
-	const pageNumberModal = new ModalBuilder()
-		.setCustomId("pageNumberModal")
-		.setTitle("Enter page number");
+function getInputModal(): ModalBuilder {
+	const pageNumberModal = new ModalBuilder().setCustomId("pageNumberModal").setTitle("Enter page number");
 
 	const pageNumberInput = new TextInputBuilder()
 		.setCustomId("pageNumberInput")
@@ -132,19 +163,13 @@ function getInputModal() : ModalBuilder {
 
 	return pageNumberModal;
 }
-function getButtons(currentPage: number, maxPage: number) : ActionRowBuilder<ButtonBuilder>[] {
-	const previous = new ButtonBuilder()
-		.setCustomId(ButtonType.PREVIOUS)
-		.setLabel("⬅️")
-		.setStyle(ButtonStyle.Primary);
+function getButtons(currentPage: number, maxPage: number): ActionRowBuilder<ButtonBuilder>[] {
+	const previous = new ButtonBuilder().setCustomId(ButtonType.PREVIOUS).setLabel("⬅️").setStyle(ButtonStyle.Primary);
 	const currentPageButton = new ButtonBuilder()
 		.setCustomId(ButtonType.CURRENT)
 		.setLabel(`Item ${currentPage + 1}/${maxPage}`)
 		.setStyle(ButtonStyle.Secondary);
-	const next = new ButtonBuilder()
-		.setCustomId(ButtonType.NEXT)
-		.setLabel("➡️")
-		.setStyle(ButtonStyle.Primary);
+	const next = new ButtonBuilder().setCustomId(ButtonType.NEXT).setLabel("➡️").setStyle(ButtonStyle.Primary);
 
 	const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(previous, currentPageButton, next);
 	return [row1];

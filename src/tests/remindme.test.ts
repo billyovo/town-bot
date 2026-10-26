@@ -20,17 +20,25 @@ describe("duration string to mills", () => {
 		expect(parseDurationStringToMills("1y")).toEqual({ data: 1000 * 60 * 60 * 24 * 365, success: true });
 	});
 
-
 	test("parses a duration string with multiple units to milliseconds", () => {
-		expect(parseDurationStringToMills("1s1m1h1d1w1mo1y")).toEqual({ data: year + month + week + day + hour + minute + second, success: true });
+		expect(parseDurationStringToMills("1s1m1h1d1w1mo1y")).toEqual({
+			data: year + month + week + day + hour + minute + second,
+			success: true,
+		});
 	});
 
 	test("5hours 30minutes 10seconds", () => {
-		expect(parseDurationStringToMills("5h30m10s")).toEqual({ data: 5 * hour + 30 * minute + 10 * second, success: true });
+		expect(parseDurationStringToMills("5h30m10s")).toEqual({
+			data: 5 * hour + 30 * minute + 10 * second,
+			success: true,
+		});
 	});
 
 	test("3 weeks 2 days 5 hours 10 minutes 20 seconds", () => {
-		expect(parseDurationStringToMills("3w2d5h10m20s")).toEqual({ data: 3 * week + 2 * day + 5 * hour + 10 * minute + 20 * second, success: true });
+		expect(parseDurationStringToMills("3w2d5h10m20s")).toEqual({
+			data: 3 * week + 2 * day + 5 * hour + 10 * minute + 20 * second,
+			success: true,
+		});
 	});
 
 	test("5 years and 3 months", () => {
@@ -44,7 +52,6 @@ describe("duration string to mills", () => {
 	test("returns an error when an invalid duration is given", () => {
 		expect(parseDurationStringToMills("1")).toEqual({ data: null, error: "Invalid duration", success: false });
 	});
-
 });
 
 describe("mills to human", () => {
@@ -58,7 +65,9 @@ describe("mills to human", () => {
 		expect(parseMillsToHuman(year)).toEqual("1 year ");
 
 		expect(parseMillsToHuman(5 * hour + 30 * minute + 10 * second)).toEqual("5 hours 30 minutes 10 seconds ");
-		expect(parseMillsToHuman(3 * week + 2 * day + 5 * hour + 10 * minute + 20 * second)).toEqual("3 weeks 2 days 5 hours 10 minutes 20 seconds ");
+		expect(parseMillsToHuman(3 * week + 2 * day + 5 * hour + 10 * minute + 20 * second)).toEqual(
+			"3 weeks 2 days 5 hours 10 minutes 20 seconds ",
+		);
 		expect(parseMillsToHuman(5 * year + 3 * month)).toEqual("5 years 3 months ");
 
 		expect(parseMillsToHuman(5 * hour + 10 * second)).toEqual("5 hours 10 seconds ");

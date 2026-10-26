@@ -13,9 +13,6 @@ if (!process.env.CLIENT_ID || !process.env.DISCORD_TOKEN) {
 const rest = new REST().setToken(`${process.env.DISCORD_TOKEN}`);
 
 (async () => {
-	const data = await rest.put(
-		Routes.applicationCommands(`${process.env.CLIENT_ID}`),
-		{ body: [] },
-	);
+	const data = await rest.put(Routes.applicationCommands(`${process.env.CLIENT_ID}`), { body: [] });
 	logger.info(JSON.stringify(data));
 })();

@@ -4,7 +4,9 @@ import { Reminder, ReminderModel } from "~/src/lib/database/schemas/reminders";
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const userID = interaction.user.id;
 
-	const allUserReminder : HydratedDocument<Reminder>[] = await ReminderModel.find({ owner: userID }).sort({ sendTime: 1 }).exec();
+	const allUserReminder: HydratedDocument<Reminder>[] = await ReminderModel.find({ owner: userID })
+		.sort({ sendTime: 1 })
+		.exec();
 
 	if (allUserReminder.length === 0) {
 		await interaction.reply({
@@ -14,7 +16,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return;
 	}
 
-	const formattedMessage : string[] = allUserReminder.map((reminder : HydratedDocument<Reminder>) => {
+	const formattedMessage: string[] = allUserReminder.map((reminder: HydratedDocument<Reminder>) => {
 		const ellipsedMessage = reminder.message.length > 50 ? `${reminder.message.substring(0, 50)}...` : reminder.message;
 		return `${time(reminder.sendTime, TimestampStyles.RelativeTime)} ${ellipsedMessage}`;
 	});

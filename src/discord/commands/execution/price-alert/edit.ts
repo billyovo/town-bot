@@ -1,4 +1,11 @@
-import { ActionRowBuilder, ChatInputCommandInteraction, ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
+import {
+	ActionRowBuilder,
+	ChatInputCommandInteraction,
+	ModalBuilder,
+	ModalSubmitInteraction,
+	TextInputBuilder,
+	TextInputStyle,
+} from "discord.js";
 import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
 import { QueryFilter } from "mongoose";
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
@@ -19,7 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const brand = interaction.options.getString("brand") ?? "";
 	const productName = interaction.options.getString("name") ?? "";
 
-	const randomID : string = randomUUID();
+	const randomID: string = randomUUID();
 
 	if (!(url || (brand && productName && shop))) {
 		return interaction.reply({ content: "Please provide a URL or both a brand and a product name" });
@@ -28,24 +35,38 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const product = await getProductFromInputDetails(url, shop, brand, productName);
 	if (!product) return interaction.reply({ content: "Product not found" });
 
-	const productEditModal : ModalBuilder = getProductEditModal(product, randomID);
+	const productEditModal: ModalBuilder = getProductEditModal(product, randomID);
 	await interaction.showModal(productEditModal);
 
-	const filter = (interaction : ModalSubmitInteraction) => interaction.customId === `${ProductEditFields.MODAL}-${randomID}`;
-	const response : ModalSubmitInteraction = await interaction.awaitModalSubmit({ filter, time: 180000 });
+	const filter = (interaction: ModalSubmitInteraction) =>
+		interaction.customId === `${ProductEditFields.MODAL}-${randomID}`;
+	const response: ModalSubmitInteraction = await interaction.awaitModalSubmit({ filter, time: 180000 });
 
-	const newProductName : string = response.fields.getTextInputValue(`${ProductEditFields.NAME}-${randomID}`);
-	const newBrand : string = response.fields.getTextInputValue(`${ProductEditFields.BRAND}-${randomID}`) || "";
-	const newImage : string = response.fields.getTextInputValue(`${ProductEditFields.IMAGE}-${randomID}`) || "";
-	const newQuantity : number = parseInt(response.fields.getTextInputValue(`${ProductEditFields.QUANTITY}-${randomID}`)) || 1;
-	const newEnabled : boolean = parseInt(response.fields.getTextInputValue(`${ProductEditFields.ENABLED}-${randomID}`)) > 0;
+	const newProductName: string = response.fields.getTextInputValue(`${ProductEditFields.NAME}-${randomID}`);
+	const newBrand: string = response.fields.getTextInputValue(`${ProductEditFields.BRAND}-${randomID}`) || "";
+	const newImage: string = response.fields.getTextInputValue(`${ProductEditFields.IMAGE}-${randomID}`) || "";
+	const newQuantity: number =
+		parseInt(response.fields.getTextInputValue(`${ProductEditFields.QUANTITY}-${randomID}`)) || 1;
+	const newEnabled: boolean =
+		parseInt(response.fields.getTextInputValue(`${ProductEditFields.ENABLED}-${randomID}`)) > 0;
 
-	await PriceAlertModel.updateOne({ url: product.url }, { productName: newProductName, brand: newBrand, productImage: newImage, quantity: newQuantity, isEnabled: newEnabled }).exec();
+	await PriceAlertModel.updateOne(
+		{ url: product.url },
+		{
+			productName: newProductName,
+			brand: newBrand,
+			productImage: newImage,
+			quantity: newQuantity,
+			isEnabled: newEnabled,
+		},
+	).exec();
 
-	await response.reply({ content: `Updated ${product.productName} of ${product.brand} to [${newProductName}](${product.url}) of ${newBrand}` });
+	await response.reply({
+		content: `Updated ${product.productName} of ${product.brand} to [${newProductName}](${product.url}) of ${newBrand}`,
+	});
 }
 
-function getProductEditModal(product : PriceAlertItem, UUID: string) : ModalBuilder {
+function getProductEditModal(product: PriceAlertItem, UUID: string): ModalBuilder {
 	const productEditModal = new ModalBuilder()
 		.setCustomId(`${ProductEditFields.MODAL}-${UUID}`)
 		.setTitle("Edit Product");
@@ -92,27 +113,41 @@ function getProductEditModal(product : PriceAlertItem, UUID: string) : ModalBuil
 		.setValue(product.isEnabled ? "1" : "0")
 		.setStyle(TextInputStyle.Short);
 
-	const firstRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([productNameField]);
-	const secondRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([brandField]);
-	const thirdRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([quantityField]);
-	const forthRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([imageField]);
-	const fifthRow : ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([enabledField]);
+	const firstRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([
+		productNameField,
+	]);
+	const secondRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([
+		brandField,
+	]);
+	const thirdRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([
+		quantityField,
+	]);
+	const forthRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([
+		imageField,
+	]);
+	const fifthRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents([
+		enabledField,
+	]);
 
 	productEditModal.addComponents([firstRow, secondRow, thirdRow, forthRow, fifthRow]);
 
 	return productEditModal;
 }
 
-async function getProductFromInputDetails(url : string, shop : string, brand : string, productName : string) : Promise<PriceAlertItem | null> {
+async function getProductFromInputDetails(
+	url: string,
+	shop: string,
+	brand: string,
+	productName: string,
+): Promise<PriceAlertItem | null> {
 	let query: QueryFilter<PriceAlertItem>;
 
 	if (url) {
 		query = { url: decodeURI(url) };
-	}
-	else {
+	} else {
 		query = { productName: productName, brand: brand, shop: shop as PriceAlertShopOption };
 	}
 
-	const product : PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
+	const product: PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
 	return product;
 }
