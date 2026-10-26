@@ -1,4 +1,4 @@
-import { describe } from "@jest/globals";
+import { describe, expect, test } from "vitest";
 import { parseDurationStringToMills, parseMillsToHuman } from "../lib/utils/time/duration";
 
 const year = 1000 * 60 * 60 * 24 * 365;
