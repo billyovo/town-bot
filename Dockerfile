@@ -7,7 +7,7 @@ FROM base AS build
 RUN addgroup -S app && adduser -S app -G app
 RUN chown -R app:app /app
 
-COPY package.json pnpm-lock.yaml /app/
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml /app/
 COPY src /app/src
 COPY tsconfig.json /app/
 

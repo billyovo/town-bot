@@ -5,10 +5,21 @@ on:
     branches: ["master"]
     paths:
       - "Dockerfile"
+      - "secrets.Dockerfile"
       - "docker-compose.yaml"
+      - ".dockerignore"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.json"
       - "src/**"
       - ".github/workflows/**"
+      - "scripts/**"
   workflow_dispatch:
+
+concurrency:
+  group: release-prod
+  cancel-in-progress: false
 
 jobs:
   build:

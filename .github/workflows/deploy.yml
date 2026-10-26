@@ -37,3 +37,11 @@ jobs:
         uses: Ilshidur/action-discord@0.4.0
         with:
           args: "{{ EVENT_PAYLOAD.repository.full_name }} deploy finished"
+
+      - name: Deploy Failure Notification
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.4.0
+        with:
+          args: "{{ EVENT_PAYLOAD.repository.full_name }} deploy failed"
