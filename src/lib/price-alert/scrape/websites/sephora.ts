@@ -37,7 +37,7 @@ export const parseSephoraPrice : ShopParseFunction = async (url, shopDetails) =>
 		});
 		productData = response.data;
 	}
-	catch (e) {
+	catch {
 		return { success: false, error: "Failed to fetch", data: null };
 	}
 

@@ -1,5 +1,7 @@
 import { ActionRowBuilder, ChatInputCommandInteraction, ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
+import { QueryFilter } from "mongoose";
+import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { randomUUID } from "crypto";
 
 enum ProductEditFields {
@@ -102,13 +104,13 @@ function getProductEditModal(product : PriceAlertItem, UUID: string) : ModalBuil
 }
 
 async function getProductFromInputDetails(url : string, shop : string, brand : string, productName : string) : Promise<PriceAlertItem | null> {
-	let query = {};
+	let query: QueryFilter<PriceAlertItem>;
 
 	if (url) {
 		query = { url: decodeURI(url) };
 	}
 	else {
-		query = { productName: productName, brand: brand, shop: shop };
+		query = { productName: productName, brand: brand, shop: shop as PriceAlertShopOption };
 	}
 
 	const product : PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();

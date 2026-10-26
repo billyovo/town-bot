@@ -19,7 +19,6 @@ export async function getHTML(url : string) : Promise<Success<HTMLElement> | Fai
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getLDScript(root : HTMLElement) : Promise<Record<string, any> | null> {
 	const allAvailableProductInfoString = root.querySelectorAll("script[type=\"application/ld+json\"]");
 	if (!allAvailableProductInfoString) return null;
@@ -31,7 +30,7 @@ export async function getLDScript(root : HTMLElement) : Promise<Record<string, a
 				return jsonData;
 			}
 		}
-		catch (e) {
+		catch {
 			continue;
 		}
 	}

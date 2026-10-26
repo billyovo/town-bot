@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, MessageFlags, time, TimestampStyles } from
 import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/time/duration";
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
-import { ReminderModel } from "~/src/lib/database/schemas/reminders";
+import { Reminder, ReminderModel } from "~/src/lib/database/schemas/reminders";
 import { logger } from "~/src/lib/logger/logger";
 import { Failure, Success } from "~/src/@types/utils";
 
@@ -63,13 +63,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const reminderTime : DateTime = DateTime.now().plus(reminderDuration.data);
 	const reminderMessage = `I will ${dm ? "DM" : "remind"} you at ${time(Math.round(reminderTime.toSeconds()), TimestampStyles.RelativeTime)} after ${parseMillsToHuman(reminderDuration.data.toMillis())}!`;
 
-	const reminder = await ReminderModel.create({
-		sendTime: reminderTime.toJSDate(),
-		message: message,
-		isDM: !!dm,
-		owner: interaction.user.id,
-		channel: dm ? null : interaction.channel!.id,
-	});
+	const reminderData: Reminder = dm
+		? { sendTime: reminderTime.toJSDate(), message: message, isDM: true, owner: interaction.user.id, channel: null }
+		: { sendTime: reminderTime.toJSDate(), message: message, isDM: false, owner: interaction.user.id, channel: interaction.channel!.id };
+
+	const reminder = await ReminderModel.create(reminderData);
 
 	scheduleJob(reminder._id.toString(), reminderTime.toJSDate(), () => {
 		if (dm) {

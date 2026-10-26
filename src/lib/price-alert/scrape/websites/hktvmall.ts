@@ -15,7 +15,7 @@ type HKTVMALLProductData = {
 	membershipLevel: string
 }
 
-export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, __) => {
+export const parseHktvmallPrice : ShopParseFunction = async (url : string) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
