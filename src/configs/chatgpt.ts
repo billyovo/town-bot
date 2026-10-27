@@ -1,5 +1,5 @@
 export const config = {
-	"model": "gpt-3.5-turbo",
+	model: "gpt-3.5-turbo",
 };
 
 const delMessageTimeHours = 24;

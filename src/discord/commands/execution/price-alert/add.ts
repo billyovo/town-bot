@@ -23,7 +23,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	if (!output.success) return await interaction.editReply({ content: output.error ?? "Unknown error" });
 
-	const itemToBeadded : PriceAlertItem = {
+	const itemToBeadded: PriceAlertItem = {
 		lastChecked: new Date(),
 		url: decodedURL,
 		price: output.data.price,
@@ -42,42 +42,59 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 	const embed = getAddedToAlertEmbed(itemToBeadded);
 
-	const similarProducts : PriceAlertItem[] = await PriceAlertModel.aggregate(
-		[
-			{
-				$search: {
-					autocomplete: {
-						query: itemToBeadded.productName,
-						path: "productName",
-						fuzzy: {},
-					},
+	const similarProducts: PriceAlertItem[] = await PriceAlertModel.aggregate([
+		{
+			$search: {
+				autocomplete: {
+					query: itemToBeadded.productName,
+					path: "productName",
+					fuzzy: {},
 				},
 			},
-		],
-	).limit(1).exec();
+		},
+	])
+		.limit(1)
+		.exec();
 
 	if (!similarProducts.length) {
 		return await interaction.editReply({ embeds: [embed], content: "Added to price alert" });
 	}
 
-	const similarProduct : PriceAlertItem = similarProducts[0];
+	const similarProduct: PriceAlertItem = similarProducts[0];
 	const row = new ActionRowBuilder<ButtonBuilder>();
-	const randomID : string = randomUUID();
+	const randomID: string = randomUUID();
 	row.addComponents(
-		new ButtonBuilder()
-			.setLabel("Merge")
-			.setStyle(ButtonStyle.Success)
-			.setCustomId(`priceAlert-merge-yes-${randomID}`),
+		new ButtonBuilder().setLabel("Merge").setStyle(ButtonStyle.Success).setCustomId(`priceAlert-merge-yes-${randomID}`),
 	);
 
-	await interaction.editReply({ embeds: [embed], components: [row], content: `Found a similar product:\n**${similarProduct.brand} ${similarProduct.productName}**\n\nDo you want to merge these two products infos?` });
+	await interaction.editReply({
+		embeds: [embed],
+		components: [row],
+		content: `Found a similar product:\n**${similarProduct.brand} ${similarProduct.productName}**\n\nDo you want to merge these two products infos?`,
+	});
 
-	const collector = interaction.channel?.createMessageComponentCollector({ filter: (i) => i.user.id === interaction.user.id && (i.customId === `priceAlert-merge-yes-${randomID}` || i.customId === `priceAlert-merge-no-${randomID}`), time: 20000, max: 1 });
+	const collector = interaction.channel?.createMessageComponentCollector({
+		filter: (i) =>
+			i.user.id === interaction.user.id &&
+			(i.customId === `priceAlert-merge-yes-${randomID}` || i.customId === `priceAlert-merge-no-${randomID}`),
+		time: 20000,
+		max: 1,
+	});
 	collector?.on("collect", async (i) => {
 		if (i.customId === `priceAlert-merge-yes-${randomID}`) {
-			await PriceAlertModel.updateOne({ url: itemToBeadded.url }, { productName: similarProduct.productName, brand: similarProduct.brand }).exec();
-			const newEmbed = getAddedToAlertEmbed({ ...itemToBeadded, productName: similarProduct.productName, brand: similarProduct.brand });
-			await interaction.editReply({ content: `Merged ${itemToBeadded.productName} into ${similarProduct.productName}`, embeds: [newEmbed] });
+			await PriceAlertModel.updateOne(
+				{ url: itemToBeadded.url },
+				{ productName: similarProduct.productName, brand: similarProduct.brand },
+			).exec();
+			const newEmbed = getAddedToAlertEmbed({
+				...itemToBeadded,
+				productName: similarProduct.productName,
+				brand: similarProduct.brand,
+			});
+			await interaction.editReply({
+				content: `Merged ${itemToBeadded.productName} into ${similarProduct.productName}`,
+				embeds: [newEmbed],
+			});
 		}
 	});
 	collector?.on("end", async () => {

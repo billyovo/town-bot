@@ -9,20 +9,20 @@ import { parseWellcomePrice } from "~/src/lib/price-alert/scrape/websites/wellco
 import { parseStylevanaPrice } from "../../scrape/websites/stylevana";
 
 export type ParseDetails = {
-    image: string;
-    parseFunction: ShopParseFunction;
+	image: string;
+	parseFunction: ShopParseFunction;
 	emote: string;
 };
 
 export enum PriceAlertShopOption {
-    HKTVMALL = "HKTVMALL",
-    WATSONS = "WATSONS",
-    AEONCITY = "AEONCITY",
-    PNS = "PNS",
-    SEPHORA = "SEPHORA",
-    MANNINGS = "MANNINGS",
+	HKTVMALL = "HKTVMALL",
+	WATSONS = "WATSONS",
+	AEONCITY = "AEONCITY",
+	PNS = "PNS",
+	SEPHORA = "SEPHORA",
+	MANNINGS = "MANNINGS",
 	SHOPLINE = "SHOPLINE",
-    WELLCOME = "WELLCOME",
+	WELLCOME = "WELLCOME",
 	STYLEVANA = "STYLEVANA",
 }
 
@@ -72,17 +72,16 @@ export const PriceAlertShopParseDetails: Record<PriceAlertShopOption, ParseDetai
 		parseFunction: parseStylevanaPrice,
 		emote: "<:stylevana:1423928481271775303>",
 	},
-
 } satisfies Record<PriceAlertShopOption, ParseDetails>;
 
 export enum PriceAlertListMode {
-    ALL = "all",
-    DETAILED = "detailed",
+	ALL = "all",
+	DETAILED = "detailed",
 }
 
 export enum PriceAlertResult {
-    SUCCESS = "SUCCESS",
-    FAIL = "FAIL",
-    PRICE_DECREASE = "PRICE_DECREASE",
+	SUCCESS = "SUCCESS",
+	FAIL = "FAIL",
+	PRICE_DECREASE = "PRICE_DECREASE",
 	PRICE_INCREASE = "PRICE_INCREASE",
 }

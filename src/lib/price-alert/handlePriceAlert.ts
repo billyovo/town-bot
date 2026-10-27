@@ -7,12 +7,15 @@ import { PriceAlertItem, PriceAlertModel } from "../database/schemas/product";
 import { getPriceChangeEmbed } from "~/src/assets/embeds/priceEmbeds";
 import axios from "axios";
 
-function hasNewPromotion(oldPromotions: PromotionClassified[] | undefined, newPromotions: PromotionClassified[] | undefined) : boolean {
+function hasNewPromotion(
+	oldPromotions: PromotionClassified[] | undefined,
+	newPromotions: PromotionClassified[] | undefined,
+): boolean {
 	if (!oldPromotions || oldPromotions.length === 0) return false;
 	if (!newPromotions || newPromotions.length === 0) return false;
 
 	for (const newPromotion of newPromotions) {
-		const match = oldPromotions.find(oldPromotion => oldPromotion.description === newPromotion.description);
+		const match = oldPromotions.find((oldPromotion) => oldPromotion.description === newPromotion.description);
 		if (!match) {
 			return true;
 		}
@@ -20,8 +23,10 @@ function hasNewPromotion(oldPromotions: PromotionClassified[] | undefined, newPr
 	return false;
 }
 
-export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductInfo: ShopParseFunctionReturn) : Promise<PriceAlertChecked> {
-
+export async function getPriceChange(
+	oldProductInfo: PriceAlertItem,
+	newProductInfo: ShopParseFunctionReturn,
+): Promise<PriceAlertChecked> {
 	if (!newProductInfo.success) {
 		return {
 			data: {
@@ -34,8 +39,12 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 		};
 	}
 	logger.info(`Checked Product: ${newProductInfo.data.productName}`);
-	const oldPromotions : PromotionClassified[] | undefined = oldProductInfo.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
-	const newPromotions : PromotionClassified[] | undefined = newProductInfo.data.promotions?.filter((promotion) => promotion.type === PromotionType.DISCOUNT);
+	const oldPromotions: PromotionClassified[] | undefined = oldProductInfo.promotions?.filter(
+		(promotion) => promotion.type === PromotionType.DISCOUNT,
+	);
+	const newPromotions: PromotionClassified[] | undefined = newProductInfo.data.promotions?.filter(
+		(promotion) => promotion.type === PromotionType.DISCOUNT,
+	);
 	const isNewPromotionAdded = hasNewPromotion(oldPromotions, newPromotions);
 	const isPriceReduced = newProductInfo.data.price < oldProductInfo.price;
 	const isPriceIncreased = newProductInfo.data.price > oldProductInfo.price;
@@ -49,7 +58,9 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 				promotions: newProductInfo.data.promotions,
 				previous: {
 					price: isPriceReduced ? oldProductInfo.price : (oldProductInfo?.previous?.price ?? oldProductInfo.price),
-					date: isPriceReduced ? oldProductInfo.lastChecked : (oldProductInfo?.previous?.date ?? oldProductInfo.lastChecked),
+					date: isPriceReduced
+						? oldProductInfo.lastChecked
+						: (oldProductInfo?.previous?.date ?? oldProductInfo.lastChecked),
 				},
 				failCount: 0,
 			},
@@ -75,31 +86,32 @@ export async function getPriceChange(oldProductInfo: PriceAlertItem, newProductI
 	}
 
 	return {
-		data:{
+		data: {
 			...oldProductInfo,
 			lastChecked: new Date(),
 			failCount: 0,
 		},
 		result: PriceAlertResult.SUCCESS,
 	};
-
 }
 
 type ScrapeResultActions = {
-	onPriceIncrease: (product: PriceAlertItem) => void,
-	onPriceDecrease: (product: PriceAlertItem) => void,
-	onFailure: (product: PriceAlertItem, error?: string) => void,
-	onTooManyFailures?: (product: PriceAlertItem) => void,
-	onSuccess?: (product: PriceAlertItem) => void,
-}
+	onPriceIncrease: (product: PriceAlertItem) => void;
+	onPriceDecrease: (product: PriceAlertItem) => void;
+	onFailure: (product: PriceAlertItem, error?: string) => void;
+	onTooManyFailures?: (product: PriceAlertItem) => void;
+	onSuccess?: (product: PriceAlertItem) => void;
+};
 
-const defaultActions : ScrapeResultActions = {
+const defaultActions: ScrapeResultActions = {
 	onPriceDecrease: (updatedProduct) => {
-		axios.post(process.env.PRICE_WEBHOOK as string, {
-			embeds: [getPriceChangeEmbed(updatedProduct).toJSON()],
-		}).catch((error) => {
-			logger.error(`Failed to send price change webhook: ${error}`);
-		});
+		axios
+			.post(process.env.PRICE_WEBHOOK as string, {
+				embeds: [getPriceChangeEmbed(updatedProduct).toJSON()],
+			})
+			.catch((error) => {
+				logger.error(`Failed to send price change webhook: ${error}`);
+			});
 	},
 	onPriceIncrease: () => {
 		// Do nothing!
@@ -111,33 +123,35 @@ const defaultActions : ScrapeResultActions = {
 	},
 	onTooManyFailures: async (updatedProduct) => {
 		await PriceAlertModel.updateOne({ url: updatedProduct.url }, { isEnabled: false });
-		axios.post(process.env.PRICE_WEBHOOK as string, {
-			content: `Disabled [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
-		}).catch((error) => {
-			logger.error(`Failed to send too many failures webhook: ${error}`);
-		});
+		axios
+			.post(process.env.PRICE_WEBHOOK as string, {
+				content: `Disabled [${updatedProduct.productName}](${updatedProduct.url}) from ${updatedProduct.shop} due to too many failures.`,
+			})
+			.catch((error) => {
+				logger.error(`Failed to send too many failures webhook: ${error}`);
+			});
 	},
 };
 
-export const handleScrapeResult = async (scrapeResult : PriceAlertChecked, actions = defaultActions) => {
+export const handleScrapeResult = async (scrapeResult: PriceAlertChecked, actions = defaultActions) => {
 	switch (scrapeResult.result) {
-	case PriceAlertResult.PRICE_DECREASE:
-		actions.onPriceDecrease(scrapeResult.data);
-		break;
-	case PriceAlertResult.PRICE_INCREASE:
-		actions.onPriceIncrease(scrapeResult.data);
-		break;
-	case PriceAlertResult.SUCCESS:
-		actions.onSuccess?.(scrapeResult.data);
-		break;
-	case PriceAlertResult.FAIL:{
-		actions.onFailure(scrapeResult.data, scrapeResult.error);
-		if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
-			if (actions.onTooManyFailures) {
-				actions.onTooManyFailures(scrapeResult.data);
+		case PriceAlertResult.PRICE_DECREASE:
+			actions.onPriceDecrease(scrapeResult.data);
+			break;
+		case PriceAlertResult.PRICE_INCREASE:
+			actions.onPriceIncrease(scrapeResult.data);
+			break;
+		case PriceAlertResult.SUCCESS:
+			actions.onSuccess?.(scrapeResult.data);
+			break;
+		case PriceAlertResult.FAIL: {
+			actions.onFailure(scrapeResult.data, scrapeResult.error);
+			if (scrapeResult.data.failCount && scrapeResult.data.failCount >= maximumFailureCount) {
+				if (actions.onTooManyFailures) {
+					actions.onTooManyFailures(scrapeResult.data);
+				}
 			}
 		}
-	}
 	}
 	await PriceAlertModel.updateOne({ url: scrapeResult.data.url }, scrapeResult.data);
 };

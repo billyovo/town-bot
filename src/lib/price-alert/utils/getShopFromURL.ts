@@ -2,7 +2,7 @@ import { PriceAlertShopOption } from "./enums/priceAlertShopOption";
 import { ShopDetails } from "~/src/@types/price-alert";
 import tldts from "tldts";
 
-export function getShopFromURL(url: string) : ShopDetails {
+export function getShopFromURL(url: string): ShopDetails {
 	const parsedURL = tldts.parse(url);
 	const domain = parsedURL.domainWithoutSuffix?.toUpperCase();
 	return {
@@ -12,5 +12,4 @@ export function getShopFromURL(url: string) : ShopDetails {
 		hostname: parsedURL.hostname ?? "UNKNOWN HOSTNAME",
 		url: url,
 	};
-
 }

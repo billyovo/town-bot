@@ -8,7 +8,7 @@ import "./cronJobs/richLife";
 import "./cronJobs/unemployedLife";
 import path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "./secrets/deposit/.env") });
+dotenv.config({ path: path.resolve(__dirname, "./secrets/deposit/.env"), quiet: true });
 
 connectDiscord(`${process.env.DISCORD_TOKEN}`);
 connectDatabase(`${process.env.MONGO_CONNECTION_STRING}/${process.env.DATABASE_NAME}`);

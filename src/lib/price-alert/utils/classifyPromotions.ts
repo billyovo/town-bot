@@ -1,6 +1,6 @@
 import { PromotionType } from "~/src/@types/enum/price-alert";
 
-const keywords : RegExp[] = [
+const keywords: RegExp[] = [
 	// 買一送一, 買1送1 etc
 	/買([一二三四五六七八九十]{1,2}|\d+)送([一二三四五六七八九十]{1,2}|\d+)/,
 	/半價/,
@@ -21,16 +21,15 @@ const keywords : RegExp[] = [
 	/half price/i,
 ];
 
-const freebieKeywords : RegExp[] = [
-	/換購/,
-	/加購/,
-];
+const freebieKeywords: RegExp[] = [/換購/, /加購/];
 
 export function classifyPromotionByKeywords(promotions: string) {
-	if (keywords.some(keyword => keyword.test(promotions)) && !freebieKeywords.some(keyword => keyword.test(promotions))) {
+	if (
+		keywords.some((keyword) => keyword.test(promotions)) &&
+		!freebieKeywords.some((keyword) => keyword.test(promotions))
+	) {
 		return PromotionType.DISCOUNT;
-	}
-	else {
+	} else {
 		return PromotionType.FREEBIE;
 	}
 }

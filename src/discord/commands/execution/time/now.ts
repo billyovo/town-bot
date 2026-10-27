@@ -1,16 +1,24 @@
-import { ChatInputCommandInteraction, TextDisplayBuilder, SeparatorBuilder, MessageFlags, ContainerBuilder, SeparatorSpacingSize, bold } from "discord.js";
+import {
+	ChatInputCommandInteraction,
+	TextDisplayBuilder,
+	SeparatorBuilder,
+	MessageFlags,
+	ContainerBuilder,
+	SeparatorSpacingSize,
+	bold,
+} from "discord.js";
 import { DateTime } from "luxon";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const inputZone = interaction.options.getString("timezone") ?? "";
 	const isInputZoneValid = DateTime.now().setZone(inputZone).isValid;
-	if (inputZone && !isInputZoneValid) return interaction.reply({ content: "Invalid timezone", flags: MessageFlags.Ephemeral });
+	if (inputZone && !isInputZoneValid)
+		return interaction.reply({ content: "Invalid timezone", flags: MessageFlags.Ephemeral });
 
 	const zones: string[] = [];
 	if (inputZone) {
 		zones.push(inputZone);
-	}
-	else {
+	} else {
 		zones.push("Asia/Taipei");
 		zones.push("Canada/Pacific");
 		zones.push("Australia/Queensland");

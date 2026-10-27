@@ -25,23 +25,25 @@ export async function readyHandler() {
 		scheduleJob(reminder._id.toString(), reminder.sendTime, () => {
 			logger.info(`Found reminder for ${reminder.owner} at ${reminder.sendTime}!`);
 			if (reminder.isDM) {
-				client.users.fetch(reminder.owner).then(user => user.send({ content: reminder.message }))
-					.catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
-			}
-			else {
-				client.channels.fetch(reminder.channel).then(channel => {
+				client.users
+					.fetch(reminder.owner)
+					.then((user) => user.send({ content: reminder.message }))
+					.catch((err) => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+			} else {
+				client.channels.fetch(reminder.channel).then((channel) => {
 					if (channel?.isSendable()) {
-						channel.send({
-							content: reminder.message,
-							allowedMentions: {
-								users: [reminder.owner],
-							},
-						}).catch(err => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
+						channel
+							.send({
+								content: reminder.message,
+								allowedMentions: {
+									users: [reminder.owner],
+								},
+							})
+							.catch((err) => logger.error(`Failed to send reminder to ${reminder.owner}! ${err.message}`));
 					}
 				});
 			}
 			ReminderModel.deleteOne({ _id: reminder._id }).exec();
 		});
 	}
-
 }

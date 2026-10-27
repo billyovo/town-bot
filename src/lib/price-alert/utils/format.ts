@@ -1,8 +1,8 @@
-export function parsePriceToFloat(price: string) : number {
+export function parsePriceToFloat(price: string): number {
 	return parseFloat(price.replace(/[^0-9.]/g, ""));
 }
 
-export function formatBrandName(brand: string) : string {
+export function formatBrandName(brand: string): string {
 	if (!brand) return "";
 	const lowerBrand = brand.toLowerCase();
 	const brandWords = lowerBrand.split(" ");

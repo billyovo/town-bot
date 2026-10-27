@@ -5,7 +5,7 @@ import { sendSplitMessage, splitMessage } from "~/src/lib/utils/discord/splitMes
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	await interaction.deferReply();
-	const url : string = interaction.options.get("url")?.value as string;
+	const url: string = interaction.options.get("url")?.value as string;
 
 	if (!url) {
 		interaction.reply({
@@ -15,17 +15,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return;
 	}
 
-
 	await using OCRworker = await createOCRWorker();
 
 	try {
 		const ret = await OCRworker.worker.recognize(url);
 		const recognizedText = ret ? ret.data.text : "Nothing is recognized!";
-		const splitText : string[] = splitMessage(recognizedText);
+		const splitText: string[] = splitMessage(recognizedText);
 		await interaction.editReply({ content: splitText[0] });
 		await sendSplitMessage(interaction, splitText);
-	}
-	catch (error) {
+	} catch (error) {
 		if (error instanceof Error) {
 			logger.error(error.message);
 		}
@@ -33,7 +31,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 			content: "An error occurred while processing the image!",
 		});
 	}
-
 }
 
 async function createOCRWorker() {
@@ -47,5 +44,4 @@ async function createOCRWorker() {
 			await worker.terminate();
 		},
 	};
-
 }

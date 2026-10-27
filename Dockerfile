@@ -1,29 +1,22 @@
-# Build stage
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 WORKDIR /app
 
 FROM base AS build
-
-RUN addgroup -S app && adduser -S app -G app
-RUN chown -R app:app /app
-
-COPY package.json pnpm-lock.yaml /app/
-COPY src /app/src
-COPY tsconfig.json /app/
-
+ENV HUSKY=0
 RUN corepack enable
-RUN pnpm fetch && pnpm install --frozen-lockfile --offline
 
-RUN ["pnpm", "run", "build"]
-RUN ["pnpm", "prune", "--prod"]
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
-USER app
-# Runtime stage
-FROM base
+COPY tsconfig.json ./
+COPY src ./src
+RUN pnpm run build && pnpm prune --prod
 
-COPY --from=build /app/dist /app/dist
-COPY --from=build /app/package.json /app/package.json
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/src/assets/tesseract /app/dist/assets/tesseract
+FROM base AS runtime
+ENV NODE_ENV=production
 
-CMD ["npm", "run", "start"]
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+
+CMD ["node", "dist/index.js"]

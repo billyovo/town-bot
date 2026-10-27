@@ -1,5 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { PriceAlertItem, PriceAlertModel } from "~/src/lib/database/schemas/product";
+import { QueryFilter } from "mongoose";
+import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const url = interaction.options.getString("url") ?? "";
@@ -11,16 +13,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return interaction.reply({ content: "Please provide a URL or both a brand and a product name" });
 	}
 
-	let query = {};
+	let query: QueryFilter<PriceAlertItem>;
 
 	if (url) {
 		query = { url: decodeURI(url) };
-	}
-	else {
-		query = { productName: productName, brand: brand, shop: shop };
+	} else {
+		query = { productName: productName, brand: brand, shop: shop as PriceAlertShopOption };
 	}
 
-	const product : PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
+	const product: PriceAlertItem | null = await PriceAlertModel.findOne(query).exec();
 	if (!product) return interaction.reply({ content: "Product not found" });
 
 	await PriceAlertModel.deleteOne({ url: product.url });

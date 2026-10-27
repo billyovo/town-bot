@@ -5,16 +5,19 @@ import { PriceAlertGrouped, PriceAlertItem, ShopPriceItem } from "~/src/lib/data
 import { PromotionType } from "~/src/@types/enum/price-alert";
 import { PromotionClassified } from "~/src/@types/price-alert";
 
-export function getPriceChangeEmbed(product : PriceAlertItem) {
-	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
+export function getPriceChangeEmbed(product: PriceAlertItem) {
+	const storeImage: string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
 
 	const previousPrice = product.previous?.price ?? 1;
-	const discountPercentage : string = (((previousPrice - product.price) / previousPrice) * 100).toFixed(2);
-	let embedColor : ColorResolvable = "NotQuiteBlack";
+	const discountPercentage: string = (((previousPrice - product.price) / previousPrice) * 100).toFixed(2);
+	let embedColor: ColorResolvable = "NotQuiteBlack";
 	if (previousPrice > product.price) embedColor = "Green";
 	if (previousPrice < product.price) embedColor = "Red";
 
-	const price = (previousPrice.toFixed(1) === product.price.toFixed(1)) ? `$${product.price.toFixed(1)}` : `~~$${previousPrice.toFixed(1)}~~  $${product.price.toFixed(1)}`;
+	const price =
+		previousPrice.toFixed(1) === product.price.toFixed(1)
+			? `$${product.price.toFixed(1)}`
+			: `~~$${previousPrice.toFixed(1)}~~  $${product.price.toFixed(1)}`;
 	const embed = new EmbedBuilder()
 		.setTitle("Price Changed!")
 		.setURL(product.url)
@@ -27,12 +30,19 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 		.setColor(embedColor);
 
 	if (product.promotions) {
-		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
-			.map((promotion) => `${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`);
+		const discountPromotions = product.promotions
+			?.filter((promotion) => promotion.type === PromotionType.DISCOUNT)
+			.map(
+				(promotion) =>
+					`${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`,
+			);
 		if (discountPromotions.length > 0) {
-			embed.addFields(discountPromotions.map((promotion, index) => (
-				{ name: `Promotion ${index + 1}`, value: promotion.substring(0, 1024) }
-			)));
+			embed.addFields(
+				discountPromotions.map((promotion, index) => ({
+					name: `Promotion ${index + 1}`,
+					value: promotion.substring(0, 1024),
+				})),
+			);
 		}
 	}
 
@@ -43,7 +53,7 @@ export function getPriceChangeEmbed(product : PriceAlertItem) {
 }
 
 export function getAddedToAlertEmbed(product: PriceAlertItem) {
-	const storeImage : string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
+	const storeImage: string = PriceAlertShopParseDetails[product.shop]?.image ?? "";
 
 	const embed = new EmbedBuilder()
 		.setTitle(product.productName)
@@ -57,18 +67,25 @@ export function getAddedToAlertEmbed(product: PriceAlertItem) {
 	if (product.productImage) embed.setImage(product.productImage);
 	if (storeImage) embed.setThumbnail(storeImage);
 	if (product.promotions) {
-		const discountPromotions = product.promotions?.filter(promotion => promotion.type === PromotionType.DISCOUNT)
-			.map((promotion) => `${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`);
+		const discountPromotions = product.promotions
+			?.filter((promotion) => promotion.type === PromotionType.DISCOUNT)
+			.map(
+				(promotion) =>
+					`${promotion.description} ${promotion?.endTime ? `\r\n\r\nEnds: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}` : ""}`,
+			);
 		if (discountPromotions.length > 0) {
-			embed.addFields(discountPromotions.map((promotion, index) => (
-				{ name: `Promotion ${index + 1}`, value: promotion.substring(0, 1024) }
-			)));
+			embed.addFields(
+				discountPromotions.map((promotion, index) => ({
+					name: `Promotion ${index + 1}`,
+					value: promotion.substring(0, 1024),
+				})),
+			);
 		}
 	}
 	return embed;
 }
 
-function getProductImage(shopsItems : ShopPriceItem[]) : string {
+function getProductImage(shopsItems: ShopPriceItem[]): string {
 	for (let i = 0; i < shopsItems.length; i++) {
 		if (!shopsItems[i].productImage) continue;
 
@@ -79,11 +96,11 @@ function getProductImage(shopsItems : ShopPriceItem[]) : string {
 }
 
 export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
-	const productImage : string = getProductImage(productGroup.shops);
+	const productImage: string = getProductImage(productGroup.shops);
 
-	const fields : EmbedField[] = [];
+	const fields: EmbedField[] = [];
 
-	productGroup.shops.forEach((shopItem : ShopPriceItem, index : number) => {
+	productGroup.shops.forEach((shopItem: ShopPriceItem, index: number) => {
 		fields.push({
 			name: index === 0 ? "Shop" : "\u200b",
 			value: hyperlink(`${PriceAlertShopParseDetails[shopItem.shop].emote} 🔗`, shopItem.url),
@@ -91,17 +108,21 @@ export function getPriceListEmbed(productGroup: PriceAlertGrouped) {
 		});
 		fields.push({
 			name: index === 0 ? "Price" : "\u200b",
-			value: (shopItem.quantity !== 1) ? `$${(shopItem.price / shopItem.quantity).toFixed(1)} (${shopItem.price}/${shopItem.quantity}pcs)` : `$${shopItem.price}`,
+			value:
+				shopItem.quantity !== 1
+					? `$${(shopItem.price / shopItem.quantity).toFixed(1)} (${shopItem.price}/${shopItem.quantity}pcs)`
+					: `$${shopItem.price}`,
 			inline: true,
 		});
-		const promotionsList : string[] = shopItem.promotions?.map((promotion : PromotionClassified) => {
-			let promotionString = promotion.description;
-			if (promotion.endTime) {
-				promotionString += `\r\nEnd Time: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}`;
-			}
+		const promotionsList: string[] =
+			shopItem.promotions?.map((promotion: PromotionClassified) => {
+				let promotionString = promotion.description;
+				if (promotion.endTime) {
+					promotionString += `\r\nEnd Time: ${DateTime.fromJSDate(promotion.endTime).toFormat("yyyy-MM-dd HH:mm")}`;
+				}
 
-			return promotionString;
-		}) ?? [];
+				return promotionString;
+			}) ?? [];
 
 		fields.push({
 			name: index === 0 ? "Promotions" : "\u200b",

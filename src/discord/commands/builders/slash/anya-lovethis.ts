@@ -3,7 +3,7 @@ import { ApplicationIntegrationType, InteractionContextType, SlashCommandBuilder
 export const command = new SlashCommandBuilder()
 	.setName("anya-lovethis")
 	.setDescription("Show your love")
-	.addStringOption(option => option.setName("link").setDescription("image link").setRequired(false))
-	.addAttachmentOption(option => option.setName("image").setDescription("image file").setRequired(false))
+	.addStringOption((option) => option.setName("link").setDescription("image link").setRequired(false))
+	.addAttachmentOption((option) => option.setName("image").setDescription("image file").setRequired(false))
 	.setIntegrationTypes([ApplicationIntegrationType.UserInstall, ApplicationIntegrationType.GuildInstall])
 	.setContexts([InteractionContextType.Guild, InteractionContextType.PrivateChannel]);

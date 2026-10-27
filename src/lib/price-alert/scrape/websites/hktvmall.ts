@@ -8,14 +8,14 @@ import { PromotionType } from "~/src/@types/enum/price-alert";
 import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
 type HKTVMALLProductData = {
-	currencyIso: string,
-	value: number,
-	priceType: string,
-	formattedValue: string,
-	membershipLevel: string
-}
+	currencyIso: string;
+	value: number;
+	priceType: string;
+	formattedValue: string;
+	membershipLevel: string;
+};
 
-export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, __) => {
+export const parseHktvmallPrice: ShopParseFunction = async (url: string) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -33,28 +33,35 @@ export const parseHktvmallPrice : ShopParseFunction = async (url : string, _, __
 
 	if (!parsedProductData) return { success: false, error: "Product data parsing failed", data: null };
 
+	const price =
+		parsedProductData?.priceList?.reduce((acc: number, curr: HKTVMALLProductData) => {
+			const currentValue = parsePriceToFloat(curr.formattedValue);
+			if (acc < currentValue) return acc;
+			return currentValue;
+		}, Infinity) ?? null;
 
-	const price = parsedProductData?.priceList?.reduce((acc : number, curr: HKTVMALLProductData) => {
-		const currentValue = parsePriceToFloat(curr.formattedValue);
-		if (acc < currentValue) return acc;
-		return currentValue;
-	}, Infinity) ?? null;
+	const availablePromotion =
+		parsedProductData?.thresholdPromotionList ??
+		(parsedProductData?.thresholdPromotion ? [parsedProductData.thresholdPromotion] : null);
 
-	const availablePromotion = parsedProductData?.thresholdPromotionList ?? (parsedProductData?.thresholdPromotion ? [parsedProductData.thresholdPromotion] : null);
+	const parsedPromotions = availablePromotion
+		? availablePromotion.map(
+				(promotion: { label: string; description: string; startTime: string; endTime: string; name: string }) => {
+					const promotionDescription: string =
+						promotion?.description ?? `${promotion?.label ?? ""} | ${promotion?.name ?? ""}`;
+					const promotionType: PromotionType = classifyPromotionByKeywords(promotionDescription);
+					const startTime: Date | null = promotion?.startTime ? new Date(parseInt(promotion.startTime)) : null;
+					const endTime: Date | null = promotion?.endTime ? new Date(parseInt(promotion.endTime)) : null;
 
-	const parsedPromotions = availablePromotion ? availablePromotion.map((promotion: { label: string; description: string; startTime: string; endTime: string; name: string; }) => {
-		const promotionDescription : string = promotion?.description ?? (`${promotion?.label ?? ""} | ${promotion?.name ?? ""}`);
-		const promotionType : PromotionType = classifyPromotionByKeywords(promotionDescription);
-		const startTime : Date | null = promotion?.startTime ? new Date(parseInt(promotion.startTime)) : null;
-		const endTime : Date | null = promotion?.endTime ? new Date(parseInt(promotion.endTime)) : null;
-
-		return {
-			type: promotionType,
-			description: promotionDescription,
-			startTime: startTime,
-			endTime: endTime,
-		};
-	}) : [];
+					return {
+						type: promotionType,
+						description: promotionDescription,
+						startTime: startTime,
+						endTime: endTime,
+					};
+				},
+			)
+		: [];
 
 	const productName = parsedProductData?.name;
 	const brand = parsedProductData?.brandName;
@@ -108,8 +115,8 @@ function getProductDataFromScript(script: string) {
 	*/
 	const productDataIndex = script.indexOf("var productData =") + "var productData =".length;
 
-	let start : number = 0;
-	let stack : number = 1;
+	let start: number = 0;
+	let stack: number = 1;
 
 	while (script[productDataIndex + start - 1] !== "{") {
 		start++;
@@ -118,7 +125,7 @@ function getProductDataFromScript(script: string) {
 	let receivedData = "{";
 
 	// don't use falsey here, empty string is falsey
-	while ((stack > 0) && script[productDataIndex + start] !== undefined) {
+	while (stack > 0 && script[productDataIndex + start] !== undefined) {
 		const char = script[productDataIndex + start];
 		if (char === "{") stack++;
 		if (char === "}") stack--;
@@ -130,8 +137,7 @@ function getProductDataFromScript(script: string) {
 	receivedData = receivedData.replace(/\\(?!\/|u)/g, "");
 	try {
 		return JSON.parse(receivedData);
-	}
-	catch (error) {
+	} catch (error) {
 		logger.error((error as Error).message);
 		return null;
 	}

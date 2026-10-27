@@ -3,7 +3,7 @@ import { ExtendedDiscordClient } from "../lib/discord/client";
 import { autoCompleteHandler, interactionHandler } from "../discord/events/interaction";
 import { readyHandler } from "../discord/events/ready";
 
-export const client : ExtendedDiscordClient = new ExtendedDiscordClient({
+export const client: ExtendedDiscordClient = new ExtendedDiscordClient({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
@@ -12,11 +12,10 @@ export const client : ExtendedDiscordClient = new ExtendedDiscordClient({
 	],
 });
 
-export async function connectDiscord(token : string) {
+export async function connectDiscord(token: string) {
 	await client.login(token);
 }
 
 client.on(Events.InteractionCreate, interactionHandler);
 client.on(Events.InteractionCreate, autoCompleteHandler);
 client.on(Events.ClientReady, readyHandler);
-

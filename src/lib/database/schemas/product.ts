@@ -3,34 +3,37 @@ import { Schema, model } from "mongoose";
 import { PromotionClassified } from "~/src/@types/price-alert";
 
 export interface PriceAlertItem {
-    lastChecked: Date,
-    url: string,
-    price: number,
-    brand: string,
-    productName: string,
-	quantity: number,
-    productImage: string | null,
-    promotions?: PromotionClassified[] | null,
-    shop: PriceAlertShopOption,
-    failCount: number,
-    previous?: {
-        price: number,
-        date: Date,
-    },
-	isEnabled: boolean,
+	lastChecked: Date;
+	url: string;
+	price: number;
+	brand: string;
+	productName: string;
+	quantity: number;
+	productImage: string | null;
+	promotions?: PromotionClassified[] | null;
+	shop: PriceAlertShopOption;
+	failCount: number;
+	previous?: {
+		price: number;
+		date: Date;
+	};
+	isEnabled: boolean;
 }
 export type ShopPriceItem = Omit<PriceAlertItem, "brand" | "productName">;
 export interface PriceAlertGrouped {
-	productName: string,
-	brand: string,
-	shops: ShopPriceItem[]
+	productName: string;
+	brand: string;
+	shops: ShopPriceItem[];
 }
-const promotionSchema = new Schema({
-	type: String,
-	description: String,
-	startTime: Date,
-	endTime: Date,
-}, { _id: false });
+const promotionSchema = new Schema(
+	{
+		type: String,
+		description: String,
+		startTime: Date,
+		endTime: Date,
+	},
+	{ _id: false },
+);
 
 const priceAlertSchema = new Schema<PriceAlertItem>({
 	lastChecked: Date,

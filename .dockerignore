@@ -12,3 +12,8 @@ docker-compose*
 slash_commands_json
 img
 test
+
+dist
+**/.env
+**/.env.*
+src/secrets/deposit/**

@@ -1,4 +1,4 @@
 export type ImgurUploadData = {
-  image: string,
-  type: string
-}
+	image: string;
+	type: string;
+};

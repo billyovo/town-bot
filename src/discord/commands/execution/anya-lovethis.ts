@@ -1,12 +1,19 @@
-import { ChatInputCommandInteraction, AttachmentBuilder, MessageFlags, MessageContextMenuCommandInteraction } from "discord.js";
+import {
+	ChatInputCommandInteraction,
+	AttachmentBuilder,
+	MessageFlags,
+	MessageContextMenuCommandInteraction,
+} from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import path from "path";
 import { logger } from "~/src/lib/logger/logger";
 
 export async function execute(interaction: ChatInputCommandInteraction | MessageContextMenuCommandInteraction) {
 	const url = interaction.isChatInputCommand()
-		? interaction.options?.getAttachment("image")?.url ?? interaction.options?.getString("link") ?? null
-		: interaction.targetMessage.attachments?.first()?.url ?? interaction.targetMessage?.embeds?.[0]?.image?.url ?? null;
+		? (interaction.options?.getAttachment("image")?.url ?? interaction.options?.getString("link") ?? null)
+		: (interaction.targetMessage.attachments?.first()?.url ??
+			interaction.targetMessage?.embeds?.[0]?.image?.url ??
+			null);
 	if (!url) {
 		interaction.reply({ content: "Nothing is received!", flags: MessageFlags.Ephemeral });
 		return;
@@ -22,12 +29,10 @@ export async function execute(interaction: ChatInputCommandInteraction | Message
 		ctx.drawImage(base, 0, 0);
 		const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "output.png" });
 		interaction.editReply({ files: [attachment] });
-	}
-	catch (error) {
+	} catch (error) {
 		if (interaction.replied) {
 			interaction.editReply({ content: "an error occured!" });
-		}
-		else {
+		} else {
 			interaction.reply({ content: "an error occured!", flags: MessageFlags.Ephemeral });
 		}
 		if (error instanceof Error) {

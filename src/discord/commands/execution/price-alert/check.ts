@@ -14,13 +14,12 @@ function generateProgressBar(checkedProduct: number, total: number) {
 	const progress = Math.ceil((checkedProduct / total) * maxLength);
 
 	return `[${filled.repeat(progress)}${unfilled.repeat(maxLength - progress)}] (${checkedProduct}/${total})`;
-
 }
 export async function execute(interaction: ChatInputCommandInteraction) {
 	const repliedMessage = await interaction.reply({ content: "Fetching..." });
 
 	const total = await PriceAlertModel.countDocuments({ isEnabled: true });
-	const products : AsyncIterable<PriceAlertItem> = PriceAlertModel.find({ isEnabled: true }).lean().cursor();
+	const products: AsyncIterable<PriceAlertItem> = PriceAlertModel.find({ isEnabled: true }).lean().cursor();
 
 	let count = 0;
 	for await (const product of products) {
@@ -29,13 +28,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		const randomDelayTime = Math.floor(Math.random() * scrapeDelayTime);
 		await delay(randomDelayTime);
 
-		const newProductInfo : ShopParseFunctionReturn = await parseShopWebsite(product.url, product, { skipImageFetch: true });
-		const scrapeResult : PriceAlertChecked = await getPriceChange(product, newProductInfo);
+		const newProductInfo: ShopParseFunctionReturn = await parseShopWebsite(product.url, product, {
+			skipImageFetch: true,
+		});
+		const scrapeResult: PriceAlertChecked = await getPriceChange(product, newProductInfo);
 
 		await handleScrapeResult(scrapeResult);
 
-		repliedMessage.edit({ content: `Fetching [${product.productName}](${product.url}) \r\n${generateProgressBar(count, total)}` });
+		repliedMessage.edit({
+			content: `Fetching [${product.productName}](${product.url}) \r\n${generateProgressBar(count, total)}`,
+		});
 	}
 	repliedMessage.edit({ content: `Done! Checked ${count} products` });
-
 }

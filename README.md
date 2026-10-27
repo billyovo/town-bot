@@ -1,11 +1,8 @@
-
 # Town Bot
 
-  
 ## Deploy
 
-###  Docker
-
+### Docker
 
 1. Create .env file with INFISICAL_TOKEN=<TOKEN>
 
@@ -13,10 +10,9 @@
 
 `docker-compose up -d`
 
-
 ## Development
 
-###  Docker
+### Docker
 
 1. Create .env file with
 
@@ -27,11 +23,13 @@ INFISICAL_TOKEN_DEV=<TOKEN>
 `docker-compose -f docker-compose.dev.yaml up -d --build`
 
 ### pnpm
+
 1. Acquire .env file in dev environment from infisical
 2. install dependencies
-`pnpm add`
+   `pnpm add`
 3. Start dev
-`pnpm run dev`
+   `pnpm run dev`
 
 ### infisical
+
 infisical run -- pnpm run dev

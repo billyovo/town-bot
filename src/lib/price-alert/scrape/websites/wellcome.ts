@@ -5,7 +5,7 @@ import { PromotionType } from "~/src/@types/enum/price-alert";
 import { formatBrandName } from "../../utils/format";
 import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
-export const parseWellcomePrice : ShopParseFunction = async (url, _, __) => {
+export const parseWellcomePrice: ShopParseFunction = async (url) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
@@ -41,7 +41,7 @@ export const parseWellcomePrice : ShopParseFunction = async (url, _, __) => {
 
 function classifyPromotions(promotions: string[]) {
 	const classified = promotions.map((promotion) => {
-		const type : PromotionType = classifyPromotionByKeywords(promotion);
+		const type: PromotionType = classifyPromotionByKeywords(promotion);
 		return { type, description: promotion };
 	});
 

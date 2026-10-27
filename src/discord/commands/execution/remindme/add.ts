@@ -2,12 +2,12 @@ import { ChatInputCommandInteraction, MessageFlags, time, TimestampStyles } from
 import { parseDurationStringToMills, parseMillsToHuman } from "~/src/lib/utils/time/duration";
 import { DateTime, Duration } from "luxon";
 import { scheduleJob } from "node-schedule";
-import { ReminderModel } from "~/src/lib/database/schemas/reminders";
+import { Reminder, ReminderModel } from "~/src/lib/database/schemas/reminders";
 import { logger } from "~/src/lib/logger/logger";
 import { Failure, Success } from "~/src/@types/utils";
 
-function getCorrectDuration(timeInput : string) : Success<Duration> | Failure {
-	const errorMessages : string[] = [];
+function getCorrectDuration(timeInput: string): Success<Duration> | Failure {
+	const errorMessages: string[] = [];
 	// parse time in YYYY-MM-DD HH:MM:SS, then by MM-DD-YYYY HH:MM:SS
 	const timeWithYear = DateTime.fromFormat(timeInput, "dd/MM/yyyy HH:mm");
 	if (timeWithYear.isValid) {
@@ -48,7 +48,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	const dm = interaction.options.getBoolean("dm", false);
 
 	if (!dm && !interaction.channel?.isSendable()) {
-		return interaction.reply({ content: "No Permission to send message in this channel!", flags: MessageFlags.Ephemeral });
+		return interaction.reply({
+			content: "No Permission to send message in this channel!",
+			flags: MessageFlags.Ephemeral,
+		});
 	}
 
 	const reminderDuration = getCorrectDuration(timeInput);
@@ -60,37 +63,40 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 		return interaction.reply({ content: "You can't set a reminder in the past!", flags: MessageFlags.Ephemeral });
 	}
 
-	const reminderTime : DateTime = DateTime.now().plus(reminderDuration.data);
+	const reminderTime: DateTime = DateTime.now().plus(reminderDuration.data);
 	const reminderMessage = `I will ${dm ? "DM" : "remind"} you at ${time(Math.round(reminderTime.toSeconds()), TimestampStyles.RelativeTime)} after ${parseMillsToHuman(reminderDuration.data.toMillis())}!`;
 
-	const reminder = await ReminderModel.create({
-		sendTime: reminderTime.toJSDate(),
-		message: message,
-		isDM: !!dm,
-		owner: interaction.user.id,
-		channel: dm ? null : interaction.channel!.id,
-	});
+	const reminderData: Reminder = dm
+		? { sendTime: reminderTime.toJSDate(), message: message, isDM: true, owner: interaction.user.id, channel: null }
+		: {
+				sendTime: reminderTime.toJSDate(),
+				message: message,
+				isDM: false,
+				owner: interaction.user.id,
+				channel: interaction.channel!.id,
+			};
+
+	const reminder = await ReminderModel.create(reminderData);
 
 	scheduleJob(reminder._id.toString(), reminderTime.toJSDate(), () => {
 		if (dm) {
-			interaction.user.send({ content: message }).catch(err => logger.error(err.message));
-		}
-		else if (interaction.channel?.isSendable()) {
-				interaction.channel!.send({
+			interaction.user.send({ content: message }).catch((err) => logger.error(err.message));
+		} else if (interaction.channel?.isSendable()) {
+			interaction
+				.channel!.send({
 					content: message,
 					allowedMentions: {
 						users: [interaction.user.id],
 					},
-				}).catch(err => logger.error(err.message));
+				})
+				.catch((err) => logger.error(err.message));
 		}
 		ReminderModel.deleteOne({ _id: reminder._id }).exec();
 	});
 
 	if (dm) {
 		return await interaction.reply({ content: reminderMessage, flags: MessageFlags.Ephemeral });
-	}
-	else {
+	} else {
 		return await interaction.reply({ content: reminderMessage });
 	}
-
 }

@@ -3,7 +3,7 @@ import { formatBrandName, parsePriceToFloat } from "~/src/lib/price-alert/utils/
 import { PriceAlertShopOption } from "~/src/lib/price-alert/utils/enums/priceAlertShopOption";
 import { getHTML } from "../../utils/scrapeGetters";
 
-export const parseAeonPrice : ShopParseFunction = async (url, _) => {
+export const parseAeonPrice: ShopParseFunction = async (url) => {
 	const html = await getHTML(url);
 	if (!html.success) return { success: false, error: html.error, data: null };
 
