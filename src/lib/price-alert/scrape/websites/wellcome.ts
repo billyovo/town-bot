@@ -14,7 +14,9 @@ export const parseWellcomePrice: ShopParseFunction = async (url) => {
 	const productInformation = await getLDScript(root);
 	if (!productInformation) return { success: false, error: "Failed to parse product information", data: null };
 
-	if (!productInformation?.offers?.price) return { success: false, error: "Failed to parse product price", data: null };
+	// JSON-LD gives the price as a string, e.g. "45.90"
+	const price = parseFloat(productInformation?.offers?.price);
+	if (!Number.isFinite(price)) return { success: false, error: "Failed to parse product price", data: null };
 	if (!productInformation?.name) return { success: false, error: "Failed to parse product name", data: null };
 	if (!productInformation?.image) return { success: false, error: "Failed to parse product image", data: null };
 	if (!productInformation?.brand?.name) return { success: false, error: "Failed to parse product brand", data: null };
@@ -30,7 +32,7 @@ export const parseWellcomePrice: ShopParseFunction = async (url) => {
 		error: null,
 		data: {
 			productName: productInformation.name,
-			price: productInformation.offers.price,
+			price: price,
 			productImage: productInformation.image,
 			brand: formatBrandName(productInformation.brand.name),
 			shop: PriceAlertShopOption.WELLCOME,

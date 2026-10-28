@@ -28,21 +28,20 @@ export const parseManningsPrice: ShopParseFunction = async (url) => {
 	}
 
 	const productImage = getProductImage(productDetails.data.media_gallery_entries);
-	const promotions: PromotionClassified[] = productDetails.data.offers?.map((offer: Offer) => {
-		if (offer.free_gift.is_freegift) {
-			return {
-				type: PromotionType.FREEBIE,
-				description: offer.content[0].description,
-			};
-		}
-		return {
-			type: PromotionType.DISCOUNT,
-			description: offer.content[0].description,
-		};
-	});
+	const promotions: PromotionClassified[] = (productDetails.data.offers ?? []).flatMap(
+		(offer: Offer): PromotionClassified[] => {
+			const description = offer.content?.[0]?.description;
+			if (!description) return [];
+			if (offer.free_gift?.is_freegift) {
+				if (!offer.free_gift.available) return [];
+				return [{ type: PromotionType.FREEBIE, description }];
+			}
+			return [{ type: PromotionType.DISCOUNT, description }];
+		},
+	);
 
 	const data = {
-		brand: productDetails.data.brand_information.name,
+		brand: productDetails.data.brand_information?.name ?? "",
 		productName: productDetails.data.name,
 		productImage: productImage,
 		price: productDetails.data.price_range.maximum_price.final_price.value,
@@ -66,7 +65,7 @@ function getProductImage(media: MediaEntry[]): string | null {
 
 	for (const entry of media) {
 		if (entry.media_type === "image" && !entry.disabled) {
-			return `${BASEIMAGEURL}/${entry.file}`;
+			return `${BASEIMAGEURL}/${entry.file.replace(/^\/+/, "")}`;
 		}
 	}
 	return null;
@@ -76,7 +75,7 @@ async function fetchProductDetail(skuID: string): Promise<Success<ProductItem> |
 	const BASEURL = "https://www.mannings.com.hk/graphql";
 	const query = `
 		query getProductDetailForProductPage($sku: String!) {
-		productsV2(filter: { sku: { eq: $sku } }) {
+		productsV3(filter: { sku: { eq: $sku } }) {
 			items {
 			name
 			sku
@@ -129,7 +128,7 @@ async function fetchProductDetail(skuID: string): Promise<Success<ProductItem> |
 			},
 		});
 
-		if (productDetailsRes.data.data.productsV2.items.length === 0) {
+		if (productDetailsRes.data.data.productsV3.items.length === 0) {
 			throw new Error("Product not found");
 		}
 	} catch (error) {
@@ -141,7 +140,7 @@ async function fetchProductDetail(skuID: string): Promise<Success<ProductItem> |
 		};
 	}
 	return {
-		data: productDetailsRes.data.data.productsV2.items[0],
+		data: productDetailsRes.data.data.productsV3.items[0],
 		error: null,
 		success: true,
 	};
@@ -161,7 +160,7 @@ type ProductItem = {
 	offers: Offer[];
 	brand_information: {
 		name: string;
-	};
+	} | null;
 	media_gallery_entries: MediaEntry[];
 };
 

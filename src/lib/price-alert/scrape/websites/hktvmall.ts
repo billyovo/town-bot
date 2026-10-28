@@ -9,7 +9,7 @@ import { classifyPromotionByKeywords } from "../../utils/classifyPromotions";
 
 type HKTVMALLProductData = {
 	currencyIso: string;
-	value: number;
+	value: string;
 	priceType: string;
 	formattedValue: string;
 	membershipLevel: string;
@@ -33,12 +33,12 @@ export const parseHktvmallPrice: ShopParseFunction = async (url: string) => {
 
 	if (!parsedProductData) return { success: false, error: "Product data parsing failed", data: null };
 
-	const price =
-		parsedProductData?.priceList?.reduce((acc: number, curr: HKTVMALLProductData) => {
-			const currentValue = parsePriceToFloat(curr.formattedValue);
-			if (acc < currentValue) return acc;
-			return currentValue;
-		}, Infinity) ?? null;
+	const priceList: HKTVMALLProductData[] = parsedProductData?.priceList ?? [];
+	const normalPrices = priceList.filter((item) => !item.membershipLevel || item.membershipLevel === "NORMAL");
+	const prices = (normalPrices.length > 0 ? normalPrices : priceList)
+		.map((item) => parseFloat(item.value ?? "") || parsePriceToFloat(item.formattedValue ?? ""))
+		.filter((value) => Number.isFinite(value) && value > 0);
+	const price = prices.length > 0 ? Math.min(...prices) : null;
 
 	const availablePromotion =
 		parsedProductData?.thresholdPromotionList ??
@@ -90,13 +90,15 @@ export const parseHktvmallPrice: ShopParseFunction = async (url: string) => {
 function getProductScriptFromScripts(allScripts: HTMLElement[]) {
 	for (let i = 0; i < allScripts.length; i++) {
 		const script = allScripts[i];
-		if (script.textContent.includes("var productDetailPageProductData =")) {
+		if (script.textContent.includes(PRODUCT_DATA_MARKER)) {
 			return script.text;
 		}
 	}
 
 	return null;
 }
+const PRODUCT_DATA_MARKER = "var productDetailPageProductData =";
+
 function getProductDataFromScript(script: string) {
 	/*
 	   say we have a <script> tag with variables like
@@ -110,35 +112,46 @@ function getProductDataFromScript(script: string) {
 	   we only know which line the productDetailPageProductData is in, and the data could have nested objects and spam multiple lines
 	   we need to find the start and end of the object, and extract it
 
-		assume it's always an valid json object
 		use the classic stack method to find the start and end of the object, meet "{" stack++, meet "}" stack--, loop until stack = 0
+		braces inside strings are skipped
 	*/
-	const productDataIndex = script.indexOf("var productData =") + "var productData =".length;
+	const markerIndex = script.indexOf(PRODUCT_DATA_MARKER);
+	if (markerIndex === -1) return null;
 
-	let start: number = 0;
-	let stack: number = 1;
+	const start = script.indexOf("{", markerIndex + PRODUCT_DATA_MARKER.length);
+	if (start === -1) return null;
 
-	while (script[productDataIndex + start - 1] !== "{") {
-		start++;
+	let stack = 0;
+	let inString = false;
+	let end = -1;
+	for (let i = start; i < script.length; i++) {
+		const char = script[i];
+		if (inString) {
+			if (char === "\\") i++;
+			else if (char === '"') inString = false;
+			continue;
+		}
+		if (char === '"') inString = true;
+		else if (char === "{") stack++;
+		else if (char === "}") {
+			stack--;
+			if (stack === 0) {
+				end = i;
+				break;
+			}
+		}
 	}
+	if (end === -1) return null;
 
-	let receivedData = "{";
-
-	// don't use falsey here, empty string is falsey
-	while (stack > 0 && script[productDataIndex + start] !== undefined) {
-		const char = script[productDataIndex + start];
-		if (char === "{") stack++;
-		if (char === "}") stack--;
-		receivedData += char;
-		start++;
-	}
-
-	// fix the wrong escaped backslashes
-	receivedData = receivedData.replace(/\\(?!\/|u)/g, "");
+	const receivedData = script.slice(start, end + 1);
 	try {
 		return JSON.parse(receivedData);
-	} catch (error) {
-		logger.error((error as Error).message);
-		return null;
+	} catch {
+		try {
+			return JSON.parse(receivedData.replace(/\\(?!\/|u)/g, ""));
+		} catch (error) {
+			logger.error((error as Error).message);
+			return null;
+		}
 	}
 }

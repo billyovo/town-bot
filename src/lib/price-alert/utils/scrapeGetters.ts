@@ -4,10 +4,19 @@ import { Failure, Success } from "~/src/@types/utils";
 import { logger } from "../../logger/logger";
 
 export async function getHTML(url: string): Promise<Success<HTMLElement> | Failure> {
-	const html = await HTMLClient.get(url).catch(() => {
-		logger.error(`Failed to fetch ${url}`);
-		return { data: null, success: false, error: "Failed to fetch url" };
-	});
+	let html;
+	try {
+		html = await HTMLClient.get(url);
+	} catch (error) {
+		const status = (error as { response?: { status?: number } }).response?.status;
+		logger.error(`Failed to fetch ${url}${status ? ` (HTTP ${status})` : ""}`);
+		return {
+			data: null,
+			success: false,
+			error:
+				status === 403 ? "Blocked by the site (HTTP 403)" : `Failed to fetch url${status ? ` (HTTP ${status})` : ""}`,
+		};
+	}
 
 	try {
 		const root = parse(html.data);

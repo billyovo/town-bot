@@ -28,8 +28,7 @@ export const parseWatsonsGroupPrice: ShopParseFunction = async (url, shopDetails
 	}
 	const { baseURL, shopCode, shopOption } = shopDetail;
 
-	const regex = /BP_.*/g;
-	const productID: string | undefined = regex.exec(url)?.[0]?.replace("BP_", "");
+	const productID: string | undefined = new URL(url).pathname.match(/\/BP_([^/]+)\/?$/)?.[1];
 
 	if (!productID) {
 		return {
@@ -41,6 +40,7 @@ export const parseWatsonsGroupPrice: ShopParseFunction = async (url, shopDetails
 
 	const productDetails: Success<ProductDetail> | Failure = await fetchProductDetail(
 		`${baseURL}/api/v2/${shopCode}/products/search?fields=FULL&query=BP_${productID}&lang=zh_HK&curr=HKD`,
+		productID,
 	);
 	const promotionPrice: number = await fetchPromotionPrice(
 		`${baseURL}/api/v2/${shopCode}/products/${productID}/multiBuy?fields=FULL&lang=zh_HK&curr=HKD`,
@@ -75,11 +75,11 @@ export const parseWatsonsGroupPrice: ShopParseFunction = async (url, shopDetails
 type ProductDetail = {
 	brand: string;
 	productName: string;
-	productImage: string;
+	productImage: string | null;
 	discountedPriceWithoutPromotion: number;
 };
 
-async function fetchProductDetail(url: string): Promise<Success<ProductDetail> | Failure> {
+async function fetchProductDetail(url: string, productID: string): Promise<Success<ProductDetail> | Failure> {
 	let productDetailsRes;
 	try {
 		productDetailsRes = await APIClient.get(url, {});
@@ -91,7 +91,9 @@ async function fetchProductDetail(url: string): Promise<Success<ProductDetail> |
 			success: false,
 		};
 	}
-	const productDetail = productDetailsRes.data?.products?.[0];
+	const products = productDetailsRes.data?.products ?? [];
+	const productDetail =
+		products.find((product: { code?: string }) => product.code === `BP_${productID}`) ?? products[0];
 	if (!productDetail) {
 		return {
 			data: null,
@@ -100,11 +102,19 @@ async function fetchProductDetail(url: string): Promise<Success<ProductDetail> |
 		};
 	}
 
-	const brand: string = productDetail.masterBrand.name;
+	const brand: string = productDetail.masterBrand?.name ?? "";
 	const productName: string = productDetail.elabProductName;
-	const productImage: string = productDetail.images[0].url;
+	const productImage: string = productDetail.images?.[0]?.url ?? null;
 	const discountedPriceWithoutPromotion: number =
 		productDetail.elabMarkDownMemPrice?.value || productDetail.elabMarkDownPrice?.value || productDetail.price?.value;
+
+	if (!Number.isFinite(discountedPriceWithoutPromotion)) {
+		return {
+			data: null,
+			error: "Price not found",
+			success: false,
+		};
+	}
 
 	return {
 		data: {
@@ -134,7 +144,7 @@ async function fetchPromotionPrice(url: string): Promise<number> {
 	const memberPrice = promotionPriceRes.data.elabmarkdownMemPrice?.value ?? Infinity;
 	if (!promotionPriceRes.data.elabMultiBuyPromotionList?.length && memberPrice === Infinity) return Infinity;
 
-	const promotionPrice: number = promotionPriceRes.data.elabMultiBuyPromotionList.reduce(
+	const promotionPrice: number = (promotionPriceRes.data.elabMultiBuyPromotionList ?? []).reduce(
 		(minPrice: number, item: PromotionPriceResponse) => {
 			return Math.min(minPrice, item.avgDiscountedPrice.value) || minPrice;
 		},
