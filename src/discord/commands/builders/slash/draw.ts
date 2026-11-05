@@ -9,9 +9,9 @@ export const command = new SlashCommandBuilder()
 	.addStringOption((option) =>
 		option
 			.setName("model")
-			.setDescription("model")
+			.setDescription("Model (default: OpenAI)")
 			.setRequired(false)
-			.addChoices({ name: "Gemini", value: "gemini" }, { name: "ChatGPT", value: "chatgpt" }),
+			.addChoices({ name: "OpenAI (gpt-image-2.6-sunburst)", value: "openai" }, { name: "Gemini", value: "gemini" }),
 	)
 	.addStringOption((option) =>
 		option
